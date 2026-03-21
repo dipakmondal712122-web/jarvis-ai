@@ -126,6 +126,9 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
 .nbtn.on .nic{filter:drop-shadow(0 0 6px var(--cyan))}
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid rgba(0,212,255,0.3);border-radius:12px;padding:10px 18px;font-size:13px;color:var(--text);opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:nowrap;letter-spacing:1px}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Voice mode pulse */
+@keyframes voicepulse{0%,100%{box-shadow:0 0 25px rgba(0,255,136,0.5)}50%{box-shadow:0 0 45px rgba(0,255,136,0.9),0 0 20px rgba(0,255,136,0.4)}}
+#micbtn.voicemode{animation:voicepulse 1.5s infinite;background:linear-gradient(135deg,var(--green),#00AAAA)!important}
 .memc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
 .minp{flex:1;padding:9px 13px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:11px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none}
 .minp::placeholder{color:rgba(0,212,255,0.3)}
@@ -156,8 +159,14 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
       <div id="messages"></div>
       <div id="typing"><div class="avt">🤖</div><div class="tdots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
       <div id="vsec">
-        <button id="stopbtn" onclick="stopSpeak()">⏹ Stop</button>
+        <div style="display:flex;gap:8px;width:100%;justify-content:center;margin-bottom:4px">
+          <button id="stopbtn" onclick="stopSpeak()" style="background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.3);border-radius:8px;padding:5px 12px;color:var(--red);font-size:11px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px">⏹ Stop</button>
+          <button id="voicemodbtn" onclick="togVoiceMode()" style="background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);border-radius:8px;padding:5px 12px;color:var(--cyan);font-size:11px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px">🔄 Voice Mode: OFF</button>
+        </div>
         <div id="vtxt">🎤 Listening...</div>
+        <div id="vmodeinfo" style="display:none;font-size:10px;color:rgba(0,255,136,0.8);letter-spacing:1px;text-align:center;padding:4px 0">
+          ● VOICE MODE ON — বলুন, JARVIS শুনবে ও বলবে!
+        </div>
         <div id="mwrap">
           <div class="mring"></div><div class="mring"></div><div class="mring"></div>
           <button id="micbtn" onclick="togMic()">🎤</button>
@@ -281,6 +290,92 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
       </div>
     </div>
 
+    <!-- TOOLS -->
+    <div class="tp" id="tab-tools">
+      <div class="tscroll">
+
+        <!-- ── BLOG GENERATOR ── -->
+        <div class="slbl">◈ UPGRADED BLOG GENERATOR</div>
+        <div class="card">
+          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">📝 Complete SEO Blog Post</div>
+          <div class="sklbl" style="margin-bottom:5px">TOPIC / KEYWORD</div>
+          <input id="bgtopic" class="sinp" placeholder="e.g. নারকেল তেলের উপকারিতা" style="margin-bottom:8px"/>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <select id="bglang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option value="Bengali">🇧🇩 Bengali</option>
+              <option value="English">🇬🇧 English</option>
+              <option value="Hindi">🇮🇳 Hindi</option>
+            </select>
+            <select id="bgtype" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option value="health">💊 Health</option>
+              <option value="product">🛒 Product Review</option>
+              <option value="listicle">📋 List Article</option>
+              <option value="howto">📖 How-To Guide</option>
+            </select>
+          </div>
+          <button class="sbtn p" style="width:100%;padding:11px" onclick="genFullBlog()">🤖 Generate Full Blog Post</button>
+          <div id="blogresult" style="display:none;margin-top:10px">
+            <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:6px">◈ GENERATED POST</div>
+            <div id="blogtitle" style="color:var(--cyan);font-size:13px;font-weight:700;margin-bottom:6px;padding:8px;background:var(--bg);border-radius:8px"></div>
+            <div id="blogmeta" style="color:rgba(232,244,255,.6);font-size:11px;margin-bottom:6px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.5"></div>
+            <div style="display:flex;gap:8px">
+              <button class="sbtn" onclick="copyBlog()" style="flex:1;padding:9px 0">📋 Copy</button>
+              <button class="sbtn p" onclick="sendToBlogger()" style="flex:1;padding:9px 0">📝 Blogger</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── INSTAGRAM CAPTION ── -->
+        <div class="slbl" style="margin-top:4px">◈ INSTAGRAM CAPTION GENERATOR</div>
+        <div class="card">
+          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">📸 Caption + Hashtags</div>
+          <input id="captopic" class="sinp" placeholder="Topic বা product নাম লেখো..." style="margin-bottom:8px"/>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <select id="capstyle" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option value="engaging">🔥 Engaging</option>
+              <option value="funny">😄 Funny</option>
+              <option value="informative">💡 Informative</option>
+              <option value="promotional">💰 Promotional</option>
+            </select>
+            <select id="caplang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option value="Bengali">বাংলা</option>
+              <option value="English">English</option>
+              <option value="Hindi">हिन्दी</option>
+            </select>
+          </div>
+          <button class="sbtn p" style="width:100%;padding:11px" onclick="genCaption()">✨ Generate Caption</button>
+          <div id="capresult" style="display:none;margin-top:10px">
+            <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:6px">◈ YOUR CAPTION</div>
+            <div id="captiontext" style="color:var(--text);font-size:13px;padding:10px;background:var(--bg);border-radius:10px;line-height:1.6;margin-bottom:8px"></div>
+            <div id="hashtext" style="color:var(--cyan);font-size:11px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.8"></div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="sbtn" onclick="copyCap()" style="flex:1;padding:9px 0">📋 Copy</button>
+              <button class="sbtn p" onclick="postToIG()" style="flex:1;padding:9px 0">📸 Post</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SMART REMINDER ── -->
+        <div class="slbl" style="margin-top:4px">◈ SMART REMINDER</div>
+        <div class="card">
+          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">⏰ Set Reminder</div>
+          <input id="remtxt" class="sinp" placeholder="Reminder text... (e.g. Blog post লিখতে হবে)" style="margin-bottom:8px"/>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <input type="time" id="remtime" style="flex:1;padding:9px 13px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:13px;outline:none"/>
+            <select id="remrepeat" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option value="once">Once</option>
+              <option value="daily">Daily</option>
+              <option value="weekdays">Weekdays</option>
+            </select>
+          </div>
+          <button class="sbtn p" style="width:100%;padding:11px" onclick="setReminder()">⏰ Set Reminder</button>
+          <div id="remlist" style="margin-top:10px"></div>
+        </div>
+
+        <div style="height:16px"></div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="tp" id="tab-settings">
       <div class="tscroll">
@@ -346,6 +441,7 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
     <button class="nbtn" onclick="swTab('blogger',this)"><span class="nic">📝</span><span class="nlbl">BLOG</span><div class="nind"></div></button>
     <button class="nbtn" onclick="swTab('social',this)"><span class="nic">📡</span><span class="nlbl">SOCIAL</span><div class="nind"></div></button>
     <button class="nbtn" onclick="swTab('mobile',this)"><span class="nic">📱</span><span class="nlbl">MOBILE</span><div class="nind"></div></button>
+    <button class="nbtn" onclick="swTab('tools',this)"><span class="nic">🛠️</span><span class="nlbl">TOOLS</span><div class="nind"></div></button>
     <button class="nbtn" onclick="swTab('settings',this)"><span class="nic">⚙️</span><span class="nlbl">SETTINGS</span><div class="nind"></div></button>
   </div>
 </div>
@@ -579,10 +675,36 @@ async function callCla(msg,sys,key){
   return d.content?.[0]?.text?.trim()||'⚠️ No response.';
 }
 
-// ── MULTI-ENGINE TTS ──
-// Bengali: ResponsiveVoice → Web Speech API
-// Hindi/English: Web Speech API
+// ── VOICE TO VOICE SYSTEM ──
+let voiceMode = false;   // Auto-listen after AI speaks
 
+function togVoiceMode(){
+  voiceMode = !voiceMode;
+  const btn = document.getElementById('voicemodbtn');
+  const info = document.getElementById('vmodeinfo');
+  if(voiceMode){
+    btn.textContent = '🔄 Voice Mode: ON';
+    btn.style.background = 'rgba(0,255,136,0.15)';
+    btn.style.borderColor = 'rgba(0,255,136,0.4)';
+    btn.style.color = 'var(--green)';
+    info.style.display = 'block';
+    showToast('🎤 Voice Mode ON — বলুন!');
+    vibrate([100,50,100]);
+    // Start listening immediately
+    setTimeout(()=> startMic(), 500);
+  } else {
+    btn.textContent = '🔄 Voice Mode: OFF';
+    btn.style.background = 'rgba(0,212,255,0.1)';
+    btn.style.borderColor = 'rgba(0,212,255,0.3)';
+    btn.style.color = 'var(--cyan)';
+    info.style.display = 'none';
+    stopMic();
+    stopSpeak();
+    showToast('🔇 Voice Mode OFF');
+  }
+}
+
+// ── TTS — Bengali Google TTS via proxy ──
 function speak(text){
   if(!S.voiceEnabled) return;
   const clean = text
@@ -590,117 +712,137 @@ function speak(text){
     .replace(/<[^>]+>/g,'')
     .replace(/https?:\/\/\S+/g,'')
     .replace(/\[.*?\]/g,'')
-    .trim().substring(0,350);
+    .trim().substring(0,400);
   if(!clean) return;
   stopSpeak();
-  if(S.lang==='bn-IN') speakBengali(clean);
-  else if(S.lang==='hi-IN') speakHindi(clean);
-  else speakEnglish(clean);
+
+  if(S.lang === 'bn-IN') speakBengali(clean);
+  else if(S.lang === 'hi-IN') speakLang(clean,'Hindi Female','hi-IN');
+  else speakLang(clean,'UK English Female','en-US');
 }
 
-// ── BENGALI TTS ──
+// ── BENGALI TTS — 4 methods ──
 function speakBengali(text){
-  // Method 1: ResponsiveVoice (best for Bengali)
+  const chunks = splitIntoChunks(text, 180);
+  speakBengaliChunks(chunks, 0);
+}
+
+function splitIntoChunks(text, maxLen){
+  if(text.length <= maxLen) return [text];
+  const chunks = [];
+  let rem = text;
+  while(rem.length > 0){
+    if(rem.length <= maxLen){ chunks.push(rem); break; }
+    let s = rem.lastIndexOf('।', maxLen);
+    if(s < 50) s = rem.lastIndexOf(' ', maxLen);
+    if(s < 10) s = maxLen;
+    chunks.push(rem.substring(0, s+1).trim());
+    rem = rem.substring(s+1).trim();
+  }
+  return chunks.filter(c=>c.length>0);
+}
+
+function speakBengaliChunks(chunks, i){
+  if(i >= chunks.length){
+    // After speaking, auto-listen in voice mode
+    if(voiceMode) setTimeout(()=> startMic(), 800);
+    return;
+  }
+
+  const chunk = chunks[i];
+
+  // Method 1: ResponsiveVoice — Bengali Female
   if(typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()){
-    try{
-      responsiveVoice.speak(text, 'Bangla Female', {
-        rate: 0.9, pitch: 1, volume: 1,
-        onstart: ()=>{ showToast('🔊 বাংলা বলছে...'); },
-        onerror: ()=>speakBengaliFallback(text)
-      });
-      return;
-    }catch(e){ speakBengaliFallback(text); }
-  } else {
-    speakBengaliFallback(text);
-  }
-}
-
-function speakBengaliFallback(text){
-  // Method 2: Web Speech API with bn-IN
-  if(window.speechSynthesis){
-    window.speechSynthesis.cancel();
-    const tryIt=()=>{
-      const voices=window.speechSynthesis.getVoices();
-      const bnVoice=voices.find(v=>v.lang==='bn-IN')||voices.find(v=>v.lang==='bn')||voices.find(v=>v.lang.startsWith('bn'));
-      if(bnVoice){
-        const utt=new SpeechSynthesisUtterance(text);
-        utt.voice=bnVoice; utt.lang='bn-IN'; utt.rate=0.85; utt.volume=1;
-        window.speechSynthesis.speak(utt);
-        showToast('🔊 Bengali voice: '+bnVoice.name.substring(0,20));
-        return;
+    responsiveVoice.speak(chunk, 'Bangla Female', {
+      rate: 0.9, pitch: 1, volume: 1,
+      onend: ()=> speakBengaliChunks(chunks, i+1),
+      onerror: ()=> {
+        responsiveVoice.speak(chunk, 'Bengali Female', {
+          rate:0.9, volume:1,
+          onend: ()=> speakBengaliChunks(chunks, i+1),
+          onerror: ()=> speakBengaliWS(chunks, i)
+        });
       }
-      // Method 3: Hindi voice (closest sound to Bengali)
-      const hiVoice=voices.find(v=>v.lang==='hi-IN')||voices.find(v=>v.lang.startsWith('hi'));
-      if(hiVoice){
-        const utt=new SpeechSynthesisUtterance(text);
-        utt.voice=hiVoice; utt.lang='hi-IN'; utt.rate=0.85; utt.volume=1;
-        window.speechSynthesis.speak(utt);
-        showToast('⚠️ Hindi voice (Bengali unavailable)');
-        return;
-      }
-      // Method 4: Any Indian English
-      const inVoice=voices.find(v=>v.lang==='en-IN')||voices.find(v=>v.name.toLowerCase().includes('india'));
-      const utt=new SpeechSynthesisUtterance(text);
-      if(inVoice){utt.voice=inVoice;}
-      utt.lang='bn-IN'; utt.rate=0.85; utt.volume=1;
-      window.speechSynthesis.speak(utt);
-    };
-    if(window.speechSynthesis.getVoices().length===0){
-      window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.onvoiceschanged=null;tryIt();};
-    }else tryIt();
+    });
+    return;
   }
+  speakBengaliWS(chunks, i);
 }
 
-// ── HINDI TTS ──
-function speakHindi(text){
-  if(typeof responsiveVoice !== 'undefined'){
-    try{
-      responsiveVoice.speak(text,'Hindi Female',{rate:0.9,pitch:1,volume:1,onerror:()=>speakWS(text,'hi-IN')});
-      return;
-    }catch(e){}
-  }
-  speakWS(text,'hi-IN');
-}
-
-// ── ENGLISH TTS ──
-function speakEnglish(text){
-  if(typeof responsiveVoice !== 'undefined'){
-    try{
-      responsiveVoice.speak(text,'UK English Female',{rate:0.95,pitch:1,volume:1,onerror:()=>speakWS(text,'en-US')});
-      return;
-    }catch(e){}
-  }
-  speakWS(text,'en-US');
-}
-
-// ── WEB SPEECH FALLBACK ──
-function speakWS(text,lang){
-  if(!window.speechSynthesis)return;
+function speakBengaliWS(chunks, i){
+  if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,800); return; }
   window.speechSynthesis.cancel();
-  const go=()=>{
-    const vs=window.speechSynthesis.getVoices();
-    const utt=new SpeechSynthesisUtterance(text);
-    utt.lang=lang; utt.rate=0.9; utt.volume=1.0;
-    const best=vs.find(v=>v.lang===lang)||vs.find(v=>v.lang.startsWith(lang.split('-')[0]))||vs[0];
-    if(best)utt.voice=best;
+
+  const trySpeak = ()=>{
+    const voices = window.speechSynthesis.getVoices();
+    const utt = new SpeechSynthesisUtterance(chunks[i]);
+
+    // Find best Bengali voice
+    const bnVoice = voices.find(v=>v.lang==='bn-IN')
+      || voices.find(v=>v.lang==='bn-BD')
+      || voices.find(v=>v.lang.startsWith('bn'))
+      || voices.find(v=>v.lang==='hi-IN')  // Hindi fallback
+      || voices.find(v=>v.lang.startsWith('en-IN')) // Indian English fallback
+      || voices[0];
+
+    utt.voice = bnVoice;
+    utt.lang = bnVoice?.lang || 'bn-IN';
+    utt.rate = 0.85; utt.pitch = 1.0; utt.volume = 1.0;
+    utt.onend = ()=> speakBengaliChunks(chunks, i+1);
+    utt.onerror = ()=> speakBengaliChunks(chunks, i+1);
     window.speechSynthesis.speak(utt);
   };
-  if(window.speechSynthesis.getVoices().length===0){
-    window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.onvoiceschanged=null;go();};
-  }else go();
+
+  if(window.speechSynthesis.getVoices().length === 0){
+    window.speechSynthesis.onvoiceschanged = ()=>{ window.speechSynthesis.onvoiceschanged=null; trySpeak(); };
+  } else trySpeak();
+}
+
+// ── HINDI / ENGLISH TTS ──
+function speakLang(text, rvVoice, wsLang){
+  const chunks = splitIntoChunks(text, 200);
+  speakLangChunks(chunks, 0, rvVoice, wsLang);
+}
+
+function speakLangChunks(chunks, i, rvVoice, wsLang){
+  if(i >= chunks.length){
+    if(voiceMode) setTimeout(()=> startMic(), 800);
+    return;
+  }
+  if(typeof responsiveVoice !== 'undefined'){
+    responsiveVoice.speak(chunks[i], rvVoice, {
+      rate:0.95, volume:1,
+      onend: ()=> speakLangChunks(chunks, i+1, rvVoice, wsLang),
+      onerror: ()=> speakWSLang(chunks, i, rvVoice, wsLang)
+    });
+    return;
+  }
+  speakWSLang(chunks, i, rvVoice, wsLang);
+}
+
+function speakWSLang(chunks, i, rvVoice, wsLang){
+  if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,800); return; }
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(chunks[i]);
+  const voices = window.speechSynthesis.getVoices();
+  const v = voices.find(vv=>vv.lang===wsLang)||voices.find(vv=>vv.lang.startsWith(wsLang.split('-')[0]))||voices[0];
+  if(v) utt.voice=v;
+  utt.lang=wsLang; utt.rate=0.95; utt.volume=1;
+  utt.onend = ()=> speakLangChunks(chunks, i+1, rvVoice, wsLang);
+  window.speechSynthesis.speak(utt);
 }
 
 function stopSpeak(){
   if(typeof responsiveVoice!=='undefined') try{responsiveVoice.cancel();}catch(e){}
   if(AUD){AUD.pause();AUD=null;}
   window.speechSynthesis?.cancel();
-  showToast('⏹ Stopped');
 }
 
+// ── VOICE TEST ──
 function testV(lang){
   const TX={
-    en:'Hello! I am JARVIS, your personal AI assistant. Voice is working perfectly!',
-    'bn-IN':'নমস্কার! আমি JARVIS, আপনার ব্যক্তিগত AI সহকারী। বাংলা ভয়েস কাজ করছে!',
+    en:'Hello! I am JARVIS, your personal AI assistant. English voice is working perfectly!',
+    'bn-IN':'নমস্কার! আমি JARVIS, আপনার ব্যক্তিগত AI সহকারী। বাংলা ভয়েস কাজ করছে! আমি এখন থেকে বাংলায় কথা বলতে পারব।',
     'hi-IN':'नमस्ते! मैं JARVIS हूँ, आपका AI सहायक। हिंदी आवाज़ काम कर रही है!'
   };
   const prev=S.lang; S.lang=lang;
@@ -719,17 +861,24 @@ function startMic(){
   REC.continuous=false; REC.interimResults=true;
   REC.onstart=()=>{
     S.isListening=true;
-    document.getElementById('micbtn').classList.add('on');
-    document.getElementById('micbtn').textContent='⏹';
+    const mb=document.getElementById('micbtn');
+    mb.classList.add('on');
+    if(voiceMode) mb.classList.add('voicemode');
+    mb.textContent='⏹';
     document.getElementById('vtxt').style.display='block';
-    document.getElementById('vtxt').textContent='🎤 Listening...';
+    document.getElementById('vtxt').textContent = voiceMode
+      ? (S.lang==='bn-IN'?'🎤 বলুন...':S.lang==='hi-IN'?'🎤 बोलिए...':'🎤 Speak now...')
+      : '🎤 Listening...';
     document.querySelectorAll('.mring').forEach(r=>r.style.display='block');
   };
   REC.onresult=(e)=>{
     const t=Array.from(e.results).map(r=>r[0].transcript).join('');
     document.getElementById('vtxt').textContent='🎤 '+t;
     document.getElementById('uinput').value=t;
-    if(e.results[e.results.length-1].isFinal&&t.trim()){stopMic();setTimeout(()=>sendMsg(),300);}
+    if(e.results[e.results.length-1].isFinal&&t.trim()){
+      stopMic();
+      setTimeout(()=>sendMsg(),300);
+    }
   };
   REC.onerror=(e)=>{showToast('🎤 Error: '+e.error);stopMic();};
   REC.onend=stopMic;
@@ -738,9 +887,9 @@ function startMic(){
 function stopMic(){
   if(REC){try{REC.stop();}catch(e){}REC=null;}
   S.isListening=false;
-  document.getElementById('micbtn').classList.remove('on');
-  document.getElementById('micbtn').textContent='🎤';
-  document.getElementById('vtxt').style.display='none';
+  const mb = document.getElementById('micbtn');
+  if(mb){ mb.classList.remove('on'); mb.textContent = voiceMode ? '👂' : '🎤'; }
+  if(!voiceMode) document.getElementById('vtxt').style.display='none';
   document.querySelectorAll('.mring').forEach(r=>r.style.display='none');
 }
 
@@ -904,6 +1053,206 @@ function clipToChat(){const t=document.getElementById('cliparea')?.value?.trim()
 async function reqNotif(){if(!('Notification' in window)){showToast('❌ Not supported');return;}if(Notification.permission==='granted'){testNotif();return;}const p=await Notification.requestPermission();if(p==='granted'){showToast('✅ Enabled!');testNotif();}else showToast('❌ Denied');}
 function testNotif(){if(Notification.permission!=='granted'){reqNotif();return;}new Notification('🤖 JARVIS AI',{body:'নমস্কার! আমি JARVIS — সবসময় আপনার সেবায়!',icon:'https://img.icons8.com/fluency/48/robot-2.png'});vibrate([200,100,200]);showToast('🔔 Notification sent!');}
 async function shareApp(){if(navigator.share){try{await navigator.share({title:'JARVIS AI',text:'আমার Personal AI Assistant!',url:window.location.href});}catch(e){}}else{try{await navigator.clipboard.writeText(window.location.href);showToast('🔗 Link copied!');}catch(e){}}}
+
+// ── BLOG GENERATOR (UPGRADED) ──
+async function genFullBlog(){
+  const topic = document.getElementById('bgtopic').value.trim();
+  if(!topic){showToast('⚠️ Topic লেখো!');return;}
+  const lang = document.getElementById('bglang').value;
+  const type = document.getElementById('bgtype').value;
+  const typeMap = {health:'health & wellness',product:'product review with Amazon affiliate links',listicle:'listicle (numbered list)',howto:'how-to guide'};
+
+  setLoad(true);
+  const prompt = `Write a complete, SEO-optimized blog post in ${lang} language.
+Topic: "${topic}"
+Type: ${typeMap[type]}
+Include:
+1. Catchy SEO title (H1)
+2. Meta description (150-160 chars) — label it "META:"
+3. Introduction (2-3 paragraphs)
+4. 4-5 H2 subheadings with detailed content
+5. Conclusion with call-to-action
+6. Focus keyword used naturally throughout
+Format: HTML with proper tags. Make it engaging and informative.`;
+
+  const result = await aiChat(prompt);
+  setLoad(false);
+
+  if(result.startsWith('❌')){showToast(result);return;}
+
+  // Extract title
+  const titleMatch = result.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+  const title = titleMatch ? titleMatch[1] : topic;
+
+  // Extract meta
+  const metaMatch = result.match(/META:[\s\S]*?([^\n<]+)/i);
+  const meta = metaMatch ? metaMatch[1] : 'Read this complete guide about '+topic;
+
+  document.getElementById('blogtitle').textContent = '📌 ' + title;
+  document.getElementById('blogmeta').innerHTML = `<b>Meta:</b> ${meta}<br><b>Words:</b> ~${result.split(' ').length} | <b>Lang:</b> ${lang}`;
+  document.getElementById('blogresult').style.display = 'block';
+
+  // Store for blogger
+  window._lastBlog = {title, content: result, meta};
+
+  // Copy to blogger tab
+  document.getElementById('bc1').value = result;
+  document.getElementById('bt1').value = title;
+
+  showToast('✅ Blog post তৈরি হয়েছে!');
+  if(S.voiceEnabled) speak(S.lang==='bn-IN'?`ব্লগ পোস্ট তৈরি হয়েছে! বিষয়: ${topic}`:`Blog post generated about ${topic}!`);
+}
+
+async function copyBlog(){
+  const b = window._lastBlog;
+  if(!b){showToast('⚠️ আগে Generate করো!');return;}
+  try{await navigator.clipboard.writeText(`${b.title}
+
+${b.content}`);showToast('✅ Copied to clipboard!');}
+  catch(e){showToast('❌ Copy failed');}
+}
+
+function sendToBlogger(){
+  if(!window._lastBlog){showToast('⚠️ আগে Generate করো!');return;}
+  swTab('blogger', document.querySelectorAll('.nbtn')[2]);
+  showToast('📝 Blogger tab-এ গেছে!');
+}
+
+// ── INSTAGRAM CAPTION ──
+async function genCaption(){
+  const topic = document.getElementById('captopic').value.trim();
+  if(!topic){showToast('⚠️ Topic লেখো!');return;}
+  const style = document.getElementById('capstyle').value;
+  const lang = document.getElementById('caplang').value;
+  const styleMap = {engaging:'highly engaging and emotional',funny:'funny and witty',informative:'informative and educational',promotional:'promotional and sales-focused'};
+
+  setLoad(true);
+  const prompt = `Create an Instagram caption in ${lang} language.
+Topic: "${topic}"
+Style: ${styleMap[style]}
+Requirements:
+- Caption: 3-5 sentences, ${styleMap[style]} tone
+- Add relevant emojis throughout
+- End with a call-to-action
+- Then on new line write "HASHTAGS:" followed by 20-25 relevant hashtags
+- Mix popular and niche hashtags
+- Include Bengali/Indian hashtags if Bengali language selected`;
+
+  const result = await aiChat(prompt);
+  setLoad(false);
+
+  if(result.startsWith('❌')){showToast(result);return;}
+
+  // Split caption and hashtags
+  const parts = result.split(/HASHTAGS:/i);
+  const caption = parts[0].trim();
+  const hashtags = parts[1] ? parts[1].trim() : '#instagram #trending #viral';
+
+  document.getElementById('captiontext').textContent = caption;
+  document.getElementById('hashtext').textContent = hashtags;
+  document.getElementById('capresult').style.display = 'block';
+
+  window._lastCaption = caption + '\n\n' + hashtags;
+  showToast('✅ Caption তৈরি হয়েছে!');
+  if(S.voiceEnabled) speak(S.lang==='bn-IN'?'Caption তৈরি হয়েছে!':'Caption generated!');
+}
+
+async function copyCap(){
+  if(!window._lastCaption){showToast('⚠️ আগে Generate করো!');return;}
+  try{await navigator.clipboard.writeText(window._lastCaption);showToast('✅ Caption copied!');}
+  catch(e){showToast('❌ Copy failed');}
+}
+
+function postToIG(){
+  if(!window._lastCaption){showToast('⚠️ আগে Generate করো!');return;}
+  document.getElementById('postcont').value = window._lastCaption;
+  swTab('social', document.querySelectorAll('.nbtn')[3]);
+  showToast('📸 Social tab-এ গেছে!');
+}
+
+// ── SMART REMINDER ──
+let reminders = [];
+let reminderTimers = [];
+
+function setReminder(){
+  const txt = document.getElementById('remtxt').value.trim();
+  const time = document.getElementById('remtime').value;
+  const repeat = document.getElementById('remrepeat').value;
+
+  if(!txt){showToast('⚠️ Reminder text লেখো!');return;}
+  if(!time){showToast('⚠️ Time select করো!');return;}
+
+  if(Notification.permission !== 'granted'){
+    Notification.requestPermission().then(p=>{
+      if(p==='granted') createReminder(txt,time,repeat);
+      else showToast('⚠️ Notification permission দাও!');
+    });
+    return;
+  }
+  createReminder(txt,time,repeat);
+}
+
+function createReminder(txt,time,repeat){
+  const id = Date.now();
+  const rem = {id,txt,time,repeat,active:true};
+  reminders.push(rem);
+  scheduleReminder(rem);
+  renderReminders();
+  document.getElementById('remtxt').value='';
+  showToast(`⏰ Reminder set for ${time}!`);
+  if(S.voiceEnabled) speak(S.lang==='bn-IN'?`রিমাইন্ডার সেট হয়েছে ${time} এ`:`Reminder set for ${time}`);
+}
+
+function scheduleReminder(rem){
+  const now = new Date();
+  const [h,m] = rem.time.split(':').map(Number);
+  let target = new Date(now);
+  target.setHours(h,m,0,0);
+  if(target <= now) target.setDate(target.getDate()+1);
+  const delay = target - now;
+
+  const timer = setTimeout(()=>{
+    triggerReminder(rem);
+    if(rem.repeat === 'daily') scheduleReminder(rem);
+    else if(rem.repeat === 'weekdays'){
+      const day = new Date().getDay();
+      if(day < 5) scheduleReminder(rem);
+    }
+  }, delay);
+  reminderTimers.push({id:rem.id, timer});
+}
+
+function triggerReminder(rem){
+  if(Notification.permission==='granted'){
+    new Notification('⏰ JARVIS Reminder', {body:rem.txt, icon:'https://img.icons8.com/fluency/48/robot-2.png'});
+  }
+  vibrate([300,100,300,100,300]);
+  showToast('⏰ '+rem.txt);
+  if(S.voiceEnabled) speak(S.lang==='bn-IN'?`রিমাইন্ডার: ${rem.txt}`:`Reminder: ${rem.txt}`);
+}
+
+function deleteReminder(id){
+  reminders = reminders.filter(r=>r.id!==id);
+  const t = reminderTimers.find(t=>t.id===id);
+  if(t) clearTimeout(t.timer);
+  reminderTimers = reminderTimers.filter(t=>t.id!==id);
+  renderReminders();
+  showToast('🗑️ Reminder deleted');
+}
+
+function renderReminders(){
+  const el = document.getElementById('remlist');
+  if(!el) return;
+  if(!reminders.length){el.innerHTML='<div style="color:rgba(0,212,255,.4);font-size:12px;text-align:center;padding:8px">কোনো reminder নেই</div>';return;}
+  el.innerHTML = reminders.map(r=>`
+    <div style="background:var(--bg);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="color:var(--text);font-size:13px">${r.txt}</div>
+        <div style="color:var(--cyan);font-size:10px;margin-top:2px;letter-spacing:1px">⏰ ${r.time} • ${r.repeat.toUpperCase()}</div>
+      </div>
+      <button onclick="deleteReminder(${r.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,51,102,.6);font-size:18px">✕</button>
+    </div>`).join('');
+}
 
 // ── TOAST ──
 let TT;
