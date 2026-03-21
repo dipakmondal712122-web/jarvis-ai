@@ -721,6 +721,12 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
               <div class="toggle-thumb"></div>
             </div>
           </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="blog-btn" onclick="testVoice('en')" style="flex:1;padding:9px 0">🔊 English</button>
+            <button class="blog-btn" onclick="testVoice('bn-IN')" style="flex:1;padding:9px 0">🔊 বাংলা</button>
+            <button class="blog-btn" onclick="testVoice('hi-IN')" style="flex:1;padding:9px 0">🔊 हिंदी</button>
+          </div>
+          <div id="voice-list-info" style="margin-top:8px;font-size:10px;color:rgba(0,212,255,0.5);padding:8px 12px;background:var(--surface);border-radius:10px;display:none"></div>
         </div>
 
         <button class="save-btn" onclick="saveSettings()">◈ SAVE CONFIGURATION</button>
@@ -1075,7 +1081,7 @@ INSTRUCTIONS:
 }
 
 async function callGemini(msg, sys, key) {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
@@ -1140,7 +1146,14 @@ function startMic() {
   }
 
   recognition = new SpeechRecognition();
-  recognition.lang = state.lang === 'en' ? 'en-US' : state.lang;
+  // Set correct STT language
+  if (state.lang === 'bn-IN') {
+    recognition.lang = 'bn-IN';
+  } else if (state.lang === 'hi-IN') {
+    recognition.lang = 'hi-IN';
+  } else {
+    recognition.lang = 'en-US';
+  }
   recognition.continuous = false;
   recognition.interimResults = true;
 
@@ -1369,6 +1382,44 @@ function updateEngineStatus() {
   if (!active) { el.textContent = '● NO API KEY • GO TO SETTINGS'; el.style.color = 'rgba(255,51,102,0.8)'; return; }
   el.textContent = `● ONLINE • ${getEngineLabel(active.engine)}`;
   el.style.color = 'rgba(0,255,136,0.7)';
+}
+
+// ── VOICE TEST ──
+function testVoice(lang) {
+  const texts = {
+    'en': 'Hello! I am JARVIS, your personal AI assistant. Voice is working!',
+    'bn-IN': 'নমস্কার! আমি JARVIS, আপনার AI সহকারী। ভয়েস কাজ করছে!',
+    'hi-IN': 'नमस्ते! मैं JARVIS हूँ। आवाज़ काम कर रही है!'
+  };
+
+  window.speechSynthesis.cancel();
+  const voices = window.speechSynthesis.getVoices();
+
+  // Show available voices info
+  const infoEl = document.getElementById('voice-list-info');
+  if (infoEl) {
+    const matching = voices.filter(v =>
+      v.lang.startsWith(lang.split('-')[0])
+    ).map(v => v.name).slice(0, 3);
+    infoEl.style.display = 'block';
+    infoEl.textContent = matching.length
+      ? '✅ Found: ' + matching.join(', ')
+      : '⚠️ No native ' + lang + ' voice found — using fallback';
+  }
+
+  const utt = new SpeechSynthesisUtterance(texts[lang]);
+  utt.lang = lang;
+
+  const bestVoice = getBestVoice(lang);
+  if (bestVoice) {
+    utt.voice = bestVoice;
+    showToast('🔊 Using: ' + bestVoice.name);
+  } else {
+    showToast('⚠️ No matching voice — using system default');
+  }
+
+  utt.rate = lang === 'bn-IN' ? 0.85 : 0.9;
+  window.speechSynthesis.speak(utt);
 }
 
 // ── TOAST ──
