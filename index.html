@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>JARVIS AI — Powered by Grok</title>
+<title>JARVIS AI — Multi AI Assistant</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -387,6 +387,11 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
   box-shadow:0 0 25px rgba(0,212,255,0.3);transition:all .2s;
 }
 .save-btn:active{transform:scale(0.97)}
+.ai-engine-info{
+  background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);
+  border-radius:10px;padding:10px 13px;font-size:11px;color:rgba(0,212,255,0.7);
+  line-height:1.6;margin-bottom:12px;letter-spacing:0.5px;
+}
 .user-card{
   background:var(--surface);border:1px solid rgba(0,212,255,0.15);
   border-radius:12px;padding:12px 14px;margin-bottom:10px;
@@ -463,7 +468,7 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
       </div>
       <div>
         <div class="logo-name">JARVIS</div>
-        <div class="logo-status">● ONLINE • AI ACTIVE</div>
+        <div class="logo-status" id="engine-status">● ONLINE • AI READY</div>
       </div>
     </div>
     <div class="lang-chips">
@@ -642,12 +647,30 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
         </div>
 
         <div class="settings-group">
-          <div class="settings-group-label">◈ AI KEYS</div>
+          <div class="settings-group-label">◈ AI ENGINE</div>
+          <div class="ai-engine-info">
+            🤖 যেটার Key দেবে সেটাই কাজ করবে!<br/>
+            Priority: Gemini → Grok → Claude
+          </div>
           <div class="settings-row">
-            <div class="settings-key-label">🤖 GROK API KEY (xAI)</div>
+            <div class="settings-key-label">🟢 GEMINI API KEY (FREE)</div>
             <div class="settings-key-wrap">
-              <input class="settings-input" id="cfg-gemini" type="password" placeholder="xai-..."/>
+              <input class="settings-input" id="cfg-gemini" type="password" placeholder="AIza... (aistudio.google.com)"/>
               <button class="eye-btn" onclick="toggleEye('cfg-gemini',this)">👁</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-key-label">⚡ GROK API KEY (xAI)</div>
+            <div class="settings-key-wrap">
+              <input class="settings-input" id="cfg-grok" type="password" placeholder="xai-... (console.x.ai)"/>
+              <button class="eye-btn" onclick="toggleEye('cfg-grok',this)">👁</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-key-label">🔵 CLAUDE API KEY (Anthropic)</div>
+            <div class="settings-key-wrap">
+              <input class="settings-input" id="cfg-claude" type="password" placeholder="sk-ant-... (console.anthropic.com)"/>
+              <button class="eye-btn" onclick="toggleEye('cfg-claude',this)">👁</button>
             </div>
           </div>
         </div>
@@ -757,6 +780,8 @@ const state = {
 
 const cfg = {
   gemini: '',
+  grok: '',
+  claude: '',
   blogger: '',
   blogId: '',
   fb: '',
@@ -819,6 +844,8 @@ function loadFromStorage() {
 
     // Apply to settings inputs
     document.getElementById('cfg-gemini').value = cfg.gemini || '';
+    if(document.getElementById('cfg-grok')) document.getElementById('cfg-grok').value = cfg.grok || '';
+    if(document.getElementById('cfg-claude')) document.getElementById('cfg-claude').value = cfg.claude || '';
     document.getElementById('cfg-blogger').value = cfg.blogger || '';
     document.getElementById('cfg-blogid').value = cfg.blogId || '';
     document.getElementById('cfg-fb').value = cfg.fb || '';
@@ -1006,10 +1033,24 @@ function getLanguageName() {
   return {en:'English','bn-IN':'Bengali (বাংলা)','hi-IN':'Hindi (हिन्दी)'}[state.lang] || 'English';
 }
 
-// ── GROK API (xAI) ──
+// ── MULTI AI ENGINE ──
+function getActiveEngine() {
+  const gemKey = cfg.gemini || document.getElementById('cfg-gemini')?.value.trim();
+  const grokKey = cfg.grok || document.getElementById('cfg-grok')?.value.trim();
+  const claudeKey = cfg.claude || document.getElementById('cfg-claude')?.value.trim();
+  if (gemKey) return { engine: 'gemini', key: gemKey };
+  if (grokKey) return { engine: 'grok', key: grokKey };
+  if (claudeKey) return { engine: 'claude', key: claudeKey };
+  return null;
+}
+
+function getEngineLabel(engine) {
+  return { gemini: '🟢 Gemini', grok: '⚡ Grok', claude: '🔵 Claude' }[engine] || '🤖 AI';
+}
+
 async function geminiChat(userMsg) {
-  const key = cfg.gemini || document.getElementById('cfg-gemini').value.trim();
-  if (!key) return '⚠️ Please add your Grok API key in Settings tab first! (Free key from console.x.ai)';
+  const active = getActiveEngine();
+  if (!active) return '⚠️ কোনো API Key দেওয়া নেই! Settings-এ যাও এবং Gemini / Grok / Claude এর যেকোনো একটা key দাও।';
 
   const memoryStr = Object.entries(memories).map(([k,v]) => `- ${k}: ${v}`).join('\n');
   const systemPrompt = `You are JARVIS, a highly intelligent personal AI assistant for ${cfg.name || 'Dip Mondal'}.
@@ -1022,36 +1063,66 @@ INSTRUCTIONS:
 - Be concise yet thorough
 - If asked to write blog content, write complete SEO-optimized posts
 - Address user by name when appropriate
-- You know the user's blogs: healthtips9600.blogspot.com and kayapatbajar.blogspot.com`;
+- You know the user\'s blogs: healthtips9600.blogspot.com and kayapatbajar.blogspot.com`;
 
   try {
-    const res = await fetch('https://api.x.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${key}`
-      },
-      body: JSON.stringify({
-        model: 'grok-3-latest',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userMsg }
-        ],
-        temperature: 0.8,
-        max_tokens: 2048
-      })
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      return `❌ Grok API Error: ${err.error?.message || 'Check your API key'}`;
-    }
-
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content?.trim() || '⚠️ No response received.';
+    if (active.engine === 'gemini') return await callGemini(userMsg, systemPrompt, active.key);
+    if (active.engine === 'grok') return await callGrok(userMsg, systemPrompt, active.key);
+    if (active.engine === 'claude') return await callClaude(userMsg, systemPrompt, active.key);
   } catch(e) {
-    return `❌ Network error: ${e.message}. Check your internet connection.`;
+    return `❌ Network error: ${e.message}`;
   }
+}
+
+async function callGemini(msg, sys, key) {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: sys }] },
+      contents: [{ role: 'user', parts: [{ text: msg }] }],
+      generationConfig: { temperature: 0.8, maxOutputTokens: 2048 }
+    })
+  });
+  if (!res.ok) { const e = await res.json(); return `❌ Gemini Error: ${e.error?.message || 'Invalid key'}`; }
+  const d = await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '⚠️ No response.';
+}
+
+async function callGrok(msg, sys, key) {
+  const res = await fetch('https://api.x.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+    body: JSON.stringify({
+      model: 'grok-3-latest',
+      messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
+      temperature: 0.8, max_tokens: 2048
+    })
+  });
+  if (!res.ok) { const e = await res.json(); return `❌ Grok Error: ${e.error?.message || 'Invalid key'}`; }
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content?.trim() || '⚠️ No response.';
+}
+
+async function callClaude(msg, sys, key) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2048,
+      system: sys,
+      messages: [{ role: 'user', content: msg }]
+    })
+  });
+  if (!res.ok) { const e = await res.json(); return `❌ Claude Error: ${e.error?.message || 'Invalid key'}`; }
+  const d = await res.json();
+  return d.content?.[0]?.text?.trim() || '⚠️ No response.';
 }
 
 // ── VOICE STT ──
@@ -1167,7 +1238,7 @@ function updateStats() {
 // ── BLOGGER ──
 async function generateBlogPost(type) {
   const key = cfg.gemini || document.getElementById('cfg-gemini').value.trim();
-  if (!key) { showToast('⚠️ Add Grok API key in Settings!'); return; }
+  if (!key) { showToast('⚠️ কোনো API Key নেই! Settings-এ দাও।'); return; }
 
   setLoading(true);
   const prompt = type === 'health'
@@ -1240,7 +1311,7 @@ function selectPlatform(p) {
 
 async function generateSocialPost() {
   const key = cfg.gemini || document.getElementById('cfg-gemini').value.trim();
-  if (!key) { showToast('⚠️ Add Grok API key first!'); return; }
+  if (!key) { showToast('⚠️ কোনো API Key নেই! Settings-এ দাও।'); return; }
   setLoading(true);
   const caption = await geminiChat(`Create an engaging ${state.selectedPlatform === 'fb' ? 'Facebook' : 'Instagram'} post in ${getLanguageName()} about my health blog and tips. Use emojis and relevant hashtags. Keep it engaging and professional.`);
   setLoading(false);
@@ -1271,6 +1342,8 @@ function toggleVoice() {
 
 function saveSettings() {
   cfg.gemini = document.getElementById('cfg-gemini').value.trim();
+  cfg.grok = document.getElementById('cfg-grok') ? document.getElementById('cfg-grok').value.trim() : '';
+  cfg.claude = document.getElementById('cfg-claude') ? document.getElementById('cfg-claude').value.trim() : '';
   cfg.blogger = document.getElementById('cfg-blogger').value.trim();
   cfg.blogId = document.getElementById('cfg-blogid').value.trim();
   cfg.fb = document.getElementById('cfg-fb').value.trim();
@@ -1278,6 +1351,7 @@ function saveSettings() {
   document.getElementById('display-name').textContent = cfg.name;
   if (cfg.name) memories.user_name = cfg.name;
   saveToStorage();
+  updateEngineStatus();
   showToast('✅ Configuration saved!');
 }
 
@@ -1285,6 +1359,16 @@ function clearAll() {
   if (!confirm('Clear all data? This cannot be undone.')) return;
   try { localStorage.clear(); } catch(e) {}
   location.reload();
+}
+
+// ── ENGINE STATUS ──
+function updateEngineStatus() {
+  const active = getActiveEngine();
+  const el = document.getElementById('engine-status');
+  if (!el) return;
+  if (!active) { el.textContent = '● NO API KEY • GO TO SETTINGS'; el.style.color = 'rgba(255,51,102,0.8)'; return; }
+  el.textContent = `● ONLINE • ${getEngineLabel(active.engine)}`;
+  el.style.color = 'rgba(0,255,136,0.7)';
 }
 
 // ── TOAST ──
