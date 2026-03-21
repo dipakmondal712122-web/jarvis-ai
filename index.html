@@ -2,1403 +2,1230 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>JARVIS AI — Personal Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>JARVIS AI</title>
+<script>
+// ResponsiveVoice - best free Bengali TTS
+(function(){var s=document.createElement('script');s.src='https://code.responsivevoice.org/responsivevoice.js?key=FREE';s.async=true;document.head.appendChild(s);})();
+</script>
 <style>
-:root{--cyan:#00D4FF;--blue:#0066FF;--bg:#050A14;--surface:#0A1628;--surface2:#111C35;--text:#E8F4FF;--green:#00FF88;--red:#FF3366;--border:rgba(0,212,255,0.15)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;overflow:hidden;background:#020509}
-body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif}
+:root{--c:#00D4FF;--b:#0055FF;--bg:#050A14;--s:#0A1628;--s2:#0D1E38;--t:#E8F4FF;--g:#00FF88;--r:#FF3366;--bdr:rgba(0,212,255,0.15)}
+html,body{width:100%;height:100%;overflow:hidden;background:#020509;font-family:'Segoe UI',sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+
 #app{width:100%;max-width:430px;height:100vh;max-height:900px;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden}
-@media(min-width:500px){#app{border-radius:24px;border:1px solid var(--border);box-shadow:0 0 120px rgba(0,212,255,0.08)}}
-#app::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px);background-size:30px 30px}
-#app::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,102,255,0.06) 0%,transparent 70%)}
-#header{position:relative;z-index:10;padding:14px 18px 12px;background:linear-gradient(180deg,rgba(10,22,40,0.98) 0%,transparent 100%);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
-.logo-wrap{display:flex;align-items:center;gap:10px}
-.logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px rgba(0,212,255,0.4);position:relative;flex-shrink:0}
-.logo-dot{position:absolute;bottom:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg);box-shadow:0 0 8px var(--green);animation:pdot 2s infinite}
-@keyframes pdot{0%,100%{box-shadow:0 0 8px var(--green)}50%{box-shadow:0 0 16px var(--green)}}
-.logo-name{font-size:20px;font-weight:700;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.6);line-height:1}
-.logo-sub{font-size:9px;letter-spacing:2px;color:rgba(0,255,136,0.7);margin-top:2px}
-.lang-chips{display:flex;gap:4px;flex-shrink:0}
-.lchip{padding:4px 8px;border-radius:8px;border:1px solid rgba(0,212,255,0.25);background:transparent;color:rgba(0,212,255,0.5);font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.lchip.on{border-color:var(--cyan);background:rgba(0,212,255,0.15);color:var(--cyan)}
-#sbar{position:absolute;top:0;left:0;right:0;height:3px;z-index:20;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--cyan));background-size:200% 100%;display:none}
-#sbar.on{display:block;animation:sba 1.5s linear infinite}
-@keyframes sba{0%{background-position:0%}100%{background-position:200%}}
-#content{flex:1;overflow:hidden;position:relative;z-index:1}
+@media(min-width:500px){#app{border-radius:22px;border:1px solid var(--bdr);box-shadow:0 0 80px rgba(0,212,255,0.07)}}
+#app::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:28px 28px}
+
+/* LOADER */
+#ld{position:absolute;top:0;left:0;right:0;height:2px;z-index:99;background:linear-gradient(90deg,var(--c),var(--b),var(--c));background-size:200%;display:none}
+#ld.on{display:block;animation:la 1.4s linear infinite}
+@keyframes la{0%{background-position:0%}100%{background-position:200%}}
+
+/* HEADER */
+#hd{flex-shrink:0;position:relative;z-index:10;padding:13px 16px;background:linear-gradient(180deg,rgba(10,22,40,.97),transparent);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.lgo{display:flex;align-items:center;gap:10px}
+.lic{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--c),var(--b));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 18px rgba(0,212,255,0.4);position:relative;flex-shrink:0}
+.ldot{position:absolute;bottom:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--g);border:2px solid var(--bg);animation:dp 2s infinite}
+@keyframes dp{0%,100%{opacity:1;box-shadow:0 0 6px var(--g)}50%{opacity:.6;box-shadow:0 0 12px var(--g)}}
+.lnm{font-size:18px;font-weight:700;letter-spacing:4px;color:var(--c);text-shadow:0 0 16px rgba(0,212,255,.5)}
+.lst{font-size:8px;letter-spacing:2px;color:rgba(0,255,136,.7);margin-top:2px}
+.lcs{display:flex;gap:4px}
+.lc{padding:4px 8px;border-radius:7px;border:1px solid rgba(0,212,255,.2);background:transparent;color:rgba(0,212,255,.45);font-size:10px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.lc.on{border-color:var(--c);background:rgba(0,212,255,.12);color:var(--c)}
+
+/* CONTENT */
+#con{flex:1;overflow:hidden;position:relative;z-index:1}
 .tp{display:none;height:100%;flex-direction:column;overflow:hidden}
 .tp.on{display:flex}
-#messages{flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}
-#messages::-webkit-scrollbar{display:none}
-.brow{display:flex;align-items:flex-end;gap:8px}
-.brow.user{justify-content:flex-end}
-.avt{width:30px;height:30px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:15px}
-.bwrap{max-width:78%;display:flex;flex-direction:column}
-.brow.user .bwrap{align-items:flex-end}
-.bbl{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.55;color:var(--text);word-break:break-word}
-.aib{background:var(--surface2);border:1px solid rgba(0,212,255,0.18);border-radius:16px 16px 16px 4px}
-.usb{background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:16px 16px 4px 16px;box-shadow:0 4px 20px rgba(0,102,255,0.35)}
-.bt{font-size:9px;color:rgba(0,212,255,0.3);margin-top:3px;letter-spacing:1px}
-#typing{display:none;align-items:flex-end;gap:8px;padding:0 14px 8px}
-.tdots{padding:12px 16px;background:var(--surface2);border:1px solid rgba(0,212,255,0.18);border-radius:16px 16px 16px 4px;display:flex;gap:4px;align-items:center}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:bnc 1.2s infinite}
-.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
-@keyframes bnc{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-6px);opacity:1}}
-#vsec{padding:10px 14px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative}
-#stopbtn{position:absolute;top:0;right:14px;background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.3);border-radius:8px;padding:4px 10px;color:var(--red);font-size:11px;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:1px}
-#vtxt{font-size:12px;color:var(--cyan);background:var(--surface);border:1px solid rgba(0,212,255,0.25);border-radius:10px;padding:7px 14px;width:100%;text-align:center;display:none}
-#mwrap{position:relative;display:flex;align-items:center;justify-content:center}
-.mring{position:absolute;border-radius:50%;border:2px solid var(--cyan);animation:mping 1.2s ease-out infinite;display:none}
-.mring:nth-child(1){width:72px;height:72px;animation-delay:0s;opacity:.4}
-.mring:nth-child(2){width:90px;height:90px;animation-delay:.3s;opacity:.2}
-.mring:nth-child(3){width:110px;height:110px;animation-delay:.6s;opacity:.1}
-@keyframes mping{0%{transform:scale(.9);opacity:.6}100%{transform:scale(1.4);opacity:0}}
-#micbtn{width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--blue));font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 25px rgba(0,212,255,0.5);transition:all .25s;position:relative;z-index:2}
-#micbtn.on{background:linear-gradient(135deg,var(--red),#FF6B35);box-shadow:0 0 30px rgba(255,51,102,0.5)}
-#inparea{padding:6px 14px 14px;display:flex;gap:8px}
-#uinput{flex:1;padding:11px 15px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:14px;color:var(--text);font-size:13px;font-family:'Rajdhani',sans-serif;outline:none}
-#uinput:focus{border-color:rgba(0,212,255,0.5)}
-#uinput::placeholder{color:rgba(0,212,255,0.3)}
-#sndbtn{width:46px;height:46px;border-radius:13px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(0,212,255,0.35);flex-shrink:0}
-.tscroll{flex:1;overflow-y:auto;padding:16px 14px;scrollbar-width:none}
-.tscroll::-webkit-scrollbar{display:none}
-.slbl{font-size:10px;letter-spacing:3px;color:var(--cyan);margin-bottom:14px;font-weight:600}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:10px}
-.sbtn{flex:1;padding:9px 0;border:1px solid rgba(0,212,255,0.25);border-radius:10px;background:transparent;color:var(--text);font-size:11px;font-family:'Rajdhani',sans-serif;cursor:pointer;letter-spacing:1px;transition:all .2s}
-.sbtn.p{background:linear-gradient(135deg,var(--cyan),var(--blue));border-color:transparent}
-.sbtn:active{transform:scale(.96)}
-.sinp{width:100%;padding:10px 13px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:11px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none}
-.sinp:focus{border-color:rgba(0,212,255,0.45)}
-.sinp::placeholder{color:rgba(0,212,255,0.25)}
-.eybtn{width:40px;border:1px solid rgba(0,212,255,0.2);border-radius:11px;background:var(--surface);color:var(--cyan);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.sklbl{font-size:10px;letter-spacing:1px;color:rgba(0,212,255,0.5);margin-bottom:5px}
-.skwrap{display:flex;gap:7px}
-.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
-.mcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all .2s}
-.mcard:active{transform:scale(.97)}
-.mci{font-size:22px}
-.mcv{font-size:18px;font-weight:700;color:var(--cyan);letter-spacing:1px}
-.mcl{font-size:8px;letter-spacing:2px;color:rgba(0,212,255,0.5)}
-.mcs{font-size:10px;color:rgba(232,244,255,0.5);text-align:center}
-.mcbar{width:100%;height:4px;background:rgba(0,212,255,0.1);border-radius:2px;margin-top:4px}
-.mcfill{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .5s}
-.mapc{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:80px;display:flex;align-items:center;justify-content:center}
-.agrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.abtn{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;font-family:'Rajdhani',sans-serif;color:var(--text);font-size:10px;letter-spacing:.5px;transition:all .2s}
-.abtn:active{transform:scale(.93);border-color:var(--cyan)}
-.wcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.wmain{display:flex;align-items:center;justify-content:space-between;padding:14px}
-.wtemp{font-size:36px;font-weight:700;color:var(--cyan)}
-.wdrow{display:flex;border-top:1px solid var(--border)}
-.wdi{flex:1;padding:10px 0;text-align:center;border-right:1px solid var(--border)}
+
+/* MESSAGES */
+#msgs{flex:1;overflow-y:auto;padding:12px 12px 6px;display:flex;flex-direction:column;gap:10px}
+#msgs::-webkit-scrollbar{display:none}
+.br{display:flex;align-items:flex-end;gap:8px}
+.br.u{justify-content:flex-end}
+.av{width:28px;height:28px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--c),var(--b));display:flex;align-items:center;justify-content:center;font-size:14px}
+.bw{max-width:80%;display:flex;flex-direction:column}
+.br.u .bw{align-items:flex-end}
+.bb{padding:9px 13px;font-size:13.5px;line-height:1.5;color:var(--t);word-break:break-word}
+.ai-b{background:var(--s2);border:1px solid rgba(0,212,255,.15);border-radius:14px 14px 14px 3px}
+.u-b{background:linear-gradient(135deg,var(--b),var(--c));border-radius:14px 14px 3px 14px}
+.bt{font-size:9px;color:rgba(0,212,255,.3);margin-top:2px}
+
+/* TYPING */
+#typ{display:none;align-items:flex-end;gap:8px;padding:0 12px 6px}
+.tds{padding:10px 14px;background:var(--s2);border:1px solid rgba(0,212,255,.15);border-radius:14px 14px 14px 3px;display:flex;gap:4px;align-items:center}
+.d{width:5px;height:5px;border-radius:50%;background:var(--c);animation:bn 1.2s infinite}
+.d:nth-child(2){animation-delay:.2s}.d:nth-child(3){animation-delay:.4s}
+@keyframes bn{0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-5px);opacity:1}}
+
+/* VOICE */
+#vs{padding:8px 12px 4px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.vr{display:flex;gap:6px;width:100%}
+.vb{flex:1;padding:6px 0;border-radius:8px;border:1px solid rgba(0,212,255,.22);background:transparent;color:rgba(0,212,255,.65);font-size:10px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.vb.red{border-color:rgba(255,51,102,.3);color:var(--r)}
+.vb.grn{border-color:rgba(0,255,136,.3);color:var(--g)}
+.vb.grn.on{background:rgba(0,255,136,.12);border-color:var(--g);box-shadow:0 0 10px rgba(0,255,136,.2)}
+#vt{font-size:11px;color:var(--c);background:var(--s);border:1px solid rgba(0,212,255,.18);border-radius:9px;padding:6px 12px;width:100%;text-align:center;display:none}
+#vmi{font-size:9px;color:var(--g);letter-spacing:2px;text-align:center;display:none;animation:vmpls 1.5s infinite}
+@keyframes vmpls{0%,100%{opacity:1}50%{opacity:.4}}
+#mw{position:relative;display:flex;align-items:center;justify-content:center}
+.mr{position:absolute;border-radius:50%;border:2px solid var(--c);animation:mp 1.3s ease-out infinite;display:none;pointer-events:none}
+.mr:nth-child(1){width:66px;height:66px;opacity:.4}
+.mr:nth-child(2){width:84px;height:84px;animation-delay:.3s;opacity:.2}
+.mr:nth-child(3){width:104px;height:104px;animation-delay:.6s;opacity:.1}
+@keyframes mp{0%{transform:scale(.9);opacity:.5}100%{transform:scale(1.5);opacity:0}}
+#mc{width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;font-size:22px;background:linear-gradient(135deg,var(--c),var(--b));display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(0,212,255,.45);transition:all .25s;position:relative;z-index:2}
+#mc.ls{background:linear-gradient(135deg,var(--r),#FF6B35);box-shadow:0 0 25px rgba(255,51,102,.5)}
+#mc.vm{background:linear-gradient(135deg,var(--g),#00AAAA);box-shadow:0 0 25px rgba(0,255,136,.5);animation:gp 1.5s infinite}
+@keyframes gp{0%,100%{box-shadow:0 0 20px rgba(0,255,136,.5)}50%{box-shadow:0 0 38px rgba(0,255,136,.9)}}
+
+/* INPUT */
+#ia{padding:4px 12px 12px;display:flex;gap:8px}
+#ui{flex:1;padding:10px 13px;background:var(--s);border:1px solid rgba(0,212,255,.18);border-radius:13px;color:var(--t);font-size:13px;outline:none}
+#ui:focus{border-color:rgba(0,212,255,.45)}
+#ui::placeholder{color:rgba(0,212,255,.28)}
+#sb{width:44px;height:44px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--c),var(--b));color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(0,212,255,.3);flex-shrink:0}
+
+/* TABS */
+.tsc{flex:1;overflow-y:auto;padding:13px 12px}
+.tsc::-webkit-scrollbar{display:none}
+.sl{font-size:9px;letter-spacing:3px;color:var(--c);margin-bottom:11px;font-weight:700}
+.cd{background:var(--s);border:1px solid var(--bdr);border-radius:13px;padding:12px;margin-bottom:10px}
+
+/* FORM ELEMENTS */
+.si{width:100%;padding:9px 12px;background:var(--s);border:1px solid rgba(0,212,255,.18);border-radius:10px;color:var(--t);font-size:12px;outline:none;margin-bottom:0}
+.si:focus{border-color:rgba(0,212,255,.4)}
+.si::placeholder{color:rgba(0,212,255,.25)}
+.se{width:100%;padding:9px 12px;background:var(--s);border:1px solid rgba(0,212,255,.18);border-radius:10px;color:var(--t);font-size:12px;outline:none}
+.ta{width:100%;padding:9px 12px;background:var(--bg);border:1px solid rgba(0,212,255,.18);border-radius:10px;color:var(--t);font-size:12px;outline:none;resize:none}
+.ta::placeholder{color:rgba(0,212,255,.25)}
+.rw{display:flex;gap:7px}
+.bn{flex:1;padding:9px 0;border:1px solid rgba(0,212,255,.2);border-radius:9px;background:transparent;color:var(--t);font-size:11px;font-weight:600;letter-spacing:.8px;cursor:pointer;transition:all .18s}
+.bn.p{background:linear-gradient(135deg,var(--c),var(--b));border-color:transparent;box-shadow:0 0 10px rgba(0,212,255,.22)}
+.bn.g{background:linear-gradient(135deg,var(--g),#00AAAA);border-color:transparent;color:#050A14}
+.bn:active{transform:scale(.95)}
+.ew{display:flex;gap:6px}
+.eb{width:38px;border:1px solid rgba(0,212,255,.18);border-radius:10px;background:var(--s);color:var(--c);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ts{width:42px;height:22px;border-radius:11px;cursor:pointer;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.25);position:relative;transition:all .28s}
+.ts.on{background:linear-gradient(135deg,var(--c),var(--b));border-color:transparent}
+.th{width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .28s}
+.ts.on .th{left:22px}
+.rbox{display:none;margin-top:9px;background:var(--bg);border:1px solid rgba(0,212,255,.12);border-radius:10px;padding:10px;font-size:12px;color:var(--t);line-height:1.8}
+
+/* MOBILE GRID */
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:4px}
+.mcd{background:var(--s);border:1px solid var(--bdr);border-radius:13px;padding:13px 11px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .2s}
+.mcd:active{transform:scale(.96)}
+.mcv{font-size:18px;font-weight:700;color:var(--c)}
+.mcl{font-size:8px;letter-spacing:2px;color:rgba(0,212,255,.45)}
+.mbar{width:100%;height:3px;background:rgba(0,212,255,.08);border-radius:2px;margin-top:3px}
+.mfil{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--c),var(--b));transition:width .5s}
+.mapc{background:var(--s);border:1px solid var(--bdr);border-radius:13px;overflow:hidden;min-height:70px;display:flex;align-items:center;justify-content:center}
+.wc{background:var(--s);border:1px solid var(--bdr);border-radius:13px;overflow:hidden}
+.wd{display:flex;border-top:1px solid var(--bdr)}
+.wdi{flex:1;padding:9px 0;text-align:center;border-right:1px solid var(--bdr)}
 .wdi:last-child{border-right:none}
-.wdv{font-size:13px;color:var(--text)}
-.wdk{font-size:8px;letter-spacing:1.5px;color:rgba(0,212,255,0.4)}
-.ta{width:100%;padding:9px 12px;background:var(--bg);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none;resize:none;height:70px}
-.ta::placeholder{color:rgba(0,212,255,0.25)}
-.sc{border-radius:14px;padding:13px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;border:1px solid}
-.sc.con{background:rgba(0,255,136,0.05);border-color:rgba(0,255,136,0.2)}
-.sc.dis{background:rgba(255,51,102,0.04);border-color:rgba(255,51,102,0.2)}
-.scbtn{padding:7px 13px;border-radius:9px;border:1px solid;cursor:pointer;font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;transition:all .2s}
-.scbtn.post{border-color:rgba(0,255,136,0.4);color:var(--green);background:rgba(0,255,136,0.08)}
-.scbtn.conn{border-color:rgba(255,51,102,0.4);color:var(--red);background:rgba(255,51,102,0.06)}
-.eibox{background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:10px 13px;font-size:11px;color:rgba(0,212,255,0.7);line-height:1.6;margin-bottom:12px}
-.lggrp{display:flex;gap:8px}
-.lgbtn{flex:1;padding:10px 0;border:1px solid rgba(0,212,255,0.2);border-radius:11px;background:transparent;color:rgba(0,212,255,0.5);font-size:13px;font-family:'Rajdhani',sans-serif;cursor:pointer;letter-spacing:1px;transition:all .2s}
-.lgbtn.on{background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(0,102,255,0.15));border-color:var(--cyan);color:var(--cyan)}
-.vtog{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid rgba(0,212,255,0.15);border-radius:12px;padding:12px 14px}
-.tgsw{width:44px;height:24px;border-radius:12px;cursor:pointer;background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);position:relative;transition:all .3s}
-.tgsw.on{background:linear-gradient(135deg,var(--cyan),var(--blue));border-color:transparent}
-.tgth{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .3s;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
-.tgsw.on .tgth{left:22px}
-.savebtn{width:100%;padding:13px;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;box-shadow:0 0 25px rgba(0,212,255,0.3)}
-.savebtn:active{transform:scale(.97)}
-#nav{position:relative;z-index:10;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-shrink:0}
-.nbtn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 6px;background:none;border:none;cursor:pointer;gap:3px}
-.nic{font-size:18px;transition:filter .2s}
-.nlbl{font-size:7px;letter-spacing:1.5px;color:rgba(0,212,255,0.35);font-family:'Rajdhani',sans-serif;font-weight:600}
-.nind{width:20px;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--cyan),var(--blue));margin-top:2px;display:none}
-.nbtn.on .nlbl{color:var(--cyan)}
-.nbtn.on .nind{display:block}
-.nbtn.on .nic{filter:drop-shadow(0 0 6px var(--cyan))}
-#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid rgba(0,212,255,0.3);border-radius:12px;padding:10px 18px;font-size:13px;color:var(--text);opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:nowrap;letter-spacing:1px}
+.ag{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.ab{background:var(--s);border:1px solid var(--bdr);border-radius:11px;padding:11px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--t);font-size:10px;transition:all .18s}
+.ab:active{transform:scale(.92);border-color:var(--c)}
+
+/* SOCIAL */
+.sc{border-radius:13px;padding:12px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;border:1px solid}
+.sc.cn{background:rgba(0,255,136,.04);border-color:rgba(0,255,136,.18)}
+.sc.dc{background:rgba(255,51,102,.03);border-color:rgba(255,51,102,.18)}
+.scb{padding:6px 12px;border-radius:8px;border:1px solid;cursor:pointer;font-size:10px;font-weight:600;letter-spacing:1px}
+.scb.po{border-color:rgba(0,255,136,.35);color:var(--g);background:rgba(0,255,136,.07)}
+.scb.co{border-color:rgba(255,51,102,.35);color:var(--r);background:rgba(255,51,102,.05)}
+
+/* SETTINGS */
+.ek{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);border-radius:9px;padding:9px 12px;font-size:11px;color:rgba(0,212,255,.65);line-height:1.6;margin-bottom:10px}
+.lg{display:flex;gap:7px}
+.lb{flex:1;padding:9px 0;border:1px solid rgba(0,212,255,.18);border-radius:10px;background:transparent;color:rgba(0,212,255,.45);font-size:12px;cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.lb.on{background:rgba(0,212,255,.12);border-color:var(--c);color:var(--c)}
+.vt{display:flex;align-items:center;justify-content:space-between;background:var(--s);border:1px solid rgba(0,212,255,.12);border-radius:11px;padding:11px 12px}
+.sv{width:100%;padding:12px;border:none;border-radius:13px;cursor:pointer;background:linear-gradient(135deg,var(--c),var(--b));color:#fff;font-size:13px;font-weight:700;letter-spacing:3px;box-shadow:0 0 20px rgba(0,212,255,.25)}
+.sv:active{transform:scale(.97)}
+.sv.rd{background:rgba(255,51,102,.1);border:1px solid rgba(255,51,102,.22);color:var(--r);box-shadow:none;font-size:12px}
+
+/* MEMORY */
+.mc{background:var(--s);border:1px solid var(--bdr);border-radius:12px;padding:11px 12px;margin-bottom:9px;display:flex;align-items:flex-start;gap:10px}
+.mi{flex:1}
+.mk{font-size:8px;letter-spacing:2px;color:rgba(0,212,255,.5);text-transform:uppercase}
+.mv{font-size:13px;color:var(--t);margin-top:2px}
+.xb{background:none;border:none;cursor:pointer;color:rgba(255,51,102,.45);font-size:15px;padding:0 3px}
+
+/* NAV */
+#nav{flex-shrink:0;position:relative;z-index:10;background:var(--s);border-top:1px solid var(--bdr);display:flex}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 5px;background:none;border:none;cursor:pointer;gap:2px}
+.ni{font-size:17px;transition:filter .2s}
+.nl{font-size:7px;letter-spacing:1.5px;color:rgba(0,212,255,.3);font-weight:600}
+.ni2{width:18px;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--c),var(--b));margin-top:2px;display:none}
+.nb.on .nl{color:var(--c)}.nb.on .ni2{display:block}.nb.on .ni{filter:drop-shadow(0 0 5px var(--c))}
+
+/* TOAST */
+#toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--s2);border:1px solid rgba(0,212,255,.22);border-radius:11px;padding:8px 15px;font-size:12px;color:var(--t);opacity:0;transition:all .26s;z-index:999;pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-/* Voice mode pulse */
-@keyframes voicepulse{0%,100%{box-shadow:0 0 25px rgba(0,255,136,0.5)}50%{box-shadow:0 0 45px rgba(0,255,136,0.9),0 0 20px rgba(0,255,136,0.4)}}
-#micbtn.voicemode{animation:voicepulse 1.5s infinite;background:linear-gradient(135deg,var(--green),#00AAAA)!important}
-.memc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
-.minp{flex:1;padding:9px 13px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:11px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none}
-.minp::placeholder{color:rgba(0,212,255,0.3)}
 </style>
 </head>
 <body>
 <div id="toast"></div>
 <div id="app">
-  <div id="sbar"></div>
-  <div id="header">
-    <div class="logo-wrap">
-      <div class="logo-icon">🤖<div class="logo-dot"></div></div>
-      <div>
-        <div class="logo-name">JARVIS</div>
-        <div class="logo-sub" id="estatus">● ONLINE • AI READY</div>
-      </div>
-    </div>
-    <div class="lang-chips">
-      <button class="lchip on" onclick="setLang('en',this)">EN</button>
-      <button class="lchip" onclick="setLang('bn-IN',this)">বাং</button>
-      <button class="lchip" onclick="setLang('hi-IN',this)">हिं</button>
+<div id="ld"></div>
+
+<!-- HEADER -->
+<div id="hd">
+  <div class="lgo">
+    <div class="lic">🤖<div class="ldot"></div></div>
+    <div>
+      <div class="lnm">JARVIS</div>
+      <div class="lst" id="est">● ONLINE • AI READY</div>
     </div>
   </div>
-
-  <div id="content">
-    <!-- CHAT -->
-    <div class="tp on" id="tab-chat">
-      <div id="messages"></div>
-      <div id="typing"><div class="avt">🤖</div><div class="tdots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-      <div id="vsec">
-        <div style="display:flex;gap:8px;width:100%;justify-content:center;margin-bottom:4px">
-          <button id="stopbtn" onclick="stopSpeak()" style="background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.3);border-radius:8px;padding:5px 12px;color:var(--red);font-size:11px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px">⏹ Stop</button>
-          <button id="voicemodbtn" onclick="togVoiceMode()" style="background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);border-radius:8px;padding:5px 12px;color:var(--cyan);font-size:11px;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px">🔄 Voice Mode: OFF</button>
-        </div>
-        <div id="vtxt">🎤 Listening...</div>
-        <div id="vmodeinfo" style="display:none;font-size:10px;color:rgba(0,255,136,0.8);letter-spacing:1px;text-align:center;padding:4px 0">
-          ● VOICE MODE ON — বলুন, JARVIS শুনবে ও বলবে!
-        </div>
-        <div id="mwrap">
-          <div class="mring"></div><div class="mring"></div><div class="mring"></div>
-          <button id="micbtn" onclick="togMic()">🎤</button>
-        </div>
-      </div>
-      <div id="inparea">
-        <input id="uinput" type="text" placeholder="Ask me anything..." autocomplete="off" onkeydown="if(event.key==='Enter')sendMsg()"/>
-        <button id="sndbtn" onclick="sendMsg()">➤</button>
-      </div>
-    </div>
-
-    <!-- MEMORY -->
-    <div class="tp" id="tab-memory">
-      <div class="tscroll">
-        <div class="slbl">◈ PERSISTENT MEMORY</div>
-        <div id="memlist"></div>
-        <div class="slbl" style="margin-top:14px">◈ ADD MEMORY</div>
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <input class="minp" id="mkey" placeholder="Key"/><input class="minp" id="mval" placeholder="Value"/>
-          <button class="sbtn p" style="flex:0;padding:9px 12px;white-space:nowrap" onclick="addMem()">+ADD</button>
-        </div>
-        <div class="card" style="border-color:rgba(0,255,136,0.2)">
-          <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:8px">◈ STATS</div>
-          <div id="smsgs" style="color:rgba(232,244,255,.6);font-size:12px;margin-bottom:4px">💬 Messages: 0</div>
-          <div id="smem" style="color:rgba(232,244,255,.6);font-size:12px;margin-bottom:4px">🧠 Memories: 0</div>
-          <div style="color:rgba(232,244,255,.6);font-size:12px">📅 Session: <span id="stime"></span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- BLOGGER -->
-    <div class="tp" id="tab-blogger">
-      <div class="tscroll">
-        <div class="slbl">◈ BLOGGER CONTROL</div>
-        <div class="card">
-          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">📝 healthtips9600.blogspot.com</div>
-          <input id="bt1" class="sinp" placeholder="Post Title..." style="margin-bottom:8px"/>
-          <textarea id="bc1" class="ta" style="height:90px" placeholder="Post content..."></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="sbtn" onclick="genBlog('health')">🤖 AI Generate</button>
-            <button class="sbtn p" onclick="pubPost(1)">🚀 Publish</button>
-          </div>
-        </div>
-        <div class="card">
-          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">🛒 kayapatbajar.blogspot.com</div>
-          <input id="bt2" class="sinp" placeholder="Product Title..." style="margin-bottom:8px"/>
-          <textarea id="bc2" class="ta" style="height:90px" placeholder="Product review..."></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="sbtn" onclick="genBlog('product')">🤖 AI Generate</button>
-            <button class="sbtn p" onclick="pubPost(2)">🚀 Publish</button>
-          </div>
-        </div>
-        <div class="card">
-          <div style="color:rgba(0,212,255,.6);font-size:9px;letter-spacing:2px;margin-bottom:8px">◈ VOICE COMMANDS</div>
-          <div style="color:rgba(232,244,255,.55);font-size:12px;line-height:2">🎤 "Write a blog post about [topic]"<br>🎤 "স্বাস্থ্য টিপস নিয়ে ব্লগ পোস্ট লেখো"<br>🎤 "Publish my last draft"</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SOCIAL -->
-    <div class="tp" id="tab-social">
-      <div class="tscroll">
-        <div class="slbl">◈ SOCIAL MEDIA</div>
-        <div class="sc con"><div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">👥</span><div><div style="color:var(--text);font-size:14px">Facebook</div><div style="color:var(--green);font-size:9px;letter-spacing:1px">CONNECTED</div></div></div><button class="scbtn post" onclick="togPost()">POST</button></div>
-        <div class="sc con"><div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">📸</span><div><div style="color:var(--text);font-size:14px">Instagram</div><div style="color:var(--green);font-size:9px;letter-spacing:1px">CONNECTED</div></div></div><button class="scbtn post" onclick="togPost()">POST</button></div>
-        <div class="sc dis"><div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">🐦</span><div><div style="color:var(--text);font-size:14px">Twitter / X</div><div style="color:var(--red);font-size:9px;letter-spacing:1px">NOT CONNECTED</div></div></div><button class="scbtn conn" onclick="showToast('Settings-এ Twitter key দাও')">CONNECT</button></div>
-        <div class="card" id="postbox" style="display:none">
-          <div style="color:rgba(0,212,255,.6);font-size:9px;letter-spacing:2px;margin-bottom:8px">◈ COMPOSE</div>
-          <textarea class="ta" id="postcont" placeholder="Write your post..."></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="sbtn" onclick="genPost()">🤖 AI Write</button>
-            <button class="sbtn p" onclick="sendPost()">📤 Send</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MOBILE -->
-    <div class="tp" id="tab-mobile">
-      <div class="tscroll">
-        <div class="slbl">◈ DEVICE STATUS</div>
-        <div class="mgrid">
-          <div class="mcard" id="bcard"><div class="mci">🔋</div><div class="mcv" id="bval">--</div><div class="mcl">BATTERY</div><div class="mcbar"><div class="mcfill" id="bfill" style="width:0%"></div></div></div>
-          <div class="mcard" id="ncard"><div class="mci">🌐</div><div class="mcv" id="nval">--</div><div class="mcl">NETWORK</div><div class="mcs" id="ntype">Checking...</div></div>
-          <div class="mcard" onclick="getLoc()"><div class="mci">📍</div><div class="mcv" id="locval" style="font-size:11px">TAP</div><div class="mcl">LOCATION</div><div class="mcs" id="locsub">Tap to get</div></div>
-          <div class="mcard"><div class="mci">🕐</div><div class="mcv" id="tval" style="font-size:13px">--:--</div><div class="mcl">TIME</div><div class="mcs" id="dval">--</div></div>
-        </div>
-        <div class="slbl" style="margin-top:16px">◈ LOCATION MAP</div>
-        <div class="mapc" id="mapcon">
-          <div id="mapph" style="display:flex;flex-direction:column;align-items:center;padding:20px">
-            <div style="font-size:40px">🗺️</div>
-            <div style="color:rgba(0,212,255,.6);font-size:12px;margin-top:8px">📍 Location নাও → Map দেখাবে</div>
-          </div>
-          <iframe id="mapif" style="display:none;width:100%;height:220px;border:none" allowfullscreen></iframe>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="sbtn p" style="flex:2;padding:10px 0" onclick="getLoc()">📍 আমার Location</button>
-          <button class="sbtn" style="flex:1;padding:10px 0" onclick="openMaps()">🗺️ Maps</button>
-        </div>
-        <div class="slbl" style="margin-top:16px">◈ WEATHER</div>
-        <div class="wcard" id="wcard"><div style="color:rgba(0,212,255,.5);font-size:12px;text-align:center;padding:16px">📍 Location নিলে Weather দেখাবে</div></div>
-        <div class="slbl" style="margin-top:16px">◈ QUICK ACTIONS</div>
-        <div class="agrid">
-          <button class="abtn" onclick="copyLast()"><span style="font-size:22px">📋</span><span>Copy Chat</span></button>
-          <button class="abtn" onclick="vibrate()"><span style="font-size:22px">📳</span><span>Vibrate</span></button>
-          <button class="abtn" onclick="reqNotif()"><span style="font-size:22px">🔔</span><span>Notify</span></button>
-          <button class="abtn" onclick="shareApp()"><span style="font-size:22px">📤</span><span>Share</span></button>
-          <button class="abtn" onclick="testNotif()"><span style="font-size:22px">💬</span><span>Test Notify</span></button>
-          <button class="abtn" onclick="chkWeather()"><span style="font-size:22px">🌤️</span><span>Weather</span></button>
-        </div>
-        <div class="slbl" style="margin-top:16px">◈ CLIPBOARD</div>
-        <div class="card">
-          <textarea id="cliparea" class="ta" style="height:60px" placeholder="Text লেখো → Copy/Chat"></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="sbtn" onclick="copyTxt()" style="flex:1;padding:9px 0">📋 Copy</button>
-            <button class="sbtn" onclick="pasteTxt()" style="flex:1;padding:9px 0">📥 Paste</button>
-            <button class="sbtn p" onclick="clipToChat()" style="flex:1;padding:9px 0">💬 Chat</button>
-          </div>
-        </div>
-        <div style="height:16px"></div>
-      </div>
-    </div>
-
-    <!-- TOOLS -->
-    <div class="tp" id="tab-tools">
-      <div class="tscroll">
-
-        <!-- ── BLOG GENERATOR ── -->
-        <div class="slbl">◈ UPGRADED BLOG GENERATOR</div>
-        <div class="card">
-          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">📝 Complete SEO Blog Post</div>
-          <div class="sklbl" style="margin-bottom:5px">TOPIC / KEYWORD</div>
-          <input id="bgtopic" class="sinp" placeholder="e.g. নারকেল তেলের উপকারিতা" style="margin-bottom:8px"/>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <select id="bglang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option value="Bengali">🇧🇩 Bengali</option>
-              <option value="English">🇬🇧 English</option>
-              <option value="Hindi">🇮🇳 Hindi</option>
-            </select>
-            <select id="bgtype" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option value="health">💊 Health</option>
-              <option value="product">🛒 Product Review</option>
-              <option value="listicle">📋 List Article</option>
-              <option value="howto">📖 How-To Guide</option>
-            </select>
-          </div>
-          <button class="sbtn p" style="width:100%;padding:11px" onclick="genFullBlog()">🤖 Generate Full Blog Post</button>
-          <div id="blogresult" style="display:none;margin-top:10px">
-            <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:6px">◈ GENERATED POST</div>
-            <div id="blogtitle" style="color:var(--cyan);font-size:13px;font-weight:700;margin-bottom:6px;padding:8px;background:var(--bg);border-radius:8px"></div>
-            <div id="blogmeta" style="color:rgba(232,244,255,.6);font-size:11px;margin-bottom:6px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.5"></div>
-            <div style="display:flex;gap:8px">
-              <button class="sbtn" onclick="copyBlog()" style="flex:1;padding:9px 0">📋 Copy</button>
-              <button class="sbtn p" onclick="sendToBlogger()" style="flex:1;padding:9px 0">📝 Blogger</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── INSTAGRAM CAPTION ── -->
-        <div class="slbl" style="margin-top:4px">◈ INSTAGRAM CAPTION GENERATOR</div>
-        <div class="card">
-          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">📸 Caption + Hashtags</div>
-          <input id="captopic" class="sinp" placeholder="Topic বা product নাম লেখো..." style="margin-bottom:8px"/>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <select id="capstyle" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option value="engaging">🔥 Engaging</option>
-              <option value="funny">😄 Funny</option>
-              <option value="informative">💡 Informative</option>
-              <option value="promotional">💰 Promotional</option>
-            </select>
-            <select id="caplang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option value="Bengali">বাংলা</option>
-              <option value="English">English</option>
-              <option value="Hindi">हिन्दी</option>
-            </select>
-          </div>
-          <button class="sbtn p" style="width:100%;padding:11px" onclick="genCaption()">✨ Generate Caption</button>
-          <div id="capresult" style="display:none;margin-top:10px">
-            <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:6px">◈ YOUR CAPTION</div>
-            <div id="captiontext" style="color:var(--text);font-size:13px;padding:10px;background:var(--bg);border-radius:10px;line-height:1.6;margin-bottom:8px"></div>
-            <div id="hashtext" style="color:var(--cyan);font-size:11px;padding:8px;background:var(--bg);border-radius:8px;line-height:1.8"></div>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="sbtn" onclick="copyCap()" style="flex:1;padding:9px 0">📋 Copy</button>
-              <button class="sbtn p" onclick="postToIG()" style="flex:1;padding:9px 0">📸 Post</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── SMART REMINDER ── -->
-        <div class="slbl" style="margin-top:4px">◈ SMART REMINDER</div>
-        <div class="card">
-          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">⏰ Set Reminder</div>
-          <input id="remtxt" class="sinp" placeholder="Reminder text... (e.g. Blog post লিখতে হবে)" style="margin-bottom:8px"/>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <input type="time" id="remtime" style="flex:1;padding:9px 13px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:13px;outline:none"/>
-            <select id="remrepeat" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option value="once">Once</option>
-              <option value="daily">Daily</option>
-              <option value="weekdays">Weekdays</option>
-            </select>
-          </div>
-          <button class="sbtn p" style="width:100%;padding:11px" onclick="setReminder()">⏰ Set Reminder</button>
-          <div id="remlist" style="margin-top:10px"></div>
-        </div>
-
-        <!-- KEYWORD RESEARCH -->
-        <div class="slbl" style="margin-top:4px">◈ KEYWORD RESEARCH</div>
-        <div class="card">
-          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">🔍 SEO Keyword Analyzer</div>
-          <input id="kwtopic" class="sinp" placeholder="Topic লেখো... (e.g. স্বাস্থ্য টিপস)" style="margin-bottom:8px"/>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <select id="kwlang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option>Bengali</option><option>English</option><option>Hindi</option>
-            </select>
-            <select id="kwtype" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option value="blog">Blog</option><option value="adsense">AdSense</option><option value="affiliate">Affiliate</option>
-            </select>
-          </div>
-          <button class="sbtn p" style="width:100%;padding:11px" onclick="doKWR()">🔍 Research Keywords</button>
-          <div id="kwresult" style="display:none;margin-top:10px;background:var(--bg);border-radius:10px;padding:10px;font-size:12px;color:var(--text);line-height:1.8"></div>
-        </div>
-
-        <!-- WHATSAPP -->
-        <div class="slbl" style="margin-top:4px">◈ WHATSAPP SENDER</div>
-        <div class="card">
-          <input id="wanum" class="sinp" placeholder="Number (e.g. 91XXXXXXXXXX)" style="margin-bottom:8px"/>
-          <textarea id="wamsg" class="ta" style="height:65px" placeholder="Message লেখো..."></textarea>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="sbtn" onclick="genWAMsg()" style="flex:1;padding:9px 0">🤖 AI লিখুক</button>
-            <button class="sbtn p" onclick="sendWA()" style="flex:1;padding:9px 0">📤 WhatsApp</button>
-          </div>
-        </div>
-
-        <!-- YOUTUBE SCRIPT -->
-        <div class="slbl" style="margin-top:4px">◈ YOUTUBE SCRIPT</div>
-        <div class="card">
-          <input id="yttopic" class="sinp" placeholder="Video topic..." style="margin-bottom:8px"/>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <select id="ytdur" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option>
-            </select>
-            <select id="ytlang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
-              <option>Bengali</option><option>English</option><option>Hindi</option>
-            </select>
-          </div>
-          <button class="sbtn p" style="width:100%;padding:11px" onclick="genYTScript()">🎬 Generate Script</button>
-          <div id="ytresult" style="display:none;margin-top:10px">
-            <textarea id="ytscript" class="ta" style="height:120px;font-size:11px"></textarea>
-            <button class="sbtn" onclick="copyYT()" style="width:100%;padding:9px;margin-top:8px">📋 Copy</button>
-          </div>
-        </div>
-
-        <!-- CONTENT CALENDAR -->
-        <div class="slbl" style="margin-top:4px">◈ WEEKLY CONTENT CALENDAR</div>
-        <div class="card">
-          <input id="calniche" class="sinp" placeholder="তোমার niche... (health, tech, food)" style="margin-bottom:8px"/>
-          <button class="sbtn p" style="width:100%;padding:11px" onclick="genCalendar()">📅 7-Day Plan</button>
-          <div id="calresult" style="display:none;margin-top:10px"></div>
-        </div>
-
-        <div style="height:16px"></div>
-      </div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="tp" id="tab-settings">
-      <div class="tscroll">
-        <div class="slbl">◈ CONFIGURATION</div>
-        <div class="card" style="display:flex;align-items:center;gap:12px">
-          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:22px">👤</div>
-          <div><div id="dname" style="font-size:14px;color:var(--text);font-weight:600">Dip Mondal</div><div style="font-size:10px;color:rgba(0,212,255,.5);letter-spacing:1px;margin-top:2px">CONTENT CREATOR</div></div>
-        </div>
-        <div style="margin-bottom:14px">
-          <div class="sklbl">YOUR NAME</div>
-          <input class="sinp" id="cname" placeholder="Your name..."/>
-        </div>
-        <div style="margin-bottom:14px">
-          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:8px;font-weight:600">◈ AI ENGINE</div>
-          <div class="eibox">🚀 <b>Groq সবচেয়ে ভালো — FREE + FASTEST!</b><br/>Priority: Groq → OpenRouter → Gemini → Claude<br/>👉 console.groq.com → gsk_... key নাও</div>
-          <div class="sklbl">🚀 GROQ API KEY (FREE ✅)</div>
-          <div class="skwrap" style="margin-bottom:10px"><input class="sinp" id="cgroq" type="password" placeholder="gsk_... (console.groq.com)"/><button class="eybtn" onclick="togEye('cgroq',this)">👁</button></div>
-          <div class="sklbl">🌐 OPENROUTER API KEY</div>
-          <div class="skwrap" style="margin-bottom:10px"><input class="sinp" id="cor" type="password" placeholder="sk-or-v1-..."/><button class="eybtn" onclick="togEye('cor',this)">👁</button></div>
-          <div class="sklbl">🟢 GEMINI API KEY</div>
-          <div class="skwrap" style="margin-bottom:10px"><input class="sinp" id="cgem" type="password" placeholder="AIza..."/><button class="eybtn" onclick="togEye('cgem',this)">👁</button></div>
-          <div class="sklbl">🔵 CLAUDE API KEY</div>
-          <div class="skwrap"><input class="sinp" id="ccla" type="password" placeholder="sk-ant-..."/><button class="eybtn" onclick="togEye('ccla',this)">👁</button></div>
-        </div>
-        <div style="margin-bottom:14px">
-          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:8px;font-weight:600">◈ BLOGGER</div>
-          <div class="sklbl">📝 BLOGGER API KEY</div>
-          <input class="sinp" id="cblog" type="password" placeholder="API Key..." style="margin-bottom:10px"/>
-          <div class="sklbl">🔑 BLOG ID</div>
-          <input class="sinp" id="cblogid" placeholder="Blog ID..."/>
-        </div>
-        <div style="margin-bottom:14px">
-          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:10px;font-weight:600">◈ DEFAULT LANGUAGE</div>
-          <div class="lggrp">
-            <button class="lgbtn on" id="lgen" onclick="setLangBig('en',this)">English</button>
-            <button class="lgbtn" id="lgbn" onclick="setLangBig('bn-IN',this)">বাংলা</button>
-            <button class="lgbtn" id="lghi" onclick="setLangBig('hi-IN',this)">हिन्दी</button>
-          </div>
-        </div>
-        <div style="margin-bottom:14px">
-          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:10px;font-weight:600">◈ VOICE REPLY</div>
-          <div class="vtog">
-            <div><div style="font-size:13px;color:var(--text)">🔊 Auto Voice Reply</div><div style="font-size:10px;color:rgba(0,212,255,.4);margin-top:2px;letter-spacing:1px">AI SPEAKS RESPONSES</div></div>
-            <div class="tgsw on" id="vtogbtn" onclick="togVoice()"><div class="tgth"></div></div>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button class="sbtn" onclick="testV('en')" style="flex:1;padding:9px 0">🔊 English</button>
-            <button class="sbtn" onclick="testV('bn-IN')" style="flex:1;padding:9px 0">🔊 বাংলা</button>
-            <button class="sbtn" onclick="testV('hi-IN')" style="flex:1;padding:9px 0">🔊 हिंदी</button>
-          </div>
-        </div>
-        <button class="savebtn" onclick="saveSet()">◈ SAVE CONFIGURATION</button>
-        <div style="height:10px"></div>
-        <button class="savebtn" style="background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.3);color:var(--red);box-shadow:none;font-size:12px" onclick="clrAll()">⚠ CLEAR ALL DATA</button>
-        <div style="height:20px"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="nav">
-    <button class="nbtn on" onclick="swTab('chat',this)"><span class="nic">💬</span><span class="nlbl">CHAT</span><div class="nind"></div></button>
-    <button class="nbtn" onclick="swTab('memory',this)"><span class="nic">🧠</span><span class="nlbl">MEMORY</span><div class="nind"></div></button>
-    <button class="nbtn" onclick="swTab('blogger',this)"><span class="nic">📝</span><span class="nlbl">BLOG</span><div class="nind"></div></button>
-    <button class="nbtn" onclick="swTab('social',this)"><span class="nic">📡</span><span class="nlbl">SOCIAL</span><div class="nind"></div></button>
-    <button class="nbtn" onclick="swTab('mobile',this)"><span class="nic">📱</span><span class="nlbl">MOBILE</span><div class="nind"></div></button>
-    <button class="nbtn" onclick="swTab('tools',this)"><span class="nic">🛠️</span><span class="nlbl">TOOLS</span><div class="nind"></div></button>
-    <button class="nbtn" onclick="swTab('settings',this)"><span class="nic">⚙️</span><span class="nlbl">SETTINGS</span><div class="nind"></div></button>
+  <div class="lcs">
+    <button class="lc on" onclick="setL('en',this)">EN</button>
+    <button class="lc" onclick="setL('bn-IN',this)">বাং</button>
+    <button class="lc" onclick="setL('hi-IN',this)">हिं</button>
   </div>
 </div>
 
+<div id="con">
+
+<!-- CHAT -->
+<div class="tp on" id="t-chat">
+  <div id="msgs"></div>
+  <div id="typ"><div class="av">🤖</div><div class="tds"><div class="d"></div><div class="d"></div><div class="d"></div></div></div>
+  <div id="vs">
+    <div class="vr">
+      <button class="vb red" onclick="stopSpk()">⏹ Stop</button>
+      <button class="vb grn" id="vmb" onclick="togVM()">🔄 Voice Mode: OFF</button>
+    </div>
+    <div id="vmi">● VOICE MODE — বলুন!</div>
+    <div id="vt">🎤 বলুন...</div>
+    <div id="mw">
+      <div class="mr"></div><div class="mr"></div><div class="mr"></div>
+      <button id="mc" onclick="togMic()">🎤</button>
+    </div>
+  </div>
+  <div id="ia">
+    <input id="ui" type="text" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')snd()"/>
+    <button id="sb" onclick="snd()">➤</button>
+  </div>
+</div>
+
+<!-- MEMORY -->
+<div class="tp" id="t-mem">
+  <div class="tsc">
+    <div class="sl">◈ PERSISTENT MEMORY</div>
+    <div id="ml"></div>
+    <div class="sl" style="margin-top:12px">◈ ADD MEMORY</div>
+    <div class="rw" style="margin-bottom:9px">
+      <input class="si" id="mk" placeholder="Key" style="flex:1"/>
+      <input class="si" id="mv" placeholder="Value" style="flex:1.5"/>
+      <button class="bn p" style="flex:0;padding:9px 11px;white-space:nowrap" onclick="addM()">+ADD</button>
+    </div>
+    <div class="cd" style="border-color:rgba(0,255,136,.18)">
+      <div style="color:var(--g);font-size:9px;letter-spacing:2px;margin-bottom:7px">◈ STATS</div>
+      <div id="sm1" style="color:rgba(232,244,255,.5);font-size:12px;margin-bottom:3px">💬 0 messages</div>
+      <div id="sm2" style="color:rgba(232,244,255,.5);font-size:12px;margin-bottom:3px">🧠 0 memories</div>
+      <div style="color:rgba(232,244,255,.5);font-size:12px">📅 Session: <span id="sst"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLS -->
+<div class="tp" id="t-tools">
+  <div class="tsc">
+    <!-- Blog -->
+    <div class="sl">◈ BLOG GENERATOR</div>
+    <div class="cd">
+      <input id="bgt" class="si" placeholder="Topic লেখো..." style="margin-bottom:7px"/>
+      <div class="rw" style="margin-bottom:7px">
+        <select id="bgl" class="se" style="flex:1"><option value="Bengali">বাংলা</option><option value="English">English</option><option value="Hindi">हिन्दी</option></select>
+        <select id="bgtp" class="se" style="flex:1"><option value="health">💊 Health</option><option value="product">🛒 Product</option><option value="howto">📖 How-To</option><option value="list">📋 List</option></select>
+      </div>
+      <button class="bn p" style="width:100%;padding:10px" onclick="genBlog()">🤖 Generate Blog Post</button>
+      <div id="bgr" class="rbox">
+        <div id="bgtit" style="color:var(--c);font-weight:700;margin-bottom:5px"></div>
+        <div class="rw" style="margin-top:7px">
+          <button class="bn" onclick="cpBlog()" style="flex:1;padding:8px 0">📋 Copy</button>
+          <button class="bn p" onclick="toBlog()" style="flex:1;padding:8px 0">📝 → Blogger</button>
+        </div>
+      </div>
+    </div>
+    <!-- Caption -->
+    <div class="sl" style="margin-top:4px">◈ INSTAGRAM CAPTION</div>
+    <div class="cd">
+      <input id="cpt" class="si" placeholder="Topic বা product..." style="margin-bottom:7px"/>
+      <div class="rw" style="margin-bottom:7px">
+        <select id="cps" class="se" style="flex:1"><option value="engaging">🔥 Engaging</option><option value="funny">😄 Funny</option><option value="promo">💰 Promo</option></select>
+        <select id="cpl" class="se" style="flex:1"><option value="Bengali">বাংলা</option><option value="English">English</option><option value="Hindi">हिन्दी</option></select>
+      </div>
+      <button class="bn p" style="width:100%;padding:10px" onclick="genCap()">✨ Generate Caption</button>
+      <div id="cpr" class="rbox">
+        <div id="cptxt" style="margin-bottom:7px;line-height:1.6"></div>
+        <div id="cphash" style="color:var(--c);font-size:11px;line-height:1.8"></div>
+        <div class="rw" style="margin-top:8px">
+          <button class="bn" onclick="cpCap()" style="flex:1;padding:8px 0">📋 Copy</button>
+          <button class="bn p" onclick="toSoc()" style="flex:1;padding:8px 0">📸 Post</button>
+        </div>
+      </div>
+    </div>
+    <!-- Keyword -->
+    <div class="sl" style="margin-top:4px">◈ KEYWORD RESEARCH</div>
+    <div class="cd">
+      <input id="kwt" class="si" placeholder="Niche topic লেখো..." style="margin-bottom:7px"/>
+      <div class="rw" style="margin-bottom:7px">
+        <select id="kwl" class="se" style="flex:1"><option>Bengali</option><option>English</option><option>Hindi</option></select>
+        <select id="kwtp" class="se" style="flex:1"><option value="blog">Blog</option><option value="adsense">AdSense</option><option value="affiliate">Affiliate</option></select>
+      </div>
+      <button class="bn p" style="width:100%;padding:10px" onclick="doKW()">🔍 Research Keywords</button>
+      <div id="kwr" class="rbox"></div>
+    </div>
+    <!-- WhatsApp -->
+    <div class="sl" style="margin-top:4px">◈ WHATSAPP SENDER</div>
+    <div class="cd">
+      <input id="wan" class="si" placeholder="Number: 91XXXXXXXXXX" style="margin-bottom:7px"/>
+      <textarea id="wam" class="ta" style="height:60px;margin-bottom:7px" placeholder="Message লেখো..."></textarea>
+      <div class="rw">
+        <button class="bn" onclick="aiWA()" style="flex:1;padding:9px 0">🤖 AI লিখুক</button>
+        <button class="bn p" onclick="sendWA()" style="flex:1;padding:9px 0">📤 WhatsApp</button>
+      </div>
+    </div>
+    <!-- Reminder -->
+    <div class="sl" style="margin-top:4px">◈ SMART REMINDER</div>
+    <div class="cd">
+      <input id="rmt" class="si" placeholder="Reminder text..." style="margin-bottom:7px"/>
+      <div class="rw" style="margin-bottom:7px">
+        <input type="time" id="rmti" style="flex:1;padding:9px 12px;background:var(--s);border:1px solid rgba(0,212,255,.18);border-radius:10px;color:var(--t);font-size:12px;outline:none"/>
+        <select id="rmrp" class="se" style="flex:1"><option value="once">Once</option><option value="daily">Daily</option></select>
+      </div>
+      <button class="bn p" style="width:100%;padding:10px" onclick="setRem()">⏰ Set Reminder</button>
+      <div id="rml" style="margin-top:8px"></div>
+    </div>
+    <!-- Calendar -->
+    <div class="sl" style="margin-top:4px">◈ CONTENT CALENDAR</div>
+    <div class="cd">
+      <input id="cln" class="si" placeholder="Niche (e.g. health, tech)" style="margin-bottom:7px"/>
+      <button class="bn p" style="width:100%;padding:10px" onclick="genCal()">📅 7-Day Plan Generate</button>
+      <div id="clr" class="rbox"></div>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+</div>
+
+<!-- BLOGGER -->
+<div class="tp" id="t-blog">
+  <div class="tsc">
+    <div class="sl">◈ BLOGGER CONTROL</div>
+    <div class="cd">
+      <div style="color:var(--c);font-size:12px;margin-bottom:9px">📝 healthtips9600.blogspot.com</div>
+      <input id="bt1" class="si" placeholder="Post Title..." style="margin-bottom:7px"/>
+      <textarea id="bc1" class="ta" style="height:85px" placeholder="Post content..."></textarea>
+      <div class="rw" style="margin-top:7px">
+        <button class="bn" onclick="genBlogD(1)" style="flex:1;padding:9px 0">🤖 AI Generate</button>
+        <button class="bn p" onclick="pubPost(1)" style="flex:1;padding:9px 0">🚀 Publish</button>
+      </div>
+    </div>
+    <div class="cd">
+      <div style="color:var(--c);font-size:12px;margin-bottom:9px">🛒 kayapatbajar.blogspot.com</div>
+      <input id="bt2" class="si" placeholder="Product Title..." style="margin-bottom:7px"/>
+      <textarea id="bc2" class="ta" style="height:85px" placeholder="Product review..."></textarea>
+      <div class="rw" style="margin-top:7px">
+        <button class="bn" onclick="genBlogD(2)" style="flex:1;padding:9px 0">🤖 AI Generate</button>
+        <button class="bn p" onclick="pubPost(2)" style="flex:1;padding:9px 0">🚀 Publish</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE -->
+<div class="tp" id="t-mob">
+  <div class="tsc">
+    <div class="sl">◈ DEVICE STATUS</div>
+    <div class="mg">
+      <div class="mcd" id="bcd"><div style="font-size:20px">🔋</div><div class="mcv" id="bv">--</div><div class="mcl">BATTERY</div><div class="mbar"><div class="mfil" id="bf" style="width:0%"></div></div></div>
+      <div class="mcd"><div style="font-size:20px">🌐</div><div class="mcv" id="nv">--</div><div class="mcl">NETWORK</div><div style="font-size:9px;color:rgba(232,244,255,.4)" id="nt">Checking...</div></div>
+      <div class="mcd" onclick="getLoc()"><div style="font-size:20px">📍</div><div class="mcv" id="lv" style="font-size:11px">TAP</div><div class="mcl">LOCATION</div><div style="font-size:9px;color:rgba(232,244,255,.4)" id="ls">Tap to get</div></div>
+      <div class="mcd"><div style="font-size:20px">🕐</div><div class="mcv" id="tv" style="font-size:13px">--:--</div><div class="mcl">TIME</div><div style="font-size:9px;color:rgba(232,244,255,.4)" id="dv">--</div></div>
+    </div>
+
+    <div class="sl" style="margin-top:14px">◈ GOOGLE ASSISTANT CONNECT</div>
+    <!-- Wake Word -->
+    <div class="cd" style="border-color:rgba(0,255,136,.22)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="color:var(--g);font-size:12px;font-weight:600">🎤 Wake Word: "Hey JARVIS"</div>
+        <div class="ts" id="wwtg" onclick="togWW()"><div class="th"></div></div>
+      </div>
+      <div style="color:rgba(232,244,255,.45);font-size:11px;line-height:1.6"><span id="wwst">● Inactive</span><br>বলো <b style="color:var(--c)">"Hey JARVIS"</b> → চালু হবে!</div>
+    </div>
+    <!-- Call & SMS -->
+    <div class="cd">
+      <div style="color:var(--c);font-size:12px;margin-bottom:9px">📞 Call & SMS</div>
+      <input id="cnum" class="si" placeholder="Phone number..." style="margin-bottom:7px"/>
+      <div class="rw" style="margin-bottom:7px">
+        <button class="bn g" onclick="makeCall()" style="flex:1;padding:9px 0">📞 Call</button>
+        <button class="bn p" onclick="openSMS()" style="flex:1;padding:9px 0">💬 SMS</button>
+        <button class="bn" onclick="aiSMS()" style="flex:1;padding:9px 0">🤖 AI SMS</button>
+      </div>
+      <textarea id="smst" class="ta" style="height:55px" placeholder="SMS text..."></textarea>
+    </div>
+    <!-- Google Services -->
+    <div class="cd">
+      <div style="color:var(--c);font-size:12px;margin-bottom:9px">🔍 Google Services</div>
+      <input id="gsq" class="si" placeholder="Search করো..." style="margin-bottom:7px"/>
+      <div class="rw">
+        <button class="bn p" onclick="gSrch()" style="flex:1;padding:9px 0">🔍 Google</button>
+        <button class="bn" onclick="ytSrch()" style="flex:1;padding:9px 0">▶️ YouTube</button>
+        <button class="bn" onclick="mapSrch()" style="flex:1;padding:9px 0">🗺️ Maps</button>
+      </div>
+    </div>
+    <!-- Device Actions -->
+    <div class="cd">
+      <div style="color:var(--c);font-size:12px;margin-bottom:9px">⚡ Device Actions</div>
+      <div class="ag">
+        <button class="ab" onclick="openCam()"><span style="font-size:20px">📷</span>Camera</button>
+        <button class="ab" onclick="openGal()"><span style="font-size:20px">🖼️</span>Gallery</button>
+        <button class="ab" onclick="tryTorch()"><span style="font-size:20px">🔦</span>Torch</button>
+        <button class="ab" onclick="window.open('https://youtube.com','_blank')"><span style="font-size:20px">▶️</span>YouTube</button>
+        <button class="ab" onclick="window.open('https://google.com','_blank')"><span style="font-size:20px">🌐</span>Browser</button>
+        <button class="ab" onclick="shareApp()"><span style="font-size:20px">📤</span>Share</button>
+      </div>
+    </div>
+    <!-- Map -->
+    <div class="sl" style="margin-top:4px">◈ MAP</div>
+    <div class="mapc" id="mapc">
+      <div id="maph" style="display:flex;flex-direction:column;align-items:center;padding:18px">
+        <div style="font-size:34px">🗺️</div>
+        <div style="color:rgba(0,212,255,.45);font-size:11px;margin-top:6px">📍 Location নাও → Map দেখাবে</div>
+      </div>
+      <iframe id="mapi" style="display:none;width:100%;height:200px;border:none" allowfullscreen></iframe>
+    </div>
+    <div class="rw" style="margin-top:7px">
+      <button class="bn p" onclick="getLoc()" style="flex:2;padding:9px 0">📍 My Location</button>
+      <button class="bn" onclick="openMaps()" style="flex:1;padding:9px 0">🗺️ Maps</button>
+    </div>
+    <!-- Weather -->
+    <div class="sl" style="margin-top:14px">◈ WEATHER</div>
+    <div class="wc" id="wcard"><div style="color:rgba(0,212,255,.4);font-size:12px;text-align:center;padding:13px">📍 Location নিলে Weather দেখাবে</div></div>
+    <!-- Quick Actions -->
+    <div class="sl" style="margin-top:14px">◈ QUICK ACTIONS</div>
+    <div class="ag">
+      <button class="ab" onclick="cpLast()"><span style="font-size:20px">📋</span>Copy Chat</button>
+      <button class="ab" onclick="vib()"><span style="font-size:20px">📳</span>Vibrate</button>
+      <button class="ab" onclick="reqN()"><span style="font-size:20px">🔔</span>Notify</button>
+      <button class="ab" onclick="testN()"><span style="font-size:20px">💬</span>Test Notify</button>
+      <button class="ab" onclick="chkW()"><span style="font-size:20px">🌤️</span>Weather</button>
+      <button class="ab" onclick="shareApp()"><span style="font-size:20px">📤</span>Share</button>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+</div>
+
+<!-- SOCIAL -->
+<div class="tp" id="t-soc">
+  <div class="tsc">
+    <div class="sl">◈ SOCIAL MEDIA</div>
+    <div class="sc cn"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">👥</span><div><div style="color:var(--t);font-size:13px">Facebook</div><div style="color:var(--g);font-size:8px;letter-spacing:1px">CONNECTED</div></div></div><button class="scb po" onclick="togPost()">POST</button></div>
+    <div class="sc cn"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">📸</span><div><div style="color:var(--t);font-size:13px">Instagram</div><div style="color:var(--g);font-size:8px;letter-spacing:1px">CONNECTED</div></div></div><button class="scb po" onclick="togPost()">POST</button></div>
+    <div class="sc dc"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🐦</span><div><div style="color:var(--t);font-size:13px">Twitter/X</div><div style="color:var(--r);font-size:8px;letter-spacing:1px">NOT CONNECTED</div></div></div><button class="scb co" onclick="toast('Settings-এ key দাও')">CONNECT</button></div>
+    <div class="cd" id="postbox" style="display:none">
+      <textarea class="ta" id="postc" style="height:70px;margin-bottom:7px" placeholder="Post content..."></textarea>
+      <div class="rw">
+        <button class="bn" onclick="aiPost()" style="flex:1;padding:9px 0">🤖 AI Write</button>
+        <button class="bn p" onclick="sendPost()" style="flex:1;padding:9px 0">📤 Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="tp" id="t-set">
+  <div class="tsc">
+    <div class="sl">◈ CONFIGURATION</div>
+    <div class="cd" style="display:flex;align-items:center;gap:10px">
+      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--c),var(--b));display:flex;align-items:center;justify-content:center;font-size:20px">👤</div>
+      <div><div id="dnm" style="font-size:14px;color:var(--t);font-weight:600">Dip Mondal</div><div style="font-size:9px;color:rgba(0,212,255,.45);letter-spacing:1px;margin-top:2px">CONTENT CREATOR</div></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.45);margin-bottom:6px;font-weight:600">◈ YOUR NAME</div>
+      <input class="si" id="cnm" placeholder="Your name..."/>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.45);margin-bottom:8px;font-weight:600">◈ AI ENGINE</div>
+      <div class="ek">🚀 <b>Groq = FREE + FASTEST!</b><br>Priority: Groq → OpenRouter → Gemini → Claude</div>
+      <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🚀 GROQ (console.groq.com)</div>
+      <div class="ew" style="margin-bottom:9px"><input class="si" id="cgr" type="password" placeholder="gsk_..."/><button class="eb" onclick="ey('cgr',this)">👁</button></div>
+      <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🌐 OPENROUTER</div>
+      <div class="ew" style="margin-bottom:9px"><input class="si" id="cor" type="password" placeholder="sk-or-v1-..."/><button class="eb" onclick="ey('cor',this)">👁</button></div>
+      <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🟢 GEMINI</div>
+      <div class="ew" style="margin-bottom:9px"><input class="si" id="cgm" type="password" placeholder="AIza..."/><button class="eb" onclick="ey('cgm',this)">👁</button></div>
+      <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🔵 CLAUDE</div>
+      <div class="ew"><input class="si" id="ccl" type="password" placeholder="sk-ant-..."/><button class="eb" onclick="ey('ccl',this)">👁</button></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.45);margin-bottom:8px;font-weight:600">◈ BLOGGER</div>
+      <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">BLOGGER API KEY</div>
+      <input class="si" id="cbg" type="password" placeholder="API Key..." style="margin-bottom:9px"/>
+      <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">BLOG ID</div>
+      <input class="si" id="cbid" placeholder="Blog ID..."/>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.45);margin-bottom:9px;font-weight:600">◈ LANGUAGE</div>
+      <div class="lg">
+        <button class="lb on" id="len" onclick="setLB('en',this)">English</button>
+        <button class="lb" id="lbn" onclick="setLB('bn-IN',this)">বাংলা</button>
+        <button class="lb" id="lhi" onclick="setLB('hi-IN',this)">हिन्दी</button>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.45);margin-bottom:9px;font-weight:600">◈ VOICE REPLY</div>
+      <div class="vt">
+        <div><div style="font-size:13px;color:var(--t)">🔊 Auto Voice Reply</div><div style="font-size:9px;color:rgba(0,212,255,.35);margin-top:2px">AI SPEAKS RESPONSES</div></div>
+        <div class="ts on" id="vtg" onclick="togVR()"><div class="th"></div></div>
+      </div>
+      <div style="display:flex;gap:7px;margin-top:9px">
+        <button class="bn" onclick="testV('en')" style="flex:1;padding:8px 0">🔊 EN Test</button>
+        <button class="bn" onclick="testV('bn-IN')" style="flex:1;padding:8px 0">🔊 BN Test</button>
+        <button class="bn" onclick="testV('hi-IN')" style="flex:1;padding:8px 0">🔊 HI Test</button>
+      </div>
+    </div>
+    <button class="sv" onclick="saveS()">◈ SAVE CONFIGURATION</button>
+    <div style="height:9px"></div>
+    <button class="sv rd" onclick="clrAll()">⚠ CLEAR ALL DATA</button>
+    <div style="height:18px"></div>
+  </div>
+</div>
+
+</div><!-- /con -->
+
+<div id="nav">
+  <button class="nb on" onclick="sw('chat',this)"><span class="ni">💬</span><span class="nl">CHAT</span><div class="ni2"></div></button>
+  <button class="nb" onclick="sw('mem',this)"><span class="ni">🧠</span><span class="nl">MEMORY</span><div class="ni2"></div></button>
+  <button class="nb" onclick="sw('tools',this)"><span class="ni">🛠️</span><span class="nl">TOOLS</span><div class="ni2"></div></button>
+  <button class="nb" onclick="sw('blog',this)"><span class="ni">📝</span><span class="nl">BLOG</span><div class="ni2"></div></button>
+  <button class="nb" onclick="sw('mob',this)"><span class="ni">📱</span><span class="nl">MOBILE</span><div class="ni2"></div></button>
+  <button class="nb" onclick="sw('set',this)"><span class="ni">⚙️</span><span class="nl">SETTINGS</span><div class="ni2"></div></button>
+</div>
+
+</div><!-- /app -->
+
 <script>
-// ═══════════════════════════════════════
-//  JARVIS AI — Complete Logic
-//  Single script block — no duplicates!
-// ═══════════════════════════════════════
+// ============================================
+//  JARVIS AI — Clean Single Script
+// ============================================
 
-const S = {
-  lang: 'en', voiceEnabled: true,
-  isListening: false, msgCount: 0,
-};
+// STATE
+const S={lang:'en',voice:true,listening:false,cnt:0};
+const C={groq:'',or:'',gem:'',cla:'',blogger:'',blogId:'',name:'Dip Mondal'};
+let MEM={user_name:'Dip Mondal',profession:'Bengali Content Creator & Web Developer',primary_blog:'healthtips9600.blogspot.com',affiliate_blog:'kayapatbajar.blogspot.com',preferred_language:'Bengali',content_style:'Formal SEO-optimized',location:'India/Bangladesh',email:'Kayapatbangla@gmail.com'};
+let LAT=null,LON=null,CITY=null,REC=null,wakeREC=null,wakeOn=false,voiceMode=false;
+let rems=[],_blog=null,_cap=null,_cal=null;
 
-const C = {
-  groq:'', or:'', gem:'', cla:'',
-  blogger:'', blogId:'', name:'Dip Mondal',
-  orModel:'meta-llama/llama-3.3-70b-instruct:free',
-};
-
-let MEM = {
-  user_name:'Dip Mondal', profession:'Bengali Content Creator & Web Developer',
-  primary_blog:'healthtips9600.blogspot.com', affiliate_blog:'kayapatbajar.blogspot.com',
-  preferred_language:'Bengali', content_style:'Formal, SEO-optimized',
-  location:'India / Bangladesh', email:'Kayapatbangla@gmail.com',
-};
-
-let LAT=null, LON=null, CITY=null, AUD=null;
-
-const GR={en:'Hello Dip! I am JARVIS, your personal AI assistant. How can I help you?','bn-IN':'নমস্কার Dip! আমি JARVIS, আপনার ব্যক্তিগত AI সহকারী। কীভাবে সাহায্য করতে পারি?','hi-IN':'नमस्ते Dip! मैं JARVIS हूँ। कैसे मदद करूँ?'};
+const GR={en:'Hello Dip! I am JARVIS. How can I help you?','bn-IN':'নমস্কার Dip! আমি JARVIS। কীভাবে সাহায্য করতে পারি?','hi-IN':'नमस्ते Dip! मैं JARVIS हूँ। कैसे मदद करूँ?'};
 const PH={en:'Ask me anything...','bn-IN':'আমাকে যেকোনো কিছু জিজ্ঞেস করুন...','hi-IN':'मुझसे कुछ भी पूछें...'};
-const LN={en:'English','bn-IN':'Bengali (বাংলা)','hi-IN':'Hindi (हिन्दी)'};
+const LN={en:'English','bn-IN':'Bengali','hi-IN':'Hindi'};
 
+// INIT
 window.onload=()=>{
-  loadS(); renderMem(); addMsg('ai',GR[S.lang]);
-  document.getElementById('stime').textContent=new Date().toLocaleTimeString();
-  updStats(); updClock(); setInterval(updClock,1000);
-  initBat(); updNet();
+  loadD();renderMem();addMsg('ai',GR[S.lang]);
+  document.getElementById('sst').textContent=new Date().toLocaleTimeString();
+  updSt();updClock();setInterval(updClock,1000);initBat();updNet();
 };
 
-// ── STORAGE ──
-function saveS(){try{localStorage.setItem('jcfg',JSON.stringify(C));localStorage.setItem('jmem',JSON.stringify(MEM));localStorage.setItem('jlang',S.lang);localStorage.setItem('jvoice',S.voiceEnabled?'1':'0');}catch(e){}}
-function loadS(){
+// STORAGE
+function saveD(){try{localStorage.setItem('jc',JSON.stringify(C));localStorage.setItem('jm',JSON.stringify(MEM));localStorage.setItem('jl',S.lang);localStorage.setItem('jv',S.voice?'1':'0');}catch(e){}}
+function loadD(){
   try{
-    const c=localStorage.getItem('jcfg'); if(c) Object.assign(C,JSON.parse(c));
-    const m=localStorage.getItem('jmem'); if(m) Object.assign(MEM,JSON.parse(m));
-    const l=localStorage.getItem('jlang'); if(l) S.lang=l;
-    const v=localStorage.getItem('jvoice'); if(v!==null) S.voiceEnabled=v==='1';
-    const ids={cgroq:'groq',cor:'or',cgem:'gem',ccla:'cla',cblog:'blogger',cblogid:'blogId',cname:'name'};
-    Object.entries(ids).forEach(([id,k])=>{const el=document.getElementById(id);if(el) el.value=C[k]||'';});
-    document.getElementById('dname').textContent=C.name||'Dip Mondal';
-    document.getElementById('uinput').placeholder=PH[S.lang]||PH.en;
-    document.querySelectorAll('.lchip').forEach((c,i)=>c.classList.toggle('on',['en','bn-IN','hi-IN'][i]===S.lang));
-    ['en','bn-IN','hi-IN'].forEach((l,i)=>{const b=[document.getElementById('lgen'),document.getElementById('lgbn'),document.getElementById('lghi')][i];if(b)b.classList.toggle('on',l===S.lang);});
-    if(!S.voiceEnabled) document.getElementById('vtogbtn').classList.remove('on');
+    const c=localStorage.getItem('jc');if(c)Object.assign(C,JSON.parse(c));
+    const m=localStorage.getItem('jm');if(m)Object.assign(MEM,JSON.parse(m));
+    const l=localStorage.getItem('jl');if(l)S.lang=l;
+    const v=localStorage.getItem('jv');if(v!==null)S.voice=v==='1';
+    const mp={cgr:'groq',cor:'or',cgm:'gem',ccl:'cla',cbg:'blogger',cbid:'blogId',cnm:'name'};
+    Object.entries(mp).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.value=C[k]||'';});
+    document.getElementById('dnm').textContent=C.name||'Dip Mondal';
+    document.getElementById('ui').placeholder=PH[S.lang]||PH.en;
+    document.querySelectorAll('.lc').forEach((c,i)=>c.classList.toggle('on',['en','bn-IN','hi-IN'][i]===S.lang));
+    ['len','lbn','lhi'].forEach((id,i)=>{const b=document.getElementById(id);if(b)b.classList.toggle('on',['en','bn-IN','hi-IN'][i]===S.lang);});
+    if(!S.voice)document.getElementById('vtg').classList.remove('on');
     updEng();
   }catch(e){}
 }
 
-// ── TAB ──
-function swTab(n,btn){
+// TAB SWITCH
+function sw(n,btn){
   document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nbtn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tab-'+n).classList.add('on');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('t-'+n).classList.add('on');
   btn.classList.add('on');
-  if(n==='memory'){renderMem();updStats();}
+  if(n==='mem'){renderMem();updSt();}
 }
 
-// ── LANG ──
-function setLang(code,btn){
+// LANGUAGE
+function setL(code,btn){
   S.lang=code;
-  document.querySelectorAll('.lchip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.lc').forEach(c=>c.classList.remove('on'));
   btn.classList.add('on');
-  document.getElementById('uinput').placeholder=PH[code]||PH.en;
-  saveS();
+  document.getElementById('ui').placeholder=PH[code]||PH.en;
+  saveD();
 }
-function setLangBig(code,btn){
+function setLB(code,btn){
   S.lang=code;
-  document.querySelectorAll('.lgbtn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.lc').forEach((c,i)=>c.classList.toggle('on',['en','bn-IN','hi-IN'][i]===code));
+  document.querySelectorAll('.lb').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  document.querySelectorAll('.lchip').forEach((c,i)=>c.classList.toggle('on',['en','bn-IN','hi-IN'][i]===code));
-  document.getElementById('uinput').placeholder=PH[code]||PH.en;
-  saveS();
+  document.getElementById('ui').placeholder=PH[code]||PH.en;
+  saveD();
 }
 
-// ── MESSAGES ──
+// MESSAGES
 function addMsg(role,text){
-  const msgs=document.getElementById('messages');
+  const msgs=document.getElementById('msgs');
   const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   const row=document.createElement('div');
-  row.className='brow '+role;
-  const safe=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-  row.innerHTML=role==='ai'
-    ?`<div class="avt">🤖</div><div class="bwrap"><div class="bbl aib">${safe}</div><div class="bt">${t}</div></div>`
-    :`<div class="bwrap"><div class="bbl usb">${safe}</div><div class="bt">${t}</div></div>`;
-  msgs.appendChild(row);
-  msgs.scrollTop=msgs.scrollHeight;
-  S.msgCount++; updStats();
-  if(role==='ai'&&S.voiceEnabled) speak(text);
+  row.className='br '+role;
+  const safe=String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  row.innerHTML=role==='ai'?`<div class="av">🤖</div><div class="bw"><div class="bb ai-b">${safe}</div><div class="bt">${t}</div></div>`:`<div class="bw"><div class="bb u-b">${safe}</div><div class="bt">${t}</div></div>`;
+  msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;
+  S.cnt++;updSt();
+  if(role==='ai'&&S.voice)speak(text);
 }
 
 function setLoad(on){
-  document.getElementById('typing').style.display=on?'flex':'none';
-  document.getElementById('sbar').classList.toggle('on',on);
-  if(on) document.getElementById('messages').scrollTop=999999;
+  document.getElementById('ld').classList.toggle('on',on);
+  document.getElementById('typ').style.display=on?'flex':'none';
+  if(on)document.getElementById('msgs').scrollTop=999999;
 }
 
-// ── SEND ──
-async function sendMsg(){
-  const inp=document.getElementById('uinput');
-  const text=inp.value.trim();
-  if(!text) return;
-  inp.value='';
-  addMsg('user',text);
-  await procMsg(text);
+// SEND
+async function snd(){
+  const inp=document.getElementById('ui');
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';addMsg('user',text);await proc(text);
 }
 
-async function procMsg(text){
+// PROCESS COMMANDS
+async function proc(text){
   const lo=text.toLowerCase();
+  // Weather
   if(lo.includes('weather')||lo.includes('আবহাওয়া')||lo.includes('मौसम')){
-    if(LAT&&LON) await getWeather(LAT,LON,CITY);
-    else{getLoc();addMsg('ai',S.lang==='bn-IN'?'📍 Location নেওয়া হচ্ছে...':'Getting location first...');}
+    if(LAT&&LON)await getWeather(LAT,LON,CITY);
+    else{getLoc();addMsg('ai',S.lang==='bn-IN'?'📍 Location নেওয়া হচ্ছে...':'Getting location...');}
     return;
   }
-  if(lo.includes('আমি কোথায়')||lo.includes('where am i')||lo.includes('my location')){
-    getLoc(); addMsg('ai',S.lang==='bn-IN'?'📍 Location নেওয়া হচ্ছে...':'📍 Getting location...'); return;
+  // Location
+  if(lo.includes('আমি কোথায়')||lo.includes('where am i')){
+    getLoc();addMsg('ai',S.lang==='bn-IN'?'📍 Location নেওয়া হচ্ছে...':'Getting location...');return;
   }
-  if(lo.includes('blog post')||lo.includes('ব্লগ পোস্ট')||lo.includes('ब्लॉग पोस्ट')){
+  // Google Search
+  if(lo.includes('google')&&(lo.includes('search')||lo.includes('সার্চ')||lo.includes('খোঁজো'))){
+    const q=text.replace(/google[^\w]*(search|সার্চ|খোঁজো|te|এ)?/gi,'').trim();
+    if(q){document.getElementById('gsq').value=q;gSrch();addMsg('ai',S.lang==='bn-IN'?'"'+q+'" Google-এ search হচ্ছে...':'Searching: '+q);return;}
+  }
+  // YouTube
+  if(lo.includes('youtube')||lo.includes('ইউটিউব')){
+    const q=text.replace(/youtube[^\w]*(te|এ|search|দেখাও)?/gi,'').trim();
+    if(q){document.getElementById('gsq').value=q;ytSrch();addMsg('ai',S.lang==='bn-IN'?'YouTube-এ "'+q+'" দেখাচ্ছি...':'YouTube: '+q);return;}
+  }
+  // Call
+  if((lo.includes('call')||lo.includes('কল')||lo.includes('ফোন'))&&text.match(/\d{7,}/)){
+    const m=text.match(/\d{7,}/);
+    document.getElementById('cnum').value=m[0];makeCall();
+    addMsg('ai',S.lang==='bn-IN'?m[0]+'-তে call হচ্ছে...':'Calling '+m[0]+'...');return;
+  }
+  // Blog
+  if(lo.includes('blog post')||lo.includes('ব্লগ পোস্ট')){
     setLoad(true);
-    const post=await aiChat(`Write a complete SEO blog post in ${LN[S.lang]||'English'} about: "${text}". Include title (H1), H2 headings, 400+ word body. Format: HTML.`);
+    const r=await aiCall('Write a complete SEO blog post in '+LN[S.lang]+' about: "'+text+'". Include H1, H2 headings, 400+ word body, conclusion. HTML format.');
     setLoad(false);
-    document.getElementById('bc1').value=post;
-    const m2=post.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-    if(m2) document.getElementById('bt1').value=m2[1];
-    addMsg('ai',S.lang==='bn-IN'?'✅ ব্লগ পোস্ট তৈরি! Blogger ট্যাব দেখুন।':'✅ Blog post generated! Check Blogger tab.');
+    document.getElementById('bc1').value=r;
+    const m=r.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+    if(m)document.getElementById('bt1').value=m[1];
+    addMsg('ai',S.lang==='bn-IN'?'✅ Blog post তৈরি! Blogger tab দেখুন।':'✅ Blog post generated! Check Blogger tab.');
     return;
   }
-  if(lo.includes('remember')||lo.includes('মনে রাখো')||lo.includes('याद रखो')){
-    const m2=text.match(/(?:remember|মনে রাখো|याद रखो)[^\w]*(.*?)\s+(?:is|are|=|হলো|হল|है)\s+(.*)/i);
-    if(m2){MEM[m2[1].trim().replace(/\s+/g,'_')]=m2[2].trim();saveS();addMsg('ai',S.lang==='bn-IN'?'✅ মনে রাখা হয়েছে!':'✅ Remembered!');return;}
+  // Remember
+  if(lo.includes('remember')||lo.includes('মনে রাখো')){
+    const m=text.match(/(?:remember|মনে রাখো)\s+(.*?)\s+(?:is|are|=|হলো|হল)\s+(.*)/i);
+    if(m){MEM[m[1].trim().replace(/\s+/g,'_')]=m[2].trim();saveD();addMsg('ai',S.lang==='bn-IN'?'✅ মনে রাখা হয়েছে!':'✅ Remembered!');return;}
   }
-  if(lo==='clear'||lo==='/clear'){document.getElementById('messages').innerHTML='';S.msgCount=0;addMsg('ai',GR[S.lang]);return;}
-  setLoad(true);
-  const rep=await aiChat(text);
-  setLoad(false);
-  addMsg('ai',rep);
+  // Clear
+  if(lo==='clear'||lo==='/clear'){document.getElementById('msgs').innerHTML='';S.cnt=0;addMsg('ai',GR[S.lang]);return;}
+  // General AI
+  setLoad(true);const r=await aiCall(text);setLoad(false);addMsg('ai',r);
 }
 
-// ── AI ENGINE ──
+// AI ENGINE
 function getEng(){
-  const g=C.groq||document.getElementById('cgroq')?.value.trim();
+  const g=C.groq||document.getElementById('cgr')?.value.trim();
   const o=C.or||document.getElementById('cor')?.value.trim();
-  const gm=C.gem||document.getElementById('cgem')?.value.trim();
-  const cl=C.cla||document.getElementById('ccla')?.value.trim();
-  if(g) return{e:'groq',k:g};
-  if(o) return{e:'or',k:o};
-  if(gm) return{e:'gem',k:gm};
-  if(cl) return{e:'cla',k:cl};
-  return null;
+  const gm=C.gem||document.getElementById('cgm')?.value.trim();
+  const cl=C.cla||document.getElementById('ccl')?.value.trim();
+  if(g)return{e:'groq',k:g};if(o)return{e:'or',k:o};if(gm)return{e:'gem',k:gm};if(cl)return{e:'cla',k:cl};return null;
 }
 function updEng(){
-  const a=getEng();
-  const el=document.getElementById('estatus');
-  if(!el) return;
-  const lbs={groq:'🚀 GROQ',or:'🌐 OPENROUTER',gem:'🟢 GEMINI',cla:'🔵 CLAUDE'};
-  el.textContent=a?`● ONLINE • ${lbs[a.e]||'AI'}`:'● NO API KEY';
-  el.style.color=a?'rgba(0,255,136,0.7)':'rgba(255,51,102,0.7)';
+  const a=getEng(),el=document.getElementById('est');if(!el)return;
+  const lb={groq:'🚀 GROQ',or:'🌐 OPENROUTER',gem:'🟢 GEMINI',cla:'🔵 CLAUDE'};
+  el.textContent=a?'● ONLINE • '+(lb[a.e]||'AI'):'● NO API KEY';
+  el.style.color=a?'rgba(0,255,136,.75)':'rgba(255,51,102,.75)';
 }
 
-async function aiChat(msg){
+async function aiCall(msg){
   const a=getEng();
-  if(!a) return '⚠️ কোনো API Key নেই! Settings-এ Groq key দাও (console.groq.com — FREE!)';
-  const memStr=Object.entries(MEM).map(([k,v])=>`- ${k}: ${v}`).join('\n');
-  const sys=`You are JARVIS, intelligent personal AI for ${C.name||'Dip Mondal'}.
-USER MEMORY:\n${memStr}
-INSTRUCTIONS:
-- ALWAYS respond in ${LN[S.lang]||'English'}
-- Be concise, helpful, address user by name
-- For blog: write complete SEO-optimized HTML posts`;
+  if(!a)return '⚠️ Settings-এ Groq API key দাও! (FREE — console.groq.com)';
+  const ms=Object.entries(MEM).map(([k,v])=>'- '+k+': '+v).join('\n');
+  const sys='You are JARVIS, AI assistant for '+C.name+'.\nMEMORY:\n'+ms+'\nRULES:\n- Respond in '+(LN[S.lang]||'English')+'\n- Be helpful, concise\n- For blog: write complete SEO HTML';
   try{
-    if(a.e==='groq') return await callGroq(msg,sys,a.k);
-    if(a.e==='or') return await callOR(msg,sys,a.k);
-    if(a.e==='gem') return await callGem(msg,sys,a.k);
-    if(a.e==='cla') return await callCla(msg,sys,a.k);
-  }catch(e){return `❌ Error: ${e.message}`;}
+    if(a.e==='groq')return await cGroq(msg,sys,a.k);
+    if(a.e==='or')return await cOR(msg,sys,a.k);
+    if(a.e==='gem')return await cGem(msg,sys,a.k);
+    if(a.e==='cla')return await cCla(msg,sys,a.k);
+  }catch(e){return '❌ Error: '+e.message;}
 }
 
-async function callGroq(msg,sys,key){
-  const MS=['llama-3.3-70b-versatile','llama3-70b-8192','gemma2-9b-it','mixtral-8x7b-32768','llama3-8b-8192'];
+async function cGroq(msg,sys,key){
+  const MS=['llama-3.3-70b-versatile','llama3-70b-8192','gemma2-9b-it','mixtral-8x7b-32768'];
   for(let i=0;i<MS.length;i++){
     try{
-      const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:MS[i],messages:[{role:'system',content:sys},{role:'user',content:msg}],temperature:0.8,max_tokens:2048})});
+      const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:MS[i],messages:[{role:'system',content:sys},{role:'user',content:msg}],temperature:0.8,max_tokens:2048})});
       const d=await r.json();
-      if(!r.ok||d.error){if(i<MS.length-1){showToast(`🔄 Trying ${MS[i+1].split('-')[0]}...`);continue;}return `❌ Groq: ${d.error?.message||'Error'}`;}
-      return d.choices?.[0]?.message?.content?.trim()||'⚠️ No response.';
-    }catch(e){if(i<MS.length-1)continue;return `❌ Groq: ${e.message}`;}
+      if(!r.ok||d.error){if(i<MS.length-1){toast('🔄 Trying '+MS[i+1].split('-')[0]+'...');continue;}return '❌ Groq: '+(d.error?.message||'Error');}
+      return d.choices?.[0]?.message?.content?.trim()||'No response.';
+    }catch(e){if(i<MS.length-1)continue;return '❌ Groq: '+e.message;}
   }
 }
 
-async function callOR(msg,sys,key){
+async function cOR(msg,sys,key){
   const BAD=['google/gemini-2.0-flash-exp:free','google/gemini-2.5-pro-exp-03-25:free'];
-  const MS=['meta-llama/llama-3.3-70b-instruct:free','deepseek/deepseek-chat-v3-0324:free','deepseek/deepseek-r1:free','qwen/qwen2.5-72b-instruct:free','google/gemma-3-27b-it:free','mistralai/mistral-7b-instruct:free'];
-  let sel=C.orModel||MS[0]; if(BAD.includes(sel))sel=MS[0];
+  const MS=['meta-llama/llama-3.3-70b-instruct:free','deepseek/deepseek-chat-v3-0324:free','qwen/qwen2.5-72b-instruct:free','google/gemma-3-27b-it:free','mistralai/mistral-7b-instruct:free'];
+  let sel=C.orModel||MS[0];if(BAD.includes(sel))sel=MS[0];
   const ord=[sel,...MS.filter(m=>m!==sel)];
   for(let i=0;i<ord.length;i++){
     try{
-      const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`,'HTTP-Referer':window.location.href,'X-Title':'JARVIS AI'},body:JSON.stringify({model:ord[i],messages:[{role:'system',content:sys},{role:'user',content:msg}],temperature:0.8,max_tokens:2048})});
+      const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key,'HTTP-Referer':window.location.href,'X-Title':'JARVIS AI'},body:JSON.stringify({model:ord[i],messages:[{role:'system',content:sys},{role:'user',content:msg}],temperature:0.8,max_tokens:2048})});
       const d=await r.json();
-      if(!r.ok||d.error){const em=d.error?.message||'';if((em.includes('Provider')||em.includes('endpoint'))&&i<ord.length-1){showToast(`🔄 Next model...`);continue;}return `❌ OR: ${em||'Error'}`;}
-      const t=d.choices?.[0]?.message?.content?.trim();
-      if(!t)continue;
-      if(i>0)showToast(`✅ ${ord[i].split('/')[1]?.split(':')[0]}`);
-      return t;
-    }catch(e){if(i<ord.length-1)continue;return `❌ OR: ${e.message}`;}
+      if(!r.ok||d.error){const em=d.error?.message||'';if((em.includes('Provider')||em.includes('endpoint'))&&i<ord.length-1){continue;}return '❌ OR: '+(em||'Error');}
+      const t=d.choices?.[0]?.message?.content?.trim();if(!t)continue;return t;
+    }catch(e){if(i<ord.length-1)continue;return '❌ OR: '+e.message;}
   }
-  return '❌ সব models busy।';
 }
 
-async function callGem(msg,sys,key){
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:msg}]}],generationConfig:{temperature:0.8,maxOutputTokens:2048}})});
-  if(!r.ok){const e=await r.json();return `❌ Gemini: ${e.error?.message||'Error'}`;}
-  const d=await r.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text?.trim()||'⚠️ No response.';
+async function cGem(msg,sys,key){
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:msg}]}],generationConfig:{temperature:0.8,maxOutputTokens:2048}})});
+  if(!r.ok){const e=await r.json();return '❌ Gemini: '+(e.error?.message||'Error');}
+  const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text?.trim()||'No response.';
 }
 
-async function callCla(msg,sys,key){
+async function cCla(msg,sys,key){
   const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:2048,system:sys,messages:[{role:'user',content:msg}]})});
-  if(!r.ok){const e=await r.json();return `❌ Claude: ${e.error?.message||'Error'}`;}
-  const d=await r.json();
-  return d.content?.[0]?.text?.trim()||'⚠️ No response.';
+  if(!r.ok){const e=await r.json();return '❌ Claude: '+(e.error?.message||'Error');}
+  const d=await r.json();return d.content?.[0]?.text?.trim()||'No response.';
 }
 
-// ── VOICE TO VOICE SYSTEM ──
-let voiceMode = false;   // Auto-listen after AI speaks
-
-function togVoiceMode(){
-  voiceMode = !voiceMode;
-  const btn = document.getElementById('voicemodbtn');
-  const info = document.getElementById('vmodeinfo');
-  if(voiceMode){
-    btn.textContent = '🔄 Voice Mode: ON';
-    btn.style.background = 'rgba(0,255,136,0.15)';
-    btn.style.borderColor = 'rgba(0,255,136,0.4)';
-    btn.style.color = 'var(--green)';
-    info.style.display = 'block';
-    showToast('🎤 Voice Mode ON — বলুন!');
-    vibrate([100,50,100]);
-    // Start listening immediately
-    setTimeout(()=> startMic(), 500);
-  } else {
-    btn.textContent = '🔄 Voice Mode: OFF';
-    btn.style.background = 'rgba(0,212,255,0.1)';
-    btn.style.borderColor = 'rgba(0,212,255,0.3)';
-    btn.style.color = 'var(--cyan)';
-    info.style.display = 'none';
-    stopMic();
-    stopSpeak();
-    showToast('🔇 Voice Mode OFF');
-  }
-}
-
-// ── TTS ENGINE ──
-// Uses VoiceRSS API for Bengali (most reliable free option)
-// Fallback: ResponsiveVoice → Web Speech
-
-const VOICERSS_KEY = ''; // Optional - works without key too
+// ============================================
+//  BENGALI TTS — Web Speech API Only (Works!)
+// ============================================
+// ══════════════════════════════════════
+//  TTS ENGINE — Bengali + Hindi + English
+// ══════════════════════════════════════
+let _ttsQueue = [], _ttsBusy = false;
 
 function speak(text){
-  if(!S.voiceEnabled) return;
+  if(!S.voice) return;
   const clean = text
-    .replace(/[#*`◈►▶❌✅⚠️🎤🔔📍🌤️🤖📝📡👥📸🐦🔋🌐🗺️💬💼✍️🔤🛒📧]/g,'')
     .replace(/<[^>]+>/g,'')
     .replace(/https?:\/\/\S+/g,'')
-    .trim().substring(0,400);
+    .replace(/[◈►▶#*`]/g,'')
+    .trim().substring(0, 400);
   if(!clean) return;
-  stopSpeak();
-
+  stopSpk();
   if(S.lang === 'bn-IN') speakBengali(clean);
-  else if(S.lang === 'hi-IN') speakWithRV(clean,'Hindi Female','hi-IN');
-  else speakWithRV(clean,'UK English Female','en-US');
+  else if(S.lang === 'hi-IN') speakHindi(clean);
+  else speakEnglish(clean);
 }
 
-// ── BENGALI — Multiple methods ──
 function speakBengali(text){
-  const chunks = chunkText(text, 150);
-  playBnChunks(chunks, 0);
-}
-
-function chunkText(text, max){
-  if(text.length <= max) return [text];
-  const out = []; let rem = text;
-  while(rem.length > 0){
-    if(rem.length <= max){ out.push(rem); break; }
-    let s = rem.lastIndexOf('।', max);
-    if(s < 30) s = rem.lastIndexOf(' ', max);
-    if(s < 5) s = max;
-    out.push(rem.substring(0,s+1).trim());
-    rem = rem.substring(s+1).trim();
-  }
-  return out.filter(x=>x.length>0);
-}
-
-function playBnChunks(chunks, i){
-  if(i >= chunks.length){
-    if(voiceMode) setTimeout(startMic, 800);
-    return;
-  }
-  tryBnMethod1(chunks, i);
-}
-
-// Method 1: ResponsiveVoice Bangla Female
-function tryBnMethod1(chunks, i){
-  if(typeof responsiveVoice !== 'undefined'){
-    let fired = false;
-    const onDone = ()=>{ if(!fired){fired=true; playBnChunks(chunks,i+1);} };
-    try{
-      responsiveVoice.speak(chunks[i], 'Bangla Female',{
-        rate:0.85, pitch:1, volume:1,
-        onend: onDone,
-        onerror: ()=>{ if(!fired){fired=true; tryBnMethod2(chunks,i);} }
-      });
-      // Timeout fallback
-      setTimeout(()=>{ if(!fired){fired=true; tryBnMethod2(chunks,i);} }, 8000);
-      return;
-    }catch(e){}
-  }
-  tryBnMethod2(chunks, i);
-}
-
-// Method 2: Web Speech API - bn-IN
-function tryBnMethod2(chunks, i){
-  if(!window.speechSynthesis){ tryBnMethod3(chunks,i); return; }
-  const voices = window.speechSynthesis.getVoices();
-  const bnV = voices.find(v=>v.lang==='bn-IN')
-    || voices.find(v=>v.lang==='bn-BD')
-    || voices.find(v=>v.lang.startsWith('bn'));
-
-  if(bnV){
-    const utt = new SpeechSynthesisUtterance(chunks[i]);
-    utt.voice = bnV; utt.lang='bn-IN'; utt.rate=0.85; utt.volume=1;
-    utt.onend = ()=> playBnChunks(chunks,i+1);
-    utt.onerror = ()=> tryBnMethod3(chunks,i);
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utt);
-    return;
-  }
-  tryBnMethod3(chunks, i);
-}
-
-// Method 3: Hindi voice (closest to Bengali)
-function tryBnMethod3(chunks, i){
-  if(!window.speechSynthesis){ playBnChunks(chunks,i+1); return; }
-  const voices = window.speechSynthesis.getVoices();
-  const hiV = voices.find(v=>v.lang==='hi-IN')
-    || voices.find(v=>v.lang.startsWith('hi'))
-    || voices.find(v=>v.lang==='en-IN')
-    || voices[0];
-
-  if(hiV){
-    const utt = new SpeechSynthesisUtterance(chunks[i]);
-    utt.voice = hiV; utt.lang = hiV.lang; utt.rate=0.85; utt.volume=1;
-    utt.onend = ()=> playBnChunks(chunks,i+1);
-    utt.onerror = ()=> playBnChunks(chunks,i+1);
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utt);
-    showToast('⚠️ Bengali voice নেই — Hindi voice use করছে');
-  } else {
-    playBnChunks(chunks,i+1);
-  }
-}
-
-// ── HINDI/ENGLISH via ResponsiveVoice ──
-function speakWithRV(text, rvVoice, wsLang){
-  const chunks = chunkText(text, 200);
-  playRVChunks(chunks, 0, rvVoice, wsLang);
-}
-
-function playRVChunks(chunks, i, rvVoice, wsLang){
-  if(i >= chunks.length){
-    if(voiceMode) setTimeout(startMic, 800);
-    return;
-  }
-  if(typeof responsiveVoice !== 'undefined'){
-    let fired = false;
-    responsiveVoice.speak(chunks[i], rvVoice, {
-      rate:0.95, volume:1,
-      onend: ()=>{ if(!fired){fired=true; playRVChunks(chunks,i+1,rvVoice,wsLang);} },
-      onerror: ()=>{ if(!fired){fired=true; speakWSFallback(chunks,i,rvVoice,wsLang);} }
+  // Method 1: ResponsiveVoice Bangla Female (most reliable)
+  if(typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()){
+    let done = false;
+    const onEnd = ()=>{ if(!done){ done=true; if(voiceMode) setTimeout(startMic,700); } };
+    responsiveVoice.speak(text, 'Bangla Female', {
+      rate: 0.85, pitch: 1, volume: 1,
+      onend: onEnd,
+      onerror: ()=>{ if(!done){ done=true; speakBnFallback(text); } }
     });
-    setTimeout(()=>{ if(!fired){fired=true; speakWSFallback(chunks,i,rvVoice,wsLang);} },8000);
+    // Timeout safety
+    setTimeout(()=>{ if(!done){ done=true; speakBnFallback(text); } }, 10000);
     return;
   }
-  speakWSFallback(chunks, i, rvVoice, wsLang);
+  speakBnFallback(text);
 }
 
-function speakWSFallback(chunks, i, rvVoice, wsLang){
-  if(!window.speechSynthesis){ playRVChunks(chunks,i+1,rvVoice,wsLang); return; }
-  const voices = window.speechSynthesis.getVoices();
-  const utt = new SpeechSynthesisUtterance(chunks[i]);
-  const v = voices.find(vv=>vv.lang===wsLang)||voices.find(vv=>vv.lang.startsWith(wsLang.split('-')[0]))||voices[0];
-  if(v) utt.voice=v;
-  utt.lang=wsLang; utt.rate=0.95; utt.volume=1;
-  utt.onend=()=>playRVChunks(chunks,i+1,rvVoice,wsLang);
+function speakBnFallback(text){
+  // Method 2: Web Speech API
+  if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,700); return; }
   window.speechSynthesis.cancel();
+  const tryIt = ()=>{
+    const vs = window.speechSynthesis.getVoices();
+    const v = vs.find(v=>v.lang==='bn-IN') || vs.find(v=>v.lang==='bn-BD') || vs.find(v=>v.lang.startsWith('bn'))
+      || vs.find(v=>v.lang==='hi-IN') || vs.find(v=>v.lang.startsWith('hi'))
+      || vs.find(v=>v.lang.startsWith('en-IN')) || vs[0];
+    const utt = new SpeechSynthesisUtterance(text);
+    if(v){ utt.voice = v; utt.lang = v.lang; }
+    else utt.lang = 'bn-IN';
+    utt.rate = 0.82; utt.volume = 1;
+    utt.onend = ()=>{ if(voiceMode) setTimeout(startMic,700); };
+    utt.onerror = ()=>{ if(voiceMode) setTimeout(startMic,700); };
+    window.speechSynthesis.speak(utt);
+  };
+  if(window.speechSynthesis.getVoices().length === 0){
+    window.speechSynthesis.onvoiceschanged = ()=>{ window.speechSynthesis.onvoiceschanged=null; tryIt(); };
+  } else tryIt();
+}
+
+function speakHindi(text){
+  if(typeof responsiveVoice !== 'undefined'){
+    let done = false;
+    responsiveVoice.speak(text, 'Hindi Female', {
+      rate: 0.9, volume: 1,
+      onend: ()=>{ if(!done){ done=true; if(voiceMode) setTimeout(startMic,700); } },
+      onerror: ()=>{ if(!done){ done=true; speakWS(text,'hi-IN'); } }
+    });
+    setTimeout(()=>{ if(!done){ done=true; speakWS(text,'hi-IN'); } }, 10000);
+    return;
+  }
+  speakWS(text, 'hi-IN');
+}
+
+function speakEnglish(text){
+  if(typeof responsiveVoice !== 'undefined'){
+    let done = false;
+    responsiveVoice.speak(text, 'UK English Female', {
+      rate: 0.95, volume: 1,
+      onend: ()=>{ if(!done){ done=true; if(voiceMode) setTimeout(startMic,700); } },
+      onerror: ()=>{ if(!done){ done=true; speakWS(text,'en-US'); } }
+    });
+    setTimeout(()=>{ if(!done){ done=true; speakWS(text,'en-US'); } }, 10000);
+    return;
+  }
+  speakWS(text, 'en-US');
+}
+
+function speakWS(text, lang){
+  if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,700); return; }
+  window.speechSynthesis.cancel();
+  const vs = window.speechSynthesis.getVoices();
+  const utt = new SpeechSynthesisUtterance(text);
+  const v = vs.find(v=>v.lang===lang) || vs.find(v=>v.lang.startsWith(lang.split('-')[0])) || vs[0];
+  if(v) utt.voice = v;
+  utt.lang = lang; utt.rate = 0.9; utt.volume = 1;
+  utt.onend = ()=>{ if(voiceMode) setTimeout(startMic,700); };
   window.speechSynthesis.speak(utt);
 }
 
-function stopSpeak(){
+function stopSpk(){
   try{ if(typeof responsiveVoice!=='undefined') responsiveVoice.cancel(); }catch(e){}
   try{ window.speechSynthesis?.cancel(); }catch(e){}
-  if(AUD){try{AUD.pause();}catch(e){} AUD=null;}
+  toast('⏹ Stopped');
 }
 
 function testV(lang){
   const TX={
-    en:'Hello! I am JARVIS. English voice is working!',
-    'bn-IN':'নমস্কার! আমি JARVIS। আপনার ব্যক্তিগত AI সহকারী। বাংলা ভয়েস পরীক্ষা করা হচ্ছে।',
-    'hi-IN':'नमस्ते! मैं JARVIS हूँ। हिंदी आवाज़ परीक्षण हो रहा है!'
+    en: 'Hello! I am JARVIS. English voice is working perfectly!',
+    'bn-IN': 'নমস্কার! আমি JARVIS। বাংলা ভয়েস পরীক্ষা করা হচ্ছে। আমি এখন বাংলায় কথা বলতে পারছি।',
+    'hi-IN': 'नमस्ते! मैं JARVIS हूँ। हिंदी आवाज़ काम कर रही है!'
   };
-  const prev=S.lang; S.lang=lang;
-  speak(TX[lang]||TX.en);
-  S.lang=prev;
-  showToast('🔊 Testing '+lang+'...');
+  const prev = S.lang; S.lang = lang;
+  speak(TX[lang] || TX.en);
+  S.lang = prev;
+  // Show RV status
+  if(typeof responsiveVoice !== 'undefined'){
+    toast('🔊 ResponsiveVoice: ' + lang);
+  } else {
+    const vs = window.speechSynthesis?.getVoices() || [];
+    const bn = vs.find(v=>v.lang.startsWith('bn'));
+    toast(lang==='bn-IN' ? (bn ? '✅ Bengali voice: '+bn.name.substring(0,18) : '⚠️ No Bengali — using Hindi fallback') : '🔊 Testing '+lang+'...');
+  }
 }
 
-// ── STT ──
-let REC=null;
-function togMic(){if(S.isListening)stopMic();else startMic();}
+// ============================================
+//  VOICE MODE — Voice to Voice
+// ============================================
+function togVM(){
+  voiceMode=!voiceMode;
+  const btn=document.getElementById('vmb'),ind=document.getElementById('vmi'),mic=document.getElementById('mc');
+  if(voiceMode){
+    btn.textContent='🔄 Voice Mode: ON';btn.classList.add('on');
+    ind.style.display='block';mic.classList.add('vm');
+    toast('🎤 Voice Mode চালু!');vib([100,50,100]);
+    setTimeout(startMic,500);
+  }else{
+    btn.textContent='🔄 Voice Mode: OFF';btn.classList.remove('on');
+    ind.style.display='none';mic.classList.remove('vm');
+    stopMic();stopSpk();toast('🔇 Voice Mode বন্ধ');
+  }
+}
+
+// STT
+function togMic(){if(S.listening)stopMic();else startMic();}
 function startMic(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){showToast('❌ Chrome use করো!');return;}
-  REC=new SR(); REC.lang=S.lang==='en'?'en-US':S.lang;
-  REC.continuous=false; REC.interimResults=true;
+  if(!SR){toast('❌ Chrome browser use করো!');return;}
+  if(S.listening)return;
+  // Request mic permission first
+  navigator.mediaDevices?.getUserMedia({audio:true}).then(stream=>{
+    stream.getTracks().forEach(t=>t.stop()); // release stream
+    _doStartMic();
+  }).catch(()=>_doStartMic()); // try anyway
+}
+function _doStartMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR||S.listening)return;
+  REC=new SR();
+  REC.lang=S.lang==='en'?'en-US':S.lang;
+  REC.continuous=false;REC.interimResults=true;
   REC.onstart=()=>{
-    S.isListening=true;
-    const mb=document.getElementById('micbtn');
-    mb.classList.add('on');
-    if(voiceMode) mb.classList.add('voicemode');
-    mb.textContent='⏹';
-    document.getElementById('vtxt').style.display='block';
-    document.getElementById('vtxt').textContent = voiceMode
-      ? (S.lang==='bn-IN'?'🎤 বলুন...':S.lang==='hi-IN'?'🎤 बोलिए...':'🎤 Speak now...')
-      : '🎤 Listening...';
-    document.querySelectorAll('.mring').forEach(r=>r.style.display='block');
+    S.listening=true;
+    const m=document.getElementById('mc');m.classList.add('ls');if(voiceMode)m.classList.add('vm');m.textContent='⏹';
+    document.getElementById('vt').style.display='block';
+    document.getElementById('vt').textContent=S.lang==='bn-IN'?'🎤 বলুন...':S.lang==='hi-IN'?'🎤 बोलिए...':'🎤 Listening...';
+    document.querySelectorAll('.mr').forEach(r=>r.style.display='block');
   };
   REC.onresult=(e)=>{
     const t=Array.from(e.results).map(r=>r[0].transcript).join('');
-    document.getElementById('vtxt').textContent='🎤 '+t;
-    document.getElementById('uinput').value=t;
-    if(e.results[e.results.length-1].isFinal&&t.trim()){
-      stopMic();
-      setTimeout(()=>sendMsg(),300);
-    }
+    document.getElementById('vt').textContent='🎤 '+t;
+    document.getElementById('ui').value=t;
+    if(e.results[e.results.length-1].isFinal&&t.trim()){stopMic();setTimeout(snd,300);}
   };
-  REC.onerror=(e)=>{showToast('🎤 Error: '+e.error);stopMic();};
-  REC.onend=stopMic;
-  REC.start();
+  REC.onerror=(e)=>{ if(e.error!=='aborted') toast('🎤 Error: '+e.error); stopMic(); };
+  REC.onend=()=>{if(S.listening)stopMic();};
+  try{REC.start();}catch(e){toast('❌ '+e.message);}
 }
 function stopMic(){
   if(REC){try{REC.stop();}catch(e){}REC=null;}
-  S.isListening=false;
-  const mb = document.getElementById('micbtn');
-  if(mb){ mb.classList.remove('on'); mb.textContent = voiceMode ? '👂' : '🎤'; }
-  if(!voiceMode) document.getElementById('vtxt').style.display='none';
-  document.querySelectorAll('.mring').forEach(r=>r.style.display='none');
+  S.listening=false;
+  const m=document.getElementById('mc');m.classList.remove('ls');
+  m.classList.toggle('vm',voiceMode);m.textContent=voiceMode?'👂':'🎤';
+  if(!voiceMode)document.getElementById('vt').style.display='none';
+  document.querySelectorAll('.mr').forEach(r=>r.style.display='none');
 }
 
-// ── MEMORY ──
+// WAKE WORD
+function togWW(){
+  wakeOn=!wakeOn;
+  const tg=document.getElementById('wwtg'),st=document.getElementById('wwst');
+  if(wakeOn){
+    tg.classList.add('on');
+    if(st){st.textContent='● Active — "Hey JARVIS" শুনছি...';st.style.color='var(--g)';}
+    toast('🎤 Wake word চালু!');startWake();
+  }else{
+    tg.classList.remove('on');
+    if(st){st.textContent='● Inactive';st.style.color='rgba(0,212,255,.4)';}
+    stopWake();toast('Wake word বন্ধ');
+  }
+}
+function startWake(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR)return;
+  function listen(){
+    if(!wakeOn)return;
+    wakeREC=new SR();
+    wakeREC.lang=S.lang==='en'?'en-US':S.lang;
+    wakeREC.continuous=false;wakeREC.interimResults=false;
+    wakeREC.onresult=(e)=>{
+      const t=e.results[0][0].transcript.toLowerCase();
+      const wks=['hey jarvis','হে জারভিস','jarvis','জারভিস','ok jarvis','ওকে জারভিস'];
+      if(wks.some(w=>t.includes(w))){
+        vib([100,50,100,50,100]);
+        toast('🤖 JARVIS activated!');
+        speak(S.lang==='bn-IN'?'হ্যাঁ বলুন!':S.lang==='hi-IN'?'हाँ बोलिए!':'Yes, how can I help?');
+        setTimeout(startMic,1200);
+      }
+    };
+    wakeREC.onend=()=>{if(wakeOn)setTimeout(listen,1000);};
+    wakeREC.onerror=()=>{if(wakeOn)setTimeout(listen,2000);};
+    try{wakeREC.start();}catch(e){}
+  }
+  setTimeout(listen,300);
+}
+function stopWake(){wakeOn=false;if(wakeREC){try{wakeREC.stop();}catch(e){}wakeREC=null;}}
+
+// MEMORY
 const MICO={user_name:'👤',profession:'💼',primary_blog:'🌐',affiliate_blog:'🛒',preferred_language:'🔤',content_style:'✍️',location:'📍',email:'📧'};
 function renderMem(){
-  document.getElementById('memlist').innerHTML=Object.entries(MEM).map(([k,v])=>`
-    <div class="memc">
-      <div style="font-size:20px;flex-shrink:0">${MICO[k]||'🔹'}</div>
-      <div style="flex:1"><div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);text-transform:uppercase">${k.replace(/_/g,' ')}</div><div style="font-size:13px;color:var(--text);margin-top:3px">${v}</div></div>
-      <button onclick="delMem('${k}')" style="background:none;border:none;cursor:pointer;color:rgba(255,51,102,.5);font-size:16px;padding:0 4px">✕</button>
-    </div>`).join('');
-  updStats();
+  document.getElementById('ml').innerHTML=Object.entries(MEM).map(([k,v])=>`<div class="mc"><span style="font-size:18px;flex-shrink:0">${MICO[k]||'🔹'}</span><div class="mi"><div class="mk">${k.replace(/_/g,' ')}</div><div class="mv">${v}</div></div><button class="xb" onclick="delM('${k}')">✕</button></div>`).join('');
+  updSt();
 }
-function addMem(){
-  const k=document.getElementById('mkey').value.trim().replace(/\s+/g,'_');
-  const v=document.getElementById('mval').value.trim();
-  if(!k||!v){showToast('⚠️ Key ও Value দাও!');return;}
-  MEM[k]=v; document.getElementById('mkey').value=''; document.getElementById('mval').value='';
-  saveS(); renderMem(); showToast('🧠 Memory saved!');
+function addM(){
+  const k=document.getElementById('mk').value.trim().replace(/\s+/g,'_');
+  const v=document.getElementById('mv').value.trim();
+  if(!k||!v){toast('Key ও Value দাও!');return;}
+  MEM[k]=v;document.getElementById('mk').value='';document.getElementById('mv').value='';
+  saveD();renderMem();toast('🧠 Saved!');
 }
-function delMem(k){delete MEM[k];saveS();renderMem();showToast('🗑️ Deleted');}
-function updStats(){
-  document.getElementById('smsgs').textContent=`💬 Messages: ${S.msgCount}`;
-  document.getElementById('smem').textContent=`🧠 Memories: ${Object.keys(MEM).length}`;
+function delM(k){delete MEM[k];saveD();renderMem();toast('🗑️ Deleted');}
+function updSt(){
+  document.getElementById('sm1').textContent='💬 '+S.cnt+' messages';
+  document.getElementById('sm2').textContent='🧠 '+Object.keys(MEM).length+' memories';
 }
 
-// ── BLOGGER ──
-async function genBlog(type){
-  const a=getEng(); if(!a){showToast('⚠️ API Key নেই!');return;}
+// TOOLS — BLOG
+async function genBlog(){
+  const t=document.getElementById('bgt').value.trim();if(!t){toast('Topic লেখো!');return;}
+  const lang=document.getElementById('bgl').value,tp=document.getElementById('bgtp').value;
+  const tmap={health:'health wellness tips',product:'product review with Amazon affiliate',howto:'how-to guide',list:'numbered listicle'};
   setLoad(true);
-  const p=type==='health'?`Write complete SEO blog post in ${LN[S.lang]||'English'} about healthy lifestyle. Title H1, H2 subheadings, 400+ words body, conclusion. HTML format.`:`Write complete Amazon affiliate product review in ${LN[S.lang]||'English'}. Title, pros/cons, features, recommendation. HTML format.`;
-  const post=await aiChat(p); setLoad(false);
-  const n=type==='health'?1:2;
-  document.getElementById(`bc${n}`).value=post;
-  const m2=post.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-  if(m2) document.getElementById(`bt${n}`).value=m2[1];
-  showToast('✅ Blog post generated!');
+  const r=await aiCall('Write complete SEO '+tmap[tp]+' blog post in '+lang+' about: "'+t+'". Include H1, META:, H2 headings, 450+ words, conclusion. HTML format.');
+  setLoad(false);
+  const tm=r.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+  _blog={title:tm?tm[1]:t,content:r};
+  document.getElementById('bgtit').textContent='📌 '+(tm?tm[1]:t);
+  document.getElementById('bgr').style.display='block';
+  document.getElementById('bc1').value=r;if(tm)document.getElementById('bt1').value=tm[1];
+  toast('✅ Blog post ready!');
+}
+async function cpBlog(){if(!_blog){toast('Generate করো!');return;}try{await navigator.clipboard.writeText(_blog.title+'\n\n'+_blog.content);toast('✅ Copied!');}catch(e){toast('❌');}}
+function toBlog(){if(!_blog){toast('Generate করো!');return;}document.querySelectorAll('.nb')[3].click();toast('📝 Blogger tab!');}
+
+// TOOLS — CAPTION
+async function genCap(){
+  const t=document.getElementById('cpt').value.trim();if(!t){toast('Topic লেখো!');return;}
+  const s=document.getElementById('cps').value,l=document.getElementById('cpl').value;
+  setLoad(true);
+  const r=await aiCall('Create '+s+' Instagram caption in '+l+' for: "'+t+'". Add emojis, CTA. Then write "HASHTAGS:" and list 22 hashtags.');
+  setLoad(false);
+  const p=r.split(/HASHTAGS:/i);
+  const cap=(p[0]||r).trim(),hash=p[1]?p[1].trim():'#instagram #trending';
+  document.getElementById('cptxt').textContent=cap;
+  document.getElementById('cphash').textContent=hash;
+  document.getElementById('cpr').style.display='block';
+  _cap=cap+'\n\n'+hash;toast('✅ Caption ready!');
+}
+async function cpCap(){if(!_cap){toast('Generate করো!');return;}try{await navigator.clipboard.writeText(_cap);toast('✅ Copied!');}catch(e){toast('❌');}}
+function toSoc(){if(!_cap){toast('Generate করো!');return;}document.getElementById('postc').value=_cap;document.querySelectorAll('.nb')[4].click();toast('📸 Social tab!');}
+
+// TOOLS — KEYWORD
+async function doKW(){
+  const t=document.getElementById('kwt').value.trim();if(!t){toast('Topic লেখো!');return;}
+  const l=document.getElementById('kwl').value,tp=document.getElementById('kwtp').value;
+  setLoad(true);
+  const r=await aiCall('SEO expert. Topic "'+t+'" in '+l+' for '+tp+'. Give 10 keywords with search volume & competition (Low/Med/High), 5 long-tail keywords, 3 blog titles. Emojis, clear format.');
+  setLoad(false);
+  const el=document.getElementById('kwr');
+  el.innerHTML=r.replace(/\n/g,'<br>');el.style.display='block';toast('✅ Keywords ready!');
+}
+
+// TOOLS — WHATSAPP
+async function aiWA(){
+  const t=document.getElementById('wam').value.trim()||'আমার blog';
+  setLoad(true);
+  const m=await aiCall('Short WhatsApp message in '+(S.lang==='bn-IN'?'Bengali':S.lang==='hi-IN'?'Hindi':'English')+' about: "'+t+'". Max 60 words.');
+  setLoad(false);document.getElementById('wam').value=m;toast('✅ Ready!');
+}
+function sendWA(){
+  const num=document.getElementById('wan').value.trim().replace(/[^0-9]/g,'');
+  const msg=document.getElementById('wam').value.trim();
+  if(!msg){toast('Message লেখো!');return;}
+  window.open((num?'https://wa.me/'+num:'https://wa.me')+'?text='+encodeURIComponent(msg),'_blank');
+  vib([100]);
+}
+
+// TOOLS — REMINDER
+function setRem(){
+  const txt=document.getElementById('rmt').value.trim(),time=document.getElementById('rmti').value,rep=document.getElementById('rmrp').value;
+  if(!txt){toast('Text লেখো!');return;}if(!time){toast('Time দাও!');return;}
+  if(Notification.permission!=='granted'){Notification.requestPermission().then(p=>{if(p==='granted')crRem(txt,time,rep);else toast('⚠️ Notification allow করো!');});return;}
+  crRem(txt,time,rep);
+}
+function crRem(txt,time,rep){
+  const id=Date.now();rems.push({id,txt,time,rep});
+  const [h,m]=time.split(':').map(Number),now=new Date(),t=new Date(now);
+  t.setHours(h,m,0,0);if(t<=now)t.setDate(t.getDate()+1);
+  setTimeout(()=>{
+    if(Notification.permission==='granted')new Notification('⏰ JARVIS',{body:txt});
+    vib([300,100,300]);toast('⏰ '+txt);
+    if(S.voice)speak(S.lang==='bn-IN'?'রিমাইন্ডার: '+txt:'Reminder: '+txt);
+    if(rep==='daily')crRem(txt,time,rep);
+  },t-now);
+  rndrRems();document.getElementById('rmt').value='';
+  toast('⏰ Reminder set for '+time+'!');
+}
+function rndrRems(){
+  const el=document.getElementById('rml');
+  if(!rems.length){el.innerHTML='<div style="color:rgba(0,212,255,.3);font-size:11px;text-align:center;padding:7px">No reminders</div>';return;}
+  el.innerHTML=rems.map(r=>`<div style="background:var(--bg);border:1px solid rgba(0,212,255,.12);border-radius:9px;padding:8px 11px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between"><div><div style="color:var(--t);font-size:12px">${r.txt}</div><div style="color:var(--c);font-size:9px;margin-top:2px">⏰ ${r.time} • ${r.rep}</div></div><button onclick="delRem(${r.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,51,102,.5);font-size:15px">✕</button></div>`).join('');
+}
+function delRem(id){rems=rems.filter(r=>r.id!==id);rndrRems();toast('🗑️ Deleted');}
+
+// TOOLS — CALENDAR
+async function genCal(){
+  const n=document.getElementById('cln').value.trim()||MEM.blog_niche||'health';
+  setLoad(true);
+  const r=await aiCall('Create 7-day content calendar for '+n+' in '+(LN[S.lang]||'English')+'. Each day: blog title+keyword, Instagram idea, Facebook idea. Clear format with emojis.');
+  setLoad(false);
+  _cal=r;
+  const el=document.getElementById('clr');
+  el.innerHTML='<div style="line-height:1.9">'+r.replace(/\n/g,'<br>')+'</div><button class="bn" onclick="cpCal()" style="width:100%;padding:8px;margin-top:8px">📋 Copy</button>';
+  el.style.display='block';toast('✅ Calendar ready!');
+}
+async function cpCal(){if(!_cal){toast('Generate করো!');return;}try{await navigator.clipboard.writeText(_cal);toast('✅ Copied!');}catch(e){}}
+
+// BLOGGER
+async function genBlogD(n){
+  setLoad(true);
+  const r=await aiCall('Complete SEO blog post in '+(LN[S.lang]||'English')+'. Type: '+(n===1?'health wellness':'affiliate product review')+'. H1, H2 headings, 400+ words. HTML.');
+  setLoad(false);
+  document.getElementById('bc'+n).value=r;
+  const m=r.match(/<h1[^>]*>([^<]+)<\/h1>/i);if(m)document.getElementById('bt'+n).value=m[1];
+  toast('✅ Generated!');
 }
 async function pubPost(n){
-  const t=document.getElementById(`bt${n}`).value.trim();
-  const c=document.getElementById(`bc${n}`).value.trim();
-  if(!t||!c){showToast('⚠️ Title ও Content দাও!');return;}
-  showToast('📋 Demo mode — Blogger API key দিলে publish হবে!');
+  const t=document.getElementById('bt'+n).value.trim(),c=document.getElementById('bc'+n).value.trim();
+  if(!t||!c){toast('Title ও Content দাও!');return;}
+  if(!C.blogger||!C.blogId){toast('📋 Settings-এ Blogger key দাও!');return;}
+  toast('🚀 Publishing...(Demo)');setTimeout(()=>toast('✅ Published!'),1500);
 }
 
-// ── SOCIAL ──
+// SOCIAL
 function togPost(){const b=document.getElementById('postbox');b.style.display=b.style.display==='none'?'block':'none';}
-async function genPost(){setLoad(true);const c=await aiChat(`Create engaging social media post in ${LN[S.lang]||'English'} about my health blog. Use emojis and hashtags.`);setLoad(false);document.getElementById('postcont').value=c;}
-function sendPost(){const c=document.getElementById('postcont').value.trim();if(!c){showToast('⚠️ Content লেখো!');return;}showToast('📤 Posting... (Demo)');setTimeout(()=>showToast('✅ Posted! (Demo)'),1500);}
+async function aiPost(){setLoad(true);const r=await aiCall('Social media post in '+(LN[S.lang]||'English')+' about my health blog. Emojis + hashtags.');setLoad(false);document.getElementById('postc').value=r;}
+function sendPost(){const c=document.getElementById('postc').value.trim();if(!c){toast('Content লেখো!');return;}toast('📤 Demo mode...');setTimeout(()=>toast('✅ Posted!'),1500);}
 
-// ── SETTINGS ──
-function togEye(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈';}
-function togVoice(){S.voiceEnabled=!S.voiceEnabled;document.getElementById('vtogbtn').classList.toggle('on',S.voiceEnabled);saveS();showToast(S.voiceEnabled?'🔊 Voice ON':'🔇 Voice OFF');}
-function saveSet(){
-  C.groq=document.getElementById('cgroq').value.trim();
-  C.or=document.getElementById('cor').value.trim();
-  C.gem=document.getElementById('cgem').value.trim();
-  C.cla=document.getElementById('ccla').value.trim();
-  C.blogger=document.getElementById('cblog').value.trim();
-  C.blogId=document.getElementById('cblogid').value.trim();
-  C.name=document.getElementById('cname').value.trim()||'Dip Mondal';
-  document.getElementById('dname').textContent=C.name;
-  if(C.name)MEM.user_name=C.name;
-  saveS(); updEng(); showToast('✅ Saved!');
+// SETTINGS
+function ey(id,btn){const e=document.getElementById(id);e.type=e.type==='password'?'text':'password';btn.textContent=e.type==='password'?'👁':'🙈';}
+function togVR(){S.voice=!S.voice;document.getElementById('vtg').classList.toggle('on',S.voice);saveD();toast(S.voice?'🔊 Voice ON':'🔇 Voice OFF');}
+function saveS(){
+  C.groq=document.getElementById('cgr').value.trim();C.or=document.getElementById('cor').value.trim();
+  C.gem=document.getElementById('cgm').value.trim();C.cla=document.getElementById('ccl').value.trim();
+  C.blogger=document.getElementById('cbg').value.trim();C.blogId=document.getElementById('cbid').value.trim();
+  C.name=document.getElementById('cnm').value.trim()||'Dip Mondal';
+  document.getElementById('dnm').textContent=C.name;if(C.name)MEM.user_name=C.name;
+  saveD();updEng();toast('✅ Saved!');
 }
-function clrAll(){if(!confirm('সব data মুছে ফেলবে?'))return;try{localStorage.clear();}catch(e){}location.reload();}
+function clrAll(){if(!confirm('সব data মুছবে?'))return;try{localStorage.clear();}catch(e){}location.reload();}
 
-// ── CLOCK ──
+// CLOCK
 function updClock(){
-  const now=new Date();
-  const h=now.getHours().toString().padStart(2,'0'),m=now.getMinutes().toString().padStart(2,'0');
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const tv=document.getElementById('tval'),dv=document.getElementById('dval');
-  if(tv)tv.textContent=`${h}:${m}`; if(dv)dv.textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+  const n=new Date(),h=n.getHours().toString().padStart(2,'0'),m=n.getMinutes().toString().padStart(2,'0');
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],mos=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const tv=document.getElementById('tv'),dv=document.getElementById('dv');
+  if(tv)tv.textContent=h+':'+m;if(dv)dv.textContent=days[n.getDay()]+', '+n.getDate()+' '+mos[n.getMonth()];
 }
 
-// ── BATTERY ──
+// BATTERY
 async function initBat(){
-  if(!navigator.getBattery){const bv=document.getElementById('bval');if(bv)bv.textContent='N/A';return;}
+  const bv=document.getElementById('bv');
+  if(!navigator.getBattery){if(bv)bv.textContent='N/A';return;}
   try{
     const bat=await navigator.getBattery();
     const upd=()=>{
-      const pct=Math.round(bat.level*100);
-      const bv=document.getElementById('bval'),bf=document.getElementById('bfill');
-      if(bv)bv.textContent=pct+'%';
-      if(bf){bf.style.width=pct+'%';bf.style.background=pct>20?'linear-gradient(90deg,#00FF88,#00D4FF)':'linear-gradient(90deg,#FF3366,#FF6B35)';}
+      const p=Math.round(bat.level*100);
+      const bf=document.getElementById('bf');
+      if(bv)bv.textContent=p+'%';
+      if(bf){bf.style.width=p+'%';bf.style.background=p>20?'linear-gradient(90deg,#00FF88,#00D4FF)':'linear-gradient(90deg,#FF3366,#FF6B35)';}
+      // Change card color
+      const card=document.getElementById('bcd');
+      if(card)card.style.borderColor=p>20?'rgba(0,212,255,.15)':'rgba(255,51,102,.3)';
     };
-    upd(); bat.addEventListener('levelchange',upd); bat.addEventListener('chargingchange',upd);
-  }catch(e){}
+    upd();bat.addEventListener('levelchange',upd);bat.addEventListener('chargingchange',upd);
+  }catch(e){if(bv)bv.textContent='N/A';}
 }
 
-// ── NETWORK ──
+// NETWORK
 function updNet(){
-  const online=navigator.onLine;
-  const nv=document.getElementById('nval'),nt=document.getElementById('ntype');
-  if(nv){nv.textContent=online?'ON':'OFF';nv.style.color=online?'var(--green)':'var(--red)';}
-  if(nt){const conn=navigator.connection||navigator.mozConnection;nt.textContent=conn?(conn.effectiveType||conn.type||'Connected'):(online?'Connected':'Offline');}
+  const on=navigator.onLine,nv=document.getElementById('nv'),nt=document.getElementById('nt');
+  if(nv){nv.textContent=on?'ON':'OFF';nv.style.color=on?'var(--g)':'var(--r)';}
+  if(nt){
+    const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+    let type='Unknown';
+    if(c){type=c.effectiveType||c.type||'Connected';}
+    else{type=on?'Connected':'Offline';}
+    nt.textContent=type;
+  }
+  // Update bcd border
+  const bcd=document.getElementById('bcd');
+  if(bcd)bcd.style.borderColor=on?'rgba(0,255,136,.25)':'rgba(255,51,102,.25)';
 }
-window.addEventListener('online',()=>{updNet();showToast('🌐 Connected!');});
-window.addEventListener('offline',()=>{updNet();showToast('❌ Disconnected!');});
+window.addEventListener('online',()=>{updNet();toast('🌐 Connected!');});
+window.addEventListener('offline',()=>{updNet();toast('❌ Disconnected!');});
 
-// ── GPS ──
+// GPS
 async function getLoc(){
-  if(!navigator.geolocation){showToast('❌ Location not supported');return;}
-  showToast('📍 Location নেওয়া হচ্ছে...');
-  const lv=document.getElementById('locval'),ls=document.getElementById('locsub');
-  if(lv)lv.textContent='...';
+  if(!navigator.geolocation){toast('❌ Not supported');return;}
+  toast('📍 Location নেওয়া হচ্ছে...');
+  const lv=document.getElementById('lv'),ls=document.getElementById('ls');if(lv)lv.textContent='...';
   navigator.geolocation.getCurrentPosition(async(pos)=>{
-    LAT=pos.coords.latitude;LON=pos.coords.longitude;
-    showMap(LAT,LON);
+    LAT=pos.coords.latitude;LON=pos.coords.longitude;showMap(LAT,LON);
     try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${LAT}&lon=${LON}&format=json`);
-      const data=await r.json();
-      const city=data.address?.city||data.address?.town||data.address?.village||'Unknown';
-      const country=data.address?.country||'';
-      CITY=city;
-      if(lv){lv.textContent=city;lv.style.fontSize='11px';}
-      if(ls)ls.textContent=country;
-      showToast(`📍 ${city}, ${country}`);
-      MEM.current_location=`${city}, ${country}`;
+      const r=await fetch('https://nominatim.openstreetmap.org/reverse?lat='+LAT+'&lon='+LON+'&format=json');
+      const d=await r.json();
+      const city=d.address?.city||d.address?.town||d.address?.village||'Unknown';
+      const country=d.address?.country||'';CITY=city;
+      if(lv){lv.textContent=city;lv.style.fontSize='10px';}if(ls)ls.textContent=country;
+      toast('📍 '+city+', '+country);MEM.current_location=city+', '+country;
       await getWeather(LAT,LON,city);
-    }catch(e){if(lv)lv.textContent=`${LAT.toFixed(3)}`;}
-  },(err)=>{showToast('❌ '+err.message);if(lv)lv.textContent='Denied';},{enableHighAccuracy:true,timeout:10000});
+    }catch(e){if(lv)lv.textContent=LAT.toFixed(3);}
+  },(e)=>{toast('❌ '+e.message);if(lv)lv.textContent='Denied';},{enableHighAccuracy:true,timeout:10000});
 }
-
 function showMap(lat,lon){
-  const f=document.getElementById('mapif'),ph=document.getElementById('mapph');
-  if(!f)return;
-  f.src=`https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
-  f.style.display='block'; if(ph)ph.style.display='none';
+  const f=document.getElementById('mapi'),ph=document.getElementById('maph');if(!f)return;
+  f.src='https://maps.google.com/maps?q='+lat+','+lon+'&z=15&output=embed';
+  f.style.display='block';if(ph)ph.style.display='none';
 }
-function openMaps(){
-  if(LAT&&LON)window.open(`https://www.google.com/maps?q=${LAT},${LON}`,'_blank');
-  else{showToast('📍 আগে Location নাও!');getLoc();}
-}
+function openMaps(){if(LAT&&LON)window.open('https://maps.google.com/maps?q='+LAT+','+LON,'_blank');else{toast('📍 Location নাও!');getLoc();}}
 
-// ── WEATHER ──
+// WEATHER
 async function getWeather(lat,lon,city){
   try{
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto`);
-    const data=await r.json(); const cur=data.current;
-    const temp=Math.round(cur.temperature_2m),hum=cur.relative_humidity_2m,wind=Math.round(cur.wind_speed_10m),code=cur.weather_code;
-    const emoji=code===0?'☀️':code<=3?'⛅':code<=49?'🌫️':code<=59?'🌦️':code<=69?'🌧️':code<=79?'❄️':code<=99?'⛈️':'🌤️';
-    const desc=code===0?'Clear Sky':code<=3?'Partly Cloudy':code<=49?'Foggy':code<=59?'Drizzle':code<=69?'Rainy':code<=79?'Snowy':code<=99?'Thunderstorm':'Unknown';
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto');
+    const d=await r.json();const c=d.current;
+    const temp=Math.round(c.temperature_2m),hum=c.relative_humidity_2m,wind=Math.round(c.wind_speed_10m),code=c.weather_code;
+    const em=code===0?'☀️':code<=3?'⛅':code<=49?'🌫️':code<=59?'🌦️':code<=69?'🌧️':code<=79?'❄️':code<=99?'⛈️':'🌤️';
+    const desc=code===0?'Clear':code<=3?'Partly Cloudy':code<=49?'Foggy':code<=59?'Drizzle':code<=69?'Rainy':'Stormy';
     const wc=document.getElementById('wcard');
-    if(wc)wc.innerHTML=`<div class="wmain"><div><div class="wtemp">${temp}°C</div><div style="font-size:28px;margin-top:4px">${emoji}</div></div><div style="text-align:right"><div style="font-size:13px;color:var(--text)">${desc}</div><div style="font-size:10px;color:rgba(0,212,255,.5);margin-top:3px">📍 ${city||'Your Location'}</div></div></div><div class="wdrow"><div class="wdi"><div class="wdv">💧${hum}%</div><div class="wdk">HUMIDITY</div></div><div class="wdi"><div class="wdv">💨${wind}km/h</div><div class="wdk">WIND</div></div><div class="wdi"><div class="wdv">${temp>30?'🥵 Hot':temp>20?'😊 Nice':'🥶 Cold'}</div><div class="wdk">FEELS</div></div></div>`;
-    MEM.current_weather=`${temp}°C, ${desc} in ${city}`;
-    showToast(`🌤️ ${temp}°C — ${desc}`);
-    if(S.voiceEnabled){const wm=S.lang==='bn-IN'?`আপনার এলাকায় এখন ${temp} ডিগ্রি। আবহাওয়া ${desc}।`:`It's ${temp}°C. ${desc}.`;speak(wm);}
-  }catch(e){showToast('❌ Weather failed');}
+    if(wc)wc.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;padding:13px"><div><div style="font-size:32px;font-weight:700;color:var(--c)">'+temp+'°C</div><div style="font-size:24px;margin-top:3px">'+em+'</div></div><div style="text-align:right"><div style="font-size:13px;color:var(--t)">'+desc+'</div><div style="font-size:10px;color:rgba(0,212,255,.4);margin-top:2px">📍 '+(city||'Location')+'</div></div></div><div class="wd"><div class="wdi"><div class="wdv">💧'+hum+'%</div><div class="wdk">HUMIDITY</div></div><div class="wdi"><div class="wdv">💨'+wind+'km/h</div><div class="wdk">WIND</div></div><div class="wdi"><div class="wdv">'+(temp>30?'🥵 Hot':temp>20?'😊 Nice':'🥶 Cold')+'</div><div class="wdk">FEELS</div></div></div>';
+    MEM.current_weather=temp+'°C, '+desc+' in '+(city||'your area');
+    toast('🌤️ '+temp+'°C — '+desc);
+    if(S.voice){const wm=S.lang==='bn-IN'?'আপনার এলাকায় '+temp+' ডিগ্রি। আবহাওয়া '+desc+'।':'It is '+temp+'°C. '+desc+'.';speak(wm);}
+  }catch(e){toast('❌ Weather failed');}
 }
-async function chkWeather(){if(LAT&&LON)await getWeather(LAT,LON,CITY||'Your Location');else{showToast('📍 আগে Location নাও!');getLoc();}}
+async function chkW(){if(LAT&&LON)await getWeather(LAT,LON,CITY||'Location');else{toast('📍 Location নাও!');getLoc();}}
 
-// ── MOBILE ACTIONS ──
-function vibrate(p){if(navigator.vibrate)navigator.vibrate(p||[200,100,200]);showToast('📳 Vibrated!');}
-async function copyTxt(){const t=document.getElementById('cliparea')?.value;if(!t){showToast('⚠️ কিছু লেখো!');return;}try{await navigator.clipboard.writeText(t);showToast('✅ Copied!');}catch(e){document.getElementById('cliparea').select();document.execCommand('copy');showToast('✅ Copied!');}}
-async function pasteTxt(){try{const t=await navigator.clipboard.readText();document.getElementById('cliparea').value=t;showToast('📥 Pasted!');}catch(e){showToast('❌ Paste denied');}}
-async function copyLast(){const ms=document.querySelectorAll('.bbl.aib');if(!ms.length){showToast('⚠️ কোনো message নেই!');return;}try{await navigator.clipboard.writeText(ms[ms.length-1].textContent);showToast('✅ Last AI message copied!');}catch(e){showToast('❌ Copy failed');}}
-function clipToChat(){const t=document.getElementById('cliparea')?.value?.trim();if(!t){showToast('⚠️ কিছু লেখো!');return;}document.getElementById('uinput').value=t;swTab('chat',document.querySelector('.nbtn'));sendMsg();}
-async function reqNotif(){if(!('Notification' in window)){showToast('❌ Not supported');return;}if(Notification.permission==='granted'){testNotif();return;}const p=await Notification.requestPermission();if(p==='granted'){showToast('✅ Enabled!');testNotif();}else showToast('❌ Denied');}
-function testNotif(){if(Notification.permission!=='granted'){reqNotif();return;}new Notification('🤖 JARVIS AI',{body:'নমস্কার! আমি JARVIS — সবসময় আপনার সেবায়!',icon:'https://img.icons8.com/fluency/48/robot-2.png'});vibrate([200,100,200]);showToast('🔔 Notification sent!');}
-async function shareApp(){if(navigator.share){try{await navigator.share({title:'JARVIS AI',text:'আমার Personal AI Assistant!',url:window.location.href});}catch(e){}}else{try{await navigator.clipboard.writeText(window.location.href);showToast('🔗 Link copied!');}catch(e){}}}
+// MOBILE ACTIONS
+function vib(p){if(navigator.vibrate)navigator.vibrate(p||[200,100,200]);}
+async function cpLast(){const ms=document.querySelectorAll('.bb.ai-b');if(!ms.length){toast('কোনো message নেই!');return;}try{await navigator.clipboard.writeText(ms[ms.length-1].textContent);toast('✅ Copied!');}catch(e){toast('❌');}}
+async function reqN(){if(!('Notification'in window)){toast('❌');return;}if(Notification.permission==='granted'){testN();return;}const p=await Notification.requestPermission();if(p==='granted'){toast('✅ Enabled!');testN();}else toast('❌');}
+function testN(){if(Notification.permission!=='granted'){reqN();return;}new Notification('🤖 JARVIS AI',{body:'নমস্কার! আমি JARVIS!'});vib([200,100,200]);toast('🔔 Sent!');}
+async function shareApp(){if(navigator.share){try{await navigator.share({title:'JARVIS AI',text:'My AI!',url:window.location.href});}catch(e){}}else{try{await navigator.clipboard.writeText(window.location.href);toast('🔗 Link copied!');}catch(e){}}}
 
-// ── BLOG GENERATOR (UPGRADED) ──
-async function genFullBlog(){
-  const topic = document.getElementById('bgtopic').value.trim();
-  if(!topic){showToast('⚠️ Topic লেখো!');return;}
-  const lang = document.getElementById('bglang').value;
-  const type = document.getElementById('bgtype').value;
-  const typeMap = {health:'health & wellness',product:'product review with Amazon affiliate links',listicle:'listicle (numbered list)',howto:'how-to guide'};
+// CALL & SMS
+function makeCall(){const n=document.getElementById('cnum').value.trim().replace(/[^0-9+]/g,'');if(!n){toast('Number দাও!');return;}window.location.href='tel:'+n;vib([200]);toast('📞 Calling...');}
+function openSMS(){const n=document.getElementById('cnum').value.trim().replace(/[^0-9+]/g,''),m=document.getElementById('smst').value.trim();window.location.href='sms:'+n+(m?'?body='+encodeURIComponent(m):'');toast('💬 Opening SMS...');}
+async function aiSMS(){const t=document.getElementById('smst').value.trim()||'আমার blog';setLoad(true);const m=await aiCall('Short SMS in '+(S.lang==='bn-IN'?'Bengali':S.lang==='hi-IN'?'Hindi':'English')+' about: "'+t+'". Max 50 words.');setLoad(false);document.getElementById('smst').value=m;toast('✅ Ready!');}
 
-  setLoad(true);
-  const prompt = `Write a complete, SEO-optimized blog post in ${lang} language.
-Topic: "${topic}"
-Type: ${typeMap[type]}
-Include:
-1. Catchy SEO title (H1)
-2. Meta description (150-160 chars) — label it "META:"
-3. Introduction (2-3 paragraphs)
-4. 4-5 H2 subheadings with detailed content
-5. Conclusion with call-to-action
-6. Focus keyword used naturally throughout
-Format: HTML with proper tags. Make it engaging and informative.`;
-
-  const result = await aiChat(prompt);
-  setLoad(false);
-
-  if(result.startsWith('❌')){showToast(result);return;}
-
-  // Extract title
-  const titleMatch = result.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-  const title = titleMatch ? titleMatch[1] : topic;
-
-  // Extract meta
-  const metaMatch = result.match(/META:[\s\S]*?([^\n<]+)/i);
-  const meta = metaMatch ? metaMatch[1] : 'Read this complete guide about '+topic;
-
-  document.getElementById('blogtitle').textContent = '📌 ' + title;
-  document.getElementById('blogmeta').innerHTML = `<b>Meta:</b> ${meta}<br><b>Words:</b> ~${result.split(' ').length} | <b>Lang:</b> ${lang}`;
-  document.getElementById('blogresult').style.display = 'block';
-
-  // Store for blogger
-  window._lastBlog = {title, content: result, meta};
-
-  // Copy to blogger tab
-  document.getElementById('bc1').value = result;
-  document.getElementById('bt1').value = title;
-
-  showToast('✅ Blog post তৈরি হয়েছে!');
-  if(S.voiceEnabled) speak(S.lang==='bn-IN'?`ব্লগ পোস্ট তৈরি হয়েছে! বিষয়: ${topic}`:`Blog post generated about ${topic}!`);
+// DEVICE ACTIONS
+function openCam(){const i=document.createElement('input');i.type='file';i.accept='image/*';i.capture='environment';i.click();toast('📷 Camera opening...');}
+function openGal(){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=(e)=>{if(e.target.files[0])toast('✅ '+e.target.files[0].name);};i.click();}
+function tryTorch(){
+  if(navigator.mediaDevices){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
+      const t=stream.getVideoTracks()[0];
+      const cap=t.getCapabilities();
+      if(cap&&cap.torch){t.applyConstraints({advanced:[{torch:true}]});toast('🔦 Torch ON! (5s)');setTimeout(()=>{t.applyConstraints({advanced:[{torch:false}]});stream.getTracks().forEach(t=>t.stop());toast('🔦 Torch OFF');},5000);}
+      else{stream.getTracks().forEach(t=>t.stop());toast('❌ Torch not supported');}
+    }).catch(()=>toast('❌ Camera permission needed'));
+  }else toast('❌ Not supported');
 }
 
-async function copyBlog(){
-  const b = window._lastBlog;
-  if(!b){showToast('⚠️ আগে Generate করো!');return;}
-  try{await navigator.clipboard.writeText(`${b.title}
+// GOOGLE SERVICES
+function gSrch(){const q=document.getElementById('gsq').value.trim();if(!q){toast('Search text লেখো!');return;}window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank');toast('🔍 Searching: '+q);}
+function ytSrch(){const q=document.getElementById('gsq').value.trim();if(!q){toast('Search text লেখো!');return;}window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank');toast('▶️ YouTube: '+q);}
+function mapSrch(){const q=document.getElementById('gsq').value.trim();if(q)window.open('https://maps.google.com/maps?q='+encodeURIComponent(q),'_blank');else if(LAT&&LON)openMaps();else getLoc();if(q)toast('🗺️ Maps: '+q);}
 
-${b.content}`);showToast('✅ Copied to clipboard!');}
-  catch(e){showToast('❌ Copy failed');}
-}
-
-function sendToBlogger(){
-  if(!window._lastBlog){showToast('⚠️ আগে Generate করো!');return;}
-  swTab('blogger', document.querySelectorAll('.nbtn')[2]);
-  showToast('📝 Blogger tab-এ গেছে!');
-}
-
-// ── INSTAGRAM CAPTION ──
-async function genCaption(){
-  const topic = document.getElementById('captopic').value.trim();
-  if(!topic){showToast('⚠️ Topic লেখো!');return;}
-  const style = document.getElementById('capstyle').value;
-  const lang = document.getElementById('caplang').value;
-  const styleMap = {engaging:'highly engaging and emotional',funny:'funny and witty',informative:'informative and educational',promotional:'promotional and sales-focused'};
-
-  setLoad(true);
-  const prompt = `Create an Instagram caption in ${lang} language.
-Topic: "${topic}"
-Style: ${styleMap[style]}
-Requirements:
-- Caption: 3-5 sentences, ${styleMap[style]} tone
-- Add relevant emojis throughout
-- End with a call-to-action
-- Then on new line write "HASHTAGS:" followed by 20-25 relevant hashtags
-- Mix popular and niche hashtags
-- Include Bengali/Indian hashtags if Bengali language selected`;
-
-  const result = await aiChat(prompt);
-  setLoad(false);
-
-  if(result.startsWith('❌')){showToast(result);return;}
-
-  // Split caption and hashtags
-  const parts = result.split(/HASHTAGS:/i);
-  const caption = parts[0].trim();
-  const hashtags = parts[1] ? parts[1].trim() : '#instagram #trending #viral';
-
-  document.getElementById('captiontext').textContent = caption;
-  document.getElementById('hashtext').textContent = hashtags;
-  document.getElementById('capresult').style.display = 'block';
-
-  window._lastCaption = caption + '\n\n' + hashtags;
-  showToast('✅ Caption তৈরি হয়েছে!');
-  if(S.voiceEnabled) speak(S.lang==='bn-IN'?'Caption তৈরি হয়েছে!':'Caption generated!');
-}
-
-async function copyCap(){
-  if(!window._lastCaption){showToast('⚠️ আগে Generate করো!');return;}
-  try{await navigator.clipboard.writeText(window._lastCaption);showToast('✅ Caption copied!');}
-  catch(e){showToast('❌ Copy failed');}
-}
-
-function postToIG(){
-  if(!window._lastCaption){showToast('⚠️ আগে Generate করো!');return;}
-  document.getElementById('postcont').value = window._lastCaption;
-  swTab('social', document.querySelectorAll('.nbtn')[3]);
-  showToast('📸 Social tab-এ গেছে!');
-}
-
-// ── SMART REMINDER ──
-let reminders = [];
-let reminderTimers = [];
-
-function setReminder(){
-  const txt = document.getElementById('remtxt').value.trim();
-  const time = document.getElementById('remtime').value;
-  const repeat = document.getElementById('remrepeat').value;
-
-  if(!txt){showToast('⚠️ Reminder text লেখো!');return;}
-  if(!time){showToast('⚠️ Time select করো!');return;}
-
-  if(Notification.permission !== 'granted'){
-    Notification.requestPermission().then(p=>{
-      if(p==='granted') createReminder(txt,time,repeat);
-      else showToast('⚠️ Notification permission দাও!');
-    });
-    return;
-  }
-  createReminder(txt,time,repeat);
-}
-
-function createReminder(txt,time,repeat){
-  const id = Date.now();
-  const rem = {id,txt,time,repeat,active:true};
-  reminders.push(rem);
-  scheduleReminder(rem);
-  renderReminders();
-  document.getElementById('remtxt').value='';
-  showToast(`⏰ Reminder set for ${time}!`);
-  if(S.voiceEnabled) speak(S.lang==='bn-IN'?`রিমাইন্ডার সেট হয়েছে ${time} এ`:`Reminder set for ${time}`);
-}
-
-function scheduleReminder(rem){
-  const now = new Date();
-  const [h,m] = rem.time.split(':').map(Number);
-  let target = new Date(now);
-  target.setHours(h,m,0,0);
-  if(target <= now) target.setDate(target.getDate()+1);
-  const delay = target - now;
-
-  const timer = setTimeout(()=>{
-    triggerReminder(rem);
-    if(rem.repeat === 'daily') scheduleReminder(rem);
-    else if(rem.repeat === 'weekdays'){
-      const day = new Date().getDay();
-      if(day < 5) scheduleReminder(rem);
-    }
-  }, delay);
-  reminderTimers.push({id:rem.id, timer});
-}
-
-function triggerReminder(rem){
-  if(Notification.permission==='granted'){
-    new Notification('⏰ JARVIS Reminder', {body:rem.txt, icon:'https://img.icons8.com/fluency/48/robot-2.png'});
-  }
-  vibrate([300,100,300,100,300]);
-  showToast('⏰ '+rem.txt);
-  if(S.voiceEnabled) speak(S.lang==='bn-IN'?`রিমাইন্ডার: ${rem.txt}`:`Reminder: ${rem.txt}`);
-}
-
-function deleteReminder(id){
-  reminders = reminders.filter(r=>r.id!==id);
-  const t = reminderTimers.find(t=>t.id===id);
-  if(t) clearTimeout(t.timer);
-  reminderTimers = reminderTimers.filter(t=>t.id!==id);
-  renderReminders();
-  showToast('🗑️ Reminder deleted');
-}
-
-function renderReminders(){
-  const el = document.getElementById('remlist');
-  if(!el) return;
-  if(!reminders.length){el.innerHTML='<div style="color:rgba(0,212,255,.4);font-size:12px;text-align:center;padding:8px">কোনো reminder নেই</div>';return;}
-  el.innerHTML = reminders.map(r=>`
-    <div style="background:var(--bg);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="color:var(--text);font-size:13px">${r.txt}</div>
-        <div style="color:var(--cyan);font-size:10px;margin-top:2px;letter-spacing:1px">⏰ ${r.time} • ${r.repeat.toUpperCase()}</div>
-      </div>
-      <button onclick="deleteReminder(${r.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,51,102,.6);font-size:18px">✕</button>
-    </div>`).join('');
-}
-
-// ── KEYWORD RESEARCH ──
-async function doKWR(){
-  const topic = document.getElementById('kwtopic').value.trim();
-  if(!topic){showToast('Topic লেখো!');return;}
-  const lang = document.getElementById('kwlang').value;
-  const type = document.getElementById('kwtype').value;
-  setLoad(true);
-  const r = await aiChat('SEO expert. Topic: "'+topic+'" in '+lang+' for '+type+'. List 10 keywords with searches & competition (Low/Med/High). 5 long-tail keywords. 3 blog titles. Format with emojis.');
-  setLoad(false);
-  const el=document.getElementById('kwresult');
-  el.innerHTML=r.replace(/\n/g,'<br>');
-  el.style.display='block';
-  showToast('Keywords ready!');
-}
-
-// ── WHATSAPP ──
-async function genWAMsg(){
-  const topic = document.getElementById('wamsg').value.trim()||'আমার blog সম্পর্কে';
-  setLoad(true);
-  const msg = await aiChat('Write a short friendly WhatsApp message in '+(S.lang==='bn-IN'?'Bengali':S.lang==='hi-IN'?'Hindi':'English')+' about: "'+topic+'". Max 80 words.');
-  setLoad(false);
-  document.getElementById('wamsg').value=msg;
-  showToast('Message ready!');
-}
-function sendWA(){
-  const rawNum=document.getElementById('wanum').value.trim();
-  const num=rawNum.replace(/[^0-9]/g,'');
-  const msg=document.getElementById('wamsg').value.trim();
-  if(!msg){showToast('Message লেখো!');return;}
-  const url=num?'https://wa.me/'+num+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
-  window.open(url,'_blank');
-  vibrate([100]);
-}
-
-// ── YOUTUBE SCRIPT ──
-async function genYTScript(){
-  const topic=document.getElementById('yttopic').value.trim();
-  if(!topic){showToast('Topic লেখো!');return;}
-  const dur=document.getElementById('ytdur').value;
-  const lang=document.getElementById('ytlang').value;
-  setLoad(true);
-  const script=await aiChat('Write YouTube script in '+lang+'. Topic: "'+topic+'". Duration: '+dur+' min. Include HOOK, INTRO, MAIN CONTENT sections, TIPS, OUTRO with subscribe CTA. Add [PAUSE] [B-ROLL] cues. Engaging tone.');
-  setLoad(false);
-  document.getElementById('ytscript').value=script;
-  document.getElementById('ytresult').style.display='block';
-  showToast('Script ready!');
-}
-async function copyYT(){
-  const s=document.getElementById('ytscript').value;
-  if(!s){showToast('আগে generate করো!');return;}
-  try{await navigator.clipboard.writeText(s);showToast('Script copied!');}catch(e){showToast('Copy failed');}
-}
-
-// ── CONTENT CALENDAR ──
-async function genCalendar(){
-  const niche=document.getElementById('calniche').value.trim()||MEM.blog_niche||'health';
-  setLoad(true);
-  const r=await aiChat('Create 7-day content calendar for '+niche+' blog in '+(S.lang==='bn-IN'?'Bengali':S.lang==='hi-IN'?'Hindi':'English')+'. Each day: blog title + keyword, Instagram idea, Facebook idea. Use emojis.');
-  setLoad(false);
-  const el=document.getElementById('calresult');
-  el.innerHTML='<div style="background:var(--bg);border-radius:10px;padding:10px;font-size:11px;color:var(--text);line-height:1.9">'+r.replace(/\n/g,'<br>')+'</div><button class="sbtn" onclick="copyCalendar()" style="width:100%;padding:9px;margin-top:8px">Copy Calendar</button>';
-  el.style.display='block';
-  window._lastCal=r;
-  showToast('Calendar ready!');
-}
-async function copyCalendar(){
-  if(!window._lastCal){showToast('আগে generate করো!');return;}
-  try{await navigator.clipboard.writeText(window._lastCal);showToast('Calendar copied!');}catch(e){}
-}
-
-// ── TOAST ──
-let TT;
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(TT);TT=setTimeout(()=>t.classList.remove('on'),2800);}
+// TOAST
+let _tt;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2800);}
 </script>
 </body>
 </html>
