@@ -877,7 +877,15 @@ function loadFromStorage() {
     if(document.getElementById('cfg-grok')) document.getElementById('cfg-grok').value = cfg.grok || '';
     if(document.getElementById('cfg-claude')) document.getElementById('cfg-claude').value = cfg.claude || '';
     if(document.getElementById('cfg-openrouter')) document.getElementById('cfg-openrouter').value = cfg.openrouter || '';
-    if(document.getElementById('cfg-or-model') && cfg.orModel) document.getElementById('cfg-or-model').value = cfg.orModel;
+    // Force reset bad/old models
+    const BAD_MODELS = ['google/gemini-2.0-flash-exp:free','google/gemini-2.5-pro-exp-03-25:free','microsoft/phi-4-reasoning:free','qwen/qwen3-235b-a22b:free'];
+    if (BAD_MODELS.includes(cfg.orModel)) {
+      cfg.orModel = 'meta-llama/llama-3.3-70b-instruct:free';
+      saveToStorage();
+    }
+    if(document.getElementById('cfg-or-model')) {
+      document.getElementById('cfg-or-model').value = cfg.orModel || 'meta-llama/llama-3.3-70b-instruct:free';
+    }
     document.getElementById('cfg-blogger').value = cfg.blogger || '';
     document.getElementById('cfg-blogid').value = cfg.blogId || '';
     document.getElementById('cfg-fb').value = cfg.fb || '';
