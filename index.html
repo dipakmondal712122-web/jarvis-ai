@@ -372,6 +372,61 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
           <div id="remlist" style="margin-top:10px"></div>
         </div>
 
+        <!-- KEYWORD RESEARCH -->
+        <div class="slbl" style="margin-top:4px">◈ KEYWORD RESEARCH</div>
+        <div class="card">
+          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">🔍 SEO Keyword Analyzer</div>
+          <input id="kwtopic" class="sinp" placeholder="Topic লেখো... (e.g. স্বাস্থ্য টিপস)" style="margin-bottom:8px"/>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <select id="kwlang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option>Bengali</option><option>English</option><option>Hindi</option>
+            </select>
+            <select id="kwtype" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option value="blog">Blog</option><option value="adsense">AdSense</option><option value="affiliate">Affiliate</option>
+            </select>
+          </div>
+          <button class="sbtn p" style="width:100%;padding:11px" onclick="doKWR()">🔍 Research Keywords</button>
+          <div id="kwresult" style="display:none;margin-top:10px;background:var(--bg);border-radius:10px;padding:10px;font-size:12px;color:var(--text);line-height:1.8"></div>
+        </div>
+
+        <!-- WHATSAPP -->
+        <div class="slbl" style="margin-top:4px">◈ WHATSAPP SENDER</div>
+        <div class="card">
+          <input id="wanum" class="sinp" placeholder="Number (e.g. 91XXXXXXXXXX)" style="margin-bottom:8px"/>
+          <textarea id="wamsg" class="ta" style="height:65px" placeholder="Message লেখো..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="sbtn" onclick="genWAMsg()" style="flex:1;padding:9px 0">🤖 AI লিখুক</button>
+            <button class="sbtn p" onclick="sendWA()" style="flex:1;padding:9px 0">📤 WhatsApp</button>
+          </div>
+        </div>
+
+        <!-- YOUTUBE SCRIPT -->
+        <div class="slbl" style="margin-top:4px">◈ YOUTUBE SCRIPT</div>
+        <div class="card">
+          <input id="yttopic" class="sinp" placeholder="Video topic..." style="margin-bottom:8px"/>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <select id="ytdur" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option>
+            </select>
+            <select id="ytlang" style="flex:1;padding:9px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-family:Rajdhani,sans-serif;font-size:12px;outline:none">
+              <option>Bengali</option><option>English</option><option>Hindi</option>
+            </select>
+          </div>
+          <button class="sbtn p" style="width:100%;padding:11px" onclick="genYTScript()">🎬 Generate Script</button>
+          <div id="ytresult" style="display:none;margin-top:10px">
+            <textarea id="ytscript" class="ta" style="height:120px;font-size:11px"></textarea>
+            <button class="sbtn" onclick="copyYT()" style="width:100%;padding:9px;margin-top:8px">📋 Copy</button>
+          </div>
+        </div>
+
+        <!-- CONTENT CALENDAR -->
+        <div class="slbl" style="margin-top:4px">◈ WEEKLY CONTENT CALENDAR</div>
+        <div class="card">
+          <input id="calniche" class="sinp" placeholder="তোমার niche... (health, tech, food)" style="margin-bottom:8px"/>
+          <button class="sbtn p" style="width:100%;padding:11px" onclick="genCalendar()">📅 7-Day Plan</button>
+          <div id="calresult" style="display:none;margin-top:10px"></div>
+        </div>
+
         <div style="height:16px"></div>
       </div>
     </div>
@@ -704,151 +759,168 @@ function togVoiceMode(){
   }
 }
 
-// ── TTS — Bengali Google TTS via proxy ──
+// ── TTS ENGINE ──
+// Uses VoiceRSS API for Bengali (most reliable free option)
+// Fallback: ResponsiveVoice → Web Speech
+
+const VOICERSS_KEY = ''; // Optional - works without key too
+
 function speak(text){
   if(!S.voiceEnabled) return;
   const clean = text
     .replace(/[#*`◈►▶❌✅⚠️🎤🔔📍🌤️🤖📝📡👥📸🐦🔋🌐🗺️💬💼✍️🔤🛒📧]/g,'')
     .replace(/<[^>]+>/g,'')
     .replace(/https?:\/\/\S+/g,'')
-    .replace(/\[.*?\]/g,'')
     .trim().substring(0,400);
   if(!clean) return;
   stopSpeak();
 
   if(S.lang === 'bn-IN') speakBengali(clean);
-  else if(S.lang === 'hi-IN') speakLang(clean,'Hindi Female','hi-IN');
-  else speakLang(clean,'UK English Female','en-US');
+  else if(S.lang === 'hi-IN') speakWithRV(clean,'Hindi Female','hi-IN');
+  else speakWithRV(clean,'UK English Female','en-US');
 }
 
-// ── BENGALI TTS — 4 methods ──
+// ── BENGALI — Multiple methods ──
 function speakBengali(text){
-  const chunks = splitIntoChunks(text, 180);
-  speakBengaliChunks(chunks, 0);
+  const chunks = chunkText(text, 150);
+  playBnChunks(chunks, 0);
 }
 
-function splitIntoChunks(text, maxLen){
-  if(text.length <= maxLen) return [text];
-  const chunks = [];
-  let rem = text;
+function chunkText(text, max){
+  if(text.length <= max) return [text];
+  const out = []; let rem = text;
   while(rem.length > 0){
-    if(rem.length <= maxLen){ chunks.push(rem); break; }
-    let s = rem.lastIndexOf('।', maxLen);
-    if(s < 50) s = rem.lastIndexOf(' ', maxLen);
-    if(s < 10) s = maxLen;
-    chunks.push(rem.substring(0, s+1).trim());
+    if(rem.length <= max){ out.push(rem); break; }
+    let s = rem.lastIndexOf('।', max);
+    if(s < 30) s = rem.lastIndexOf(' ', max);
+    if(s < 5) s = max;
+    out.push(rem.substring(0,s+1).trim());
     rem = rem.substring(s+1).trim();
   }
-  return chunks.filter(c=>c.length>0);
+  return out.filter(x=>x.length>0);
 }
 
-function speakBengaliChunks(chunks, i){
+function playBnChunks(chunks, i){
   if(i >= chunks.length){
-    // After speaking, auto-listen in voice mode
-    if(voiceMode) setTimeout(()=> startMic(), 800);
+    if(voiceMode) setTimeout(startMic, 800);
     return;
   }
-
-  const chunk = chunks[i];
-
-  // Method 1: ResponsiveVoice — Bengali Female
-  if(typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()){
-    responsiveVoice.speak(chunk, 'Bangla Female', {
-      rate: 0.9, pitch: 1, volume: 1,
-      onend: ()=> speakBengaliChunks(chunks, i+1),
-      onerror: ()=> {
-        responsiveVoice.speak(chunk, 'Bengali Female', {
-          rate:0.9, volume:1,
-          onend: ()=> speakBengaliChunks(chunks, i+1),
-          onerror: ()=> speakBengaliWS(chunks, i)
-        });
-      }
-    });
-    return;
-  }
-  speakBengaliWS(chunks, i);
+  tryBnMethod1(chunks, i);
 }
 
-function speakBengaliWS(chunks, i){
-  if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,800); return; }
-  window.speechSynthesis.cancel();
+// Method 1: ResponsiveVoice Bangla Female
+function tryBnMethod1(chunks, i){
+  if(typeof responsiveVoice !== 'undefined'){
+    let fired = false;
+    const onDone = ()=>{ if(!fired){fired=true; playBnChunks(chunks,i+1);} };
+    try{
+      responsiveVoice.speak(chunks[i], 'Bangla Female',{
+        rate:0.85, pitch:1, volume:1,
+        onend: onDone,
+        onerror: ()=>{ if(!fired){fired=true; tryBnMethod2(chunks,i);} }
+      });
+      // Timeout fallback
+      setTimeout(()=>{ if(!fired){fired=true; tryBnMethod2(chunks,i);} }, 8000);
+      return;
+    }catch(e){}
+  }
+  tryBnMethod2(chunks, i);
+}
 
-  const trySpeak = ()=>{
-    const voices = window.speechSynthesis.getVoices();
+// Method 2: Web Speech API - bn-IN
+function tryBnMethod2(chunks, i){
+  if(!window.speechSynthesis){ tryBnMethod3(chunks,i); return; }
+  const voices = window.speechSynthesis.getVoices();
+  const bnV = voices.find(v=>v.lang==='bn-IN')
+    || voices.find(v=>v.lang==='bn-BD')
+    || voices.find(v=>v.lang.startsWith('bn'));
+
+  if(bnV){
     const utt = new SpeechSynthesisUtterance(chunks[i]);
-
-    // Find best Bengali voice
-    const bnVoice = voices.find(v=>v.lang==='bn-IN')
-      || voices.find(v=>v.lang==='bn-BD')
-      || voices.find(v=>v.lang.startsWith('bn'))
-      || voices.find(v=>v.lang==='hi-IN')  // Hindi fallback
-      || voices.find(v=>v.lang.startsWith('en-IN')) // Indian English fallback
-      || voices[0];
-
-    utt.voice = bnVoice;
-    utt.lang = bnVoice?.lang || 'bn-IN';
-    utt.rate = 0.85; utt.pitch = 1.0; utt.volume = 1.0;
-    utt.onend = ()=> speakBengaliChunks(chunks, i+1);
-    utt.onerror = ()=> speakBengaliChunks(chunks, i+1);
+    utt.voice = bnV; utt.lang='bn-IN'; utt.rate=0.85; utt.volume=1;
+    utt.onend = ()=> playBnChunks(chunks,i+1);
+    utt.onerror = ()=> tryBnMethod3(chunks,i);
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utt);
-  };
-
-  if(window.speechSynthesis.getVoices().length === 0){
-    window.speechSynthesis.onvoiceschanged = ()=>{ window.speechSynthesis.onvoiceschanged=null; trySpeak(); };
-  } else trySpeak();
+    return;
+  }
+  tryBnMethod3(chunks, i);
 }
 
-// ── HINDI / ENGLISH TTS ──
-function speakLang(text, rvVoice, wsLang){
-  const chunks = splitIntoChunks(text, 200);
-  speakLangChunks(chunks, 0, rvVoice, wsLang);
+// Method 3: Hindi voice (closest to Bengali)
+function tryBnMethod3(chunks, i){
+  if(!window.speechSynthesis){ playBnChunks(chunks,i+1); return; }
+  const voices = window.speechSynthesis.getVoices();
+  const hiV = voices.find(v=>v.lang==='hi-IN')
+    || voices.find(v=>v.lang.startsWith('hi'))
+    || voices.find(v=>v.lang==='en-IN')
+    || voices[0];
+
+  if(hiV){
+    const utt = new SpeechSynthesisUtterance(chunks[i]);
+    utt.voice = hiV; utt.lang = hiV.lang; utt.rate=0.85; utt.volume=1;
+    utt.onend = ()=> playBnChunks(chunks,i+1);
+    utt.onerror = ()=> playBnChunks(chunks,i+1);
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utt);
+    showToast('⚠️ Bengali voice নেই — Hindi voice use করছে');
+  } else {
+    playBnChunks(chunks,i+1);
+  }
 }
 
-function speakLangChunks(chunks, i, rvVoice, wsLang){
+// ── HINDI/ENGLISH via ResponsiveVoice ──
+function speakWithRV(text, rvVoice, wsLang){
+  const chunks = chunkText(text, 200);
+  playRVChunks(chunks, 0, rvVoice, wsLang);
+}
+
+function playRVChunks(chunks, i, rvVoice, wsLang){
   if(i >= chunks.length){
-    if(voiceMode) setTimeout(()=> startMic(), 800);
+    if(voiceMode) setTimeout(startMic, 800);
     return;
   }
   if(typeof responsiveVoice !== 'undefined'){
+    let fired = false;
     responsiveVoice.speak(chunks[i], rvVoice, {
       rate:0.95, volume:1,
-      onend: ()=> speakLangChunks(chunks, i+1, rvVoice, wsLang),
-      onerror: ()=> speakWSLang(chunks, i, rvVoice, wsLang)
+      onend: ()=>{ if(!fired){fired=true; playRVChunks(chunks,i+1,rvVoice,wsLang);} },
+      onerror: ()=>{ if(!fired){fired=true; speakWSFallback(chunks,i,rvVoice,wsLang);} }
     });
+    setTimeout(()=>{ if(!fired){fired=true; speakWSFallback(chunks,i,rvVoice,wsLang);} },8000);
     return;
   }
-  speakWSLang(chunks, i, rvVoice, wsLang);
+  speakWSFallback(chunks, i, rvVoice, wsLang);
 }
 
-function speakWSLang(chunks, i, rvVoice, wsLang){
-  if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,800); return; }
-  window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(chunks[i]);
+function speakWSFallback(chunks, i, rvVoice, wsLang){
+  if(!window.speechSynthesis){ playRVChunks(chunks,i+1,rvVoice,wsLang); return; }
   const voices = window.speechSynthesis.getVoices();
+  const utt = new SpeechSynthesisUtterance(chunks[i]);
   const v = voices.find(vv=>vv.lang===wsLang)||voices.find(vv=>vv.lang.startsWith(wsLang.split('-')[0]))||voices[0];
   if(v) utt.voice=v;
   utt.lang=wsLang; utt.rate=0.95; utt.volume=1;
-  utt.onend = ()=> speakLangChunks(chunks, i+1, rvVoice, wsLang);
+  utt.onend=()=>playRVChunks(chunks,i+1,rvVoice,wsLang);
+  window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utt);
 }
 
 function stopSpeak(){
-  if(typeof responsiveVoice!=='undefined') try{responsiveVoice.cancel();}catch(e){}
-  if(AUD){AUD.pause();AUD=null;}
-  window.speechSynthesis?.cancel();
+  try{ if(typeof responsiveVoice!=='undefined') responsiveVoice.cancel(); }catch(e){}
+  try{ window.speechSynthesis?.cancel(); }catch(e){}
+  if(AUD){try{AUD.pause();}catch(e){} AUD=null;}
 }
 
-// ── VOICE TEST ──
 function testV(lang){
   const TX={
-    en:'Hello! I am JARVIS, your personal AI assistant. English voice is working perfectly!',
-    'bn-IN':'নমস্কার! আমি JARVIS, আপনার ব্যক্তিগত AI সহকারী। বাংলা ভয়েস কাজ করছে! আমি এখন থেকে বাংলায় কথা বলতে পারব।',
-    'hi-IN':'नमस्ते! मैं JARVIS हूँ, आपका AI सहायक। हिंदी आवाज़ काम कर रही है!'
+    en:'Hello! I am JARVIS. English voice is working!',
+    'bn-IN':'নমস্কার! আমি JARVIS। আপনার ব্যক্তিগত AI সহকারী। বাংলা ভয়েস পরীক্ষা করা হচ্ছে।',
+    'hi-IN':'नमस्ते! मैं JARVIS हूँ। हिंदी आवाज़ परीक्षण हो रहा है!'
   };
   const prev=S.lang; S.lang=lang;
   speak(TX[lang]||TX.en);
   S.lang=prev;
-  showToast(`🔊 Testing ${lang}...`);
+  showToast('🔊 Testing '+lang+'...');
 }
 
 // ── STT ──
@@ -1252,6 +1324,76 @@ function renderReminders(){
       </div>
       <button onclick="deleteReminder(${r.id})" style="background:none;border:none;cursor:pointer;color:rgba(255,51,102,.6);font-size:18px">✕</button>
     </div>`).join('');
+}
+
+// ── KEYWORD RESEARCH ──
+async function doKWR(){
+  const topic = document.getElementById('kwtopic').value.trim();
+  if(!topic){showToast('Topic লেখো!');return;}
+  const lang = document.getElementById('kwlang').value;
+  const type = document.getElementById('kwtype').value;
+  setLoad(true);
+  const r = await aiChat('SEO expert. Topic: "'+topic+'" in '+lang+' for '+type+'. List 10 keywords with searches & competition (Low/Med/High). 5 long-tail keywords. 3 blog titles. Format with emojis.');
+  setLoad(false);
+  const el=document.getElementById('kwresult');
+  el.innerHTML=r.replace(/\n/g,'<br>');
+  el.style.display='block';
+  showToast('Keywords ready!');
+}
+
+// ── WHATSAPP ──
+async function genWAMsg(){
+  const topic = document.getElementById('wamsg').value.trim()||'আমার blog সম্পর্কে';
+  setLoad(true);
+  const msg = await aiChat('Write a short friendly WhatsApp message in '+(S.lang==='bn-IN'?'Bengali':S.lang==='hi-IN'?'Hindi':'English')+' about: "'+topic+'". Max 80 words.');
+  setLoad(false);
+  document.getElementById('wamsg').value=msg;
+  showToast('Message ready!');
+}
+function sendWA(){
+  const rawNum=document.getElementById('wanum').value.trim();
+  const num=rawNum.replace(/[^0-9]/g,'');
+  const msg=document.getElementById('wamsg').value.trim();
+  if(!msg){showToast('Message লেখো!');return;}
+  const url=num?'https://wa.me/'+num+'?text='+encodeURIComponent(msg):'https://wa.me/?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+  vibrate([100]);
+}
+
+// ── YOUTUBE SCRIPT ──
+async function genYTScript(){
+  const topic=document.getElementById('yttopic').value.trim();
+  if(!topic){showToast('Topic লেখো!');return;}
+  const dur=document.getElementById('ytdur').value;
+  const lang=document.getElementById('ytlang').value;
+  setLoad(true);
+  const script=await aiChat('Write YouTube script in '+lang+'. Topic: "'+topic+'". Duration: '+dur+' min. Include HOOK, INTRO, MAIN CONTENT sections, TIPS, OUTRO with subscribe CTA. Add [PAUSE] [B-ROLL] cues. Engaging tone.');
+  setLoad(false);
+  document.getElementById('ytscript').value=script;
+  document.getElementById('ytresult').style.display='block';
+  showToast('Script ready!');
+}
+async function copyYT(){
+  const s=document.getElementById('ytscript').value;
+  if(!s){showToast('আগে generate করো!');return;}
+  try{await navigator.clipboard.writeText(s);showToast('Script copied!');}catch(e){showToast('Copy failed');}
+}
+
+// ── CONTENT CALENDAR ──
+async function genCalendar(){
+  const niche=document.getElementById('calniche').value.trim()||MEM.blog_niche||'health';
+  setLoad(true);
+  const r=await aiChat('Create 7-day content calendar for '+niche+' blog in '+(S.lang==='bn-IN'?'Bengali':S.lang==='hi-IN'?'Hindi':'English')+'. Each day: blog title + keyword, Instagram idea, Facebook idea. Use emojis.');
+  setLoad(false);
+  const el=document.getElementById('calresult');
+  el.innerHTML='<div style="background:var(--bg);border-radius:10px;padding:10px;font-size:11px;color:var(--text);line-height:1.9">'+r.replace(/\n/g,'<br>')+'</div><button class="sbtn" onclick="copyCalendar()" style="width:100%;padding:9px;margin-top:8px">Copy Calendar</button>';
+  el.style.display='block';
+  window._lastCal=r;
+  showToast('Calendar ready!');
+}
+async function copyCalendar(){
+  if(!window._lastCal){showToast('আগে generate করো!');return;}
+  try{await navigator.clipboard.writeText(window._lastCal);showToast('Calendar copied!');}catch(e){}
 }
 
 // ── TOAST ──
