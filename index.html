@@ -3,756 +3,428 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>JARVIS AI — Powered by OpenRouter</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet"/>
+<title>JARVIS AI — Personal Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --cyan: #00D4FF;
-  --blue: #0066FF;
-  --bg: #050A14;
-  --surface: #0A1628;
-  --surface2: #111C35;
-  --text: #E8F4FF;
-  --green: #00FF88;
-  --red: #FF3366;
-  --amber: #FFB020;
-  --border: rgba(0,212,255,0.15);
-}
+:root{--cyan:#00D4FF;--blue:#0066FF;--bg:#050A14;--surface:#0A1628;--surface2:#111C35;--text:#E8F4FF;--green:#00FF88;--red:#FF3366;--border:rgba(0,212,255,0.15)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;height:100%;overflow:hidden;background:#020509}
 body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif}
+#app{width:100%;max-width:430px;height:100vh;max-height:900px;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden}
+@media(min-width:500px){#app{border-radius:24px;border:1px solid var(--border);box-shadow:0 0 120px rgba(0,212,255,0.08)}}
+#app::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px);background-size:30px 30px}
+#app::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,102,255,0.06) 0%,transparent 70%)}
 
-#app{
-  width:100%;max-width:430px;height:100vh;max-height:900px;
-  background:var(--bg);display:flex;flex-direction:column;
-  position:relative;overflow:hidden;border-radius:0;
-}
-@media(min-width:500px){
-  #app{border-radius:24px;border:1px solid var(--border);box-shadow:0 0 120px rgba(0,212,255,0.08),0 0 40px rgba(0,0,0,0.8)}
-}
-
-/* ── Grid BG ── */
-#app::before{
-  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px);
-  background-size:30px 30px;
-}
-#app::after{
-  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,102,255,0.06) 0%,transparent 70%);
-}
-
-/* ── HEADER ── */
-#header{
-  position:relative;z-index:10;
-  padding:14px 18px 12px;
-  background:linear-gradient(180deg,rgba(10,22,40,0.98) 0%,transparent 100%);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  flex-shrink:0;
-}
+/* HEADER */
+#header{position:relative;z-index:10;padding:14px 18px 12px;background:linear-gradient(180deg,rgba(10,22,40,0.98) 0%,transparent 100%);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
 .logo-wrap{display:flex;align-items:center;gap:10px}
-.logo-icon{
-  width:42px;height:42px;border-radius:12px;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-  box-shadow:0 0 20px rgba(0,212,255,0.4);position:relative;flex-shrink:0;
-}
-.logo-dot{
-  position:absolute;bottom:2px;right:2px;width:10px;height:10px;
-  border-radius:50%;background:var(--green);border:2px solid var(--bg);
-  box-shadow:0 0 8px var(--green);animation:pulse-dot 2s infinite;
-}
-@keyframes pulse-dot{0%,100%{box-shadow:0 0 8px var(--green)}50%{box-shadow:0 0 16px var(--green),0 0 4px var(--green)}}
-.logo-name{
-  font-size:20px;font-weight:700;letter-spacing:4px;
-  color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.6);
-  line-height:1;
-}
+.logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px rgba(0,212,255,0.4);position:relative;flex-shrink:0}
+.logo-dot{position:absolute;bottom:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg);box-shadow:0 0 8px var(--green);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 8px var(--green)}50%{box-shadow:0 0 16px var(--green)}}
+.logo-name{font-size:20px;font-weight:700;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.6);line-height:1}
 .logo-status{font-size:9px;letter-spacing:2px;color:rgba(0,255,136,0.7);margin-top:2px}
-
-/* Language chips */
 .lang-chips{display:flex;gap:4px;flex-shrink:0}
-.lang-chip{
-  padding:4px 8px;border-radius:8px;border:1px solid rgba(0,212,255,0.25);
-  background:transparent;color:rgba(0,212,255,0.5);
-  font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;
-  letter-spacing:1px;cursor:pointer;transition:all .2s;
-}
-.lang-chip.active{
-  border-color:var(--cyan);background:rgba(0,212,255,0.15);
-  color:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,0.2);
-}
+.lang-chip{padding:4px 8px;border-radius:8px;border:1px solid rgba(0,212,255,0.25);background:transparent;color:rgba(0,212,255,0.5);font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.lang-chip.active{border-color:var(--cyan);background:rgba(0,212,255,0.15);color:var(--cyan);box-shadow:0 0 10px rgba(0,212,255,0.2)}
 
-/* ── CONTENT ── */
+/* STATUS BAR */
+#status-bar{position:absolute;top:0;left:0;right:0;height:3px;z-index:20;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--cyan));background-size:200% 100%;display:none}
+#status-bar.loading{display:block;animation:loading-bar 1.5s linear infinite}
+@keyframes loading-bar{0%{background-position:0% 0}100%{background-position:200% 0}}
+
+/* CONTENT */
 #content{flex:1;overflow:hidden;position:relative;z-index:1}
 .tab-panel{display:none;height:100%;flex-direction:column;overflow:hidden}
 .tab-panel.active{display:flex}
 
-/* ── CHAT TAB ── */
-#messages{
-  flex:1;overflow-y:auto;padding:14px 14px 8px;
-  display:flex;flex-direction:column;gap:12px;
-  scrollbar-width:none;
-}
+/* CHAT */
+#messages{flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}
 #messages::-webkit-scrollbar{display:none}
-
 .bubble-row{display:flex;align-items:flex-end;gap:8px}
 .bubble-row.user{justify-content:flex-end}
-.bubble-row.ai{justify-content:flex-start}
-.ai-avatar{
-  width:30px;height:30px;border-radius:9px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  display:flex;align-items:center;justify-content:center;font-size:15px;
-  box-shadow:0 0 10px rgba(0,212,255,0.3);
-}
+.ai-avatar{width:30px;height:30px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:15px}
 .bubble-wrap{max-width:78%;display:flex;flex-direction:column}
 .bubble-row.user .bubble-wrap{align-items:flex-end}
-.bubble{
-  padding:10px 14px;border-radius:16px;
-  font-size:14px;line-height:1.55;color:var(--text);
-  word-break:break-word;
-}
-.bubble.ai-bubble{
-  background:var(--surface2);border:1px solid rgba(0,212,255,0.18);
-  border-radius:16px 16px 16px 4px;
-  box-shadow:0 0 20px rgba(0,212,255,0.06);
-}
-.bubble.user-bubble{
-  background:linear-gradient(135deg,var(--blue),var(--cyan));
-  border-radius:16px 16px 4px 16px;
-  box-shadow:0 4px 20px rgba(0,102,255,0.35);
-}
+.bubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.55;color:var(--text);word-break:break-word}
+.ai-bubble{background:var(--surface2);border:1px solid rgba(0,212,255,0.18);border-radius:16px 16px 16px 4px}
+.user-bubble{background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:16px 16px 4px 16px;box-shadow:0 4px 20px rgba(0,102,255,0.35)}
 .bubble-time{font-size:9px;color:rgba(0,212,255,0.3);margin-top:3px;letter-spacing:1px}
+#typing{display:none;align-items:flex-end;gap:8px;padding:0 14px 8px}
+.typing-dots{padding:12px 16px;background:var(--surface2);border:1px solid rgba(0,212,255,0.18);border-radius:16px 16px 16px 4px;display:flex;gap:4px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-6px);opacity:1}}
 
-/* Typing indicator */
-#typing{display:none;align-items:flex-end;gap:8px}
-.typing-dots{
-  padding:12px 16px;background:var(--surface2);
-  border:1px solid rgba(0,212,255,0.18);border-radius:16px 16px 16px 4px;
-  display:flex;gap:4px;align-items:center;
-}
-.dot{
-  width:6px;height:6px;border-radius:50%;background:var(--cyan);
-  animation:bounce 1.2s infinite;
-}
-.dot:nth-child(2){animation-delay:.2s}
-.dot:nth-child(3){animation-delay:.4s}
-@keyframes bounce{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(-6px);opacity:1}}
-
-/* ── VOICE SECTION ── */
-#voice-section{padding:10px 14px 6px;display:flex;flex-direction:column;align-items:center;gap:8px}
-#voice-text{
-  font-size:12px;color:var(--cyan);letter-spacing:1px;
-  background:var(--surface);border:1px solid rgba(0,212,255,0.25);
-  border-radius:10px;padding:7px 14px;width:100%;text-align:center;
-  display:none;min-height:34px;
-}
+/* VOICE & MIC */
+#voice-section{padding:10px 14px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative}
+#stop-btn{position:absolute;top:0;right:14px;background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.3);border-radius:8px;padding:4px 10px;color:var(--red);font-size:11px;cursor:pointer;font-family:'Rajdhani',sans-serif}
+#voice-text{font-size:12px;color:var(--cyan);letter-spacing:1px;background:var(--surface);border:1px solid rgba(0,212,255,0.25);border-radius:10px;padding:7px 14px;width:100%;text-align:center;display:none;min-height:34px}
 #mic-wrap{position:relative;display:flex;align-items:center;justify-content:center}
-.mic-ring{
-  position:absolute;border-radius:50%;border:2px solid var(--cyan);
-  animation:mic-ping 1.2s ease-out infinite;display:none;
-}
-.mic-ring:nth-child(1){width:72px;height:72px;animation-delay:0s;opacity:0.4}
-.mic-ring:nth-child(2){width:90px;height:90px;animation-delay:0.3s;opacity:0.2}
-.mic-ring:nth-child(3){width:110px;height:110px;animation-delay:0.6s;opacity:0.1}
-@keyframes mic-ping{0%{transform:scale(0.9);opacity:0.6}100%{transform:scale(1.4);opacity:0}}
-#mic-btn{
-  width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  font-size:24px;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 25px rgba(0,212,255,0.5);
-  transition:all .25s;position:relative;z-index:2;
-}
-#mic-btn:active{transform:scale(0.92)}
-#mic-btn.listening{
-  background:linear-gradient(135deg,var(--red),#FF6B35);
-  box-shadow:0 0 30px rgba(255,51,102,0.5);
-}
-#mic-btn.listening ~ .mic-ring{display:block}
+.mic-ring{position:absolute;border-radius:50%;border:2px solid var(--cyan);animation:mic-ping 1.2s ease-out infinite;display:none}
+.mic-ring:nth-child(1){width:72px;height:72px;animation-delay:0s;opacity:.4}
+.mic-ring:nth-child(2){width:90px;height:90px;animation-delay:.3s;opacity:.2}
+.mic-ring:nth-child(3){width:110px;height:110px;animation-delay:.6s;opacity:.1}
+@keyframes mic-ping{0%{transform:scale(.9);opacity:.6}100%{transform:scale(1.4);opacity:0}}
+#mic-btn{width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--blue));font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 25px rgba(0,212,255,0.5);transition:all .25s;position:relative;z-index:2}
+#mic-btn.listening{background:linear-gradient(135deg,var(--red),#FF6B35);box-shadow:0 0 30px rgba(255,51,102,0.5)}
 
-/* ── INPUT ── */
+/* INPUT */
 #input-area{padding:6px 14px 14px;display:flex;gap:8px}
-#user-input{
-  flex:1;padding:11px 15px;background:var(--surface);
-  border:1px solid rgba(0,212,255,0.2);border-radius:14px;
-  color:var(--text);font-size:13px;font-family:'Rajdhani',sans-serif;
-  outline:none;transition:border-color .2s;
-}
+#user-input{flex:1;padding:11px 15px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:14px;color:var(--text);font-size:13px;font-family:'Rajdhani',sans-serif;outline:none;transition:border-color .2s}
 #user-input:focus{border-color:rgba(0,212,255,0.5)}
 #user-input::placeholder{color:rgba(0,212,255,0.3)}
-#send-btn{
-  width:46px;height:46px;border-radius:13px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 15px rgba(0,212,255,0.35);transition:all .2s;flex-shrink:0;
-}
-#send-btn:active{transform:scale(0.92)}
+#send-btn{width:46px;height:46px;border-radius:13px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(0,212,255,0.35);flex-shrink:0}
 
-/* ── MEMORY TAB ── */
+/* SHARED */
 .tab-scroll{flex:1;overflow-y:auto;padding:16px 14px;scrollbar-width:none}
 .tab-scroll::-webkit-scrollbar{display:none}
-.section-label{
-  font-size:10px;letter-spacing:3px;color:var(--cyan);
-  margin-bottom:14px;font-weight:600;
-}
-.memory-card{
-  background:var(--surface);border:1px solid rgba(0,212,255,0.15);
-  border-radius:14px;padding:12px 14px;margin-bottom:10px;
-  display:flex;align-items:flex-start;gap:12px;
-}
-.memory-icon{font-size:20px;flex-shrink:0;margin-top:1px}
-.memory-key{font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.6);text-transform:uppercase}
-.memory-val{font-size:13px;color:var(--text);margin-top:3px;line-height:1.4}
-.mem-add-row{display:flex;gap:8px;margin-top:4px}
-.mem-input{
-  flex:1;padding:9px 13px;background:var(--surface);
-  border:1px solid rgba(0,212,255,0.2);border-radius:11px;
-  color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none;
-}
-.mem-input::placeholder{color:rgba(0,212,255,0.3)}
-.mem-btn{
-  padding:9px 14px;border:none;border-radius:11px;cursor:pointer;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  color:#fff;font-size:12px;font-family:'Rajdhani',sans-serif;
-  font-weight:600;letter-spacing:1px;
-}
-.stats-card{
-  background:var(--surface);border:1px solid rgba(0,255,136,0.2);
-  border-radius:14px;padding:13px 14px;margin-top:6px;
-}
-.stats-label{font-size:9px;letter-spacing:2px;color:var(--green);margin-bottom:8px}
-.stats-row{font-size:12px;color:rgba(232,244,255,0.6);margin-bottom:4px}
-
-/* ── BLOGGER TAB ── */
-.blogger-card{
-  background:var(--surface);border:1px solid rgba(0,212,255,0.15);
-  border-radius:14px;padding:14px;margin-bottom:12px;
-}
-.blogger-url{font-size:12px;color:var(--cyan);margin-bottom:10px}
-.blog-btns{display:flex;gap:8px}
-.blog-btn{
-  flex:1;padding:9px 0;border:1px solid rgba(0,212,255,0.25);
-  border-radius:10px;background:transparent;color:var(--text);
-  font-size:11px;font-family:'Rajdhani',sans-serif;cursor:pointer;
-  letter-spacing:1px;transition:all .2s;
-}
-.blog-btn.primary{
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  border-color:transparent;box-shadow:0 0 12px rgba(0,212,255,0.25);
-}
-.blog-btn:active{transform:scale(0.96)}
-.blog-compose{margin-top:10px}
-.blog-textarea{
-  width:100%;padding:10px 13px;background:var(--bg);
-  border:1px solid rgba(0,212,255,0.2);border-radius:11px;
-  color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;
-  outline:none;resize:none;height:90px;
-}
-.blog-textarea::placeholder{color:rgba(0,212,255,0.25)}
-.blog-title-input{
-  width:100%;padding:9px 13px;background:var(--bg);
-  border:1px solid rgba(0,212,255,0.2);border-radius:11px;
-  color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;
-  outline:none;margin-bottom:8px;
-}
-.blog-title-input::placeholder{color:rgba(0,212,255,0.25)}
-.publish-btn{
-  width:100%;padding:11px;border:none;border-radius:12px;cursor:pointer;
-  background:linear-gradient(135deg,var(--green),#00AAAA);
-  color:#050A14;font-size:13px;font-family:'Rajdhani',sans-serif;
-  font-weight:700;letter-spacing:2px;margin-top:8px;
-  box-shadow:0 0 15px rgba(0,255,136,0.2);transition:all .2s;
-}
-.publish-btn:active{transform:scale(0.97)}
-.cmd-hint-card{
-  background:var(--surface);border:1px solid rgba(0,212,255,0.1);
-  border-radius:12px;padding:13px 14px;
-}
-.cmd-hint-label{font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.6);margin-bottom:8px}
-.cmd-hint-item{font-size:12px;color:rgba(232,244,255,0.55);margin-bottom:6px;line-height:1.4}
-
-/* ── SOCIAL TAB ── */
-.social-card{
-  border-radius:14px;padding:13px 14px;margin-bottom:10px;
-  display:flex;align-items:center;justify-content:space-between;
-  border:1px solid;
-}
-.social-card.connected{background:rgba(0,255,136,0.05);border-color:rgba(0,255,136,0.2)}
-.social-card.disconnected{background:rgba(255,51,102,0.04);border-color:rgba(255,51,102,0.2)}
-.social-left{display:flex;align-items:center;gap:12px}
-.social-icon{font-size:24px}
-.social-name{font-size:14px;color:var(--text)}
-.social-status{font-size:9px;letter-spacing:1px;margin-top:2px}
-.social-status.ok{color:var(--green)}
-.social-status.no{color:var(--red)}
-.social-btn{
-  padding:7px 13px;border-radius:9px;border:1px solid;cursor:pointer;
-  font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;
-  letter-spacing:1px;transition:all .2s;
-}
-.social-btn.post-btn{
-  border-color:rgba(0,255,136,0.4);color:var(--green);
-  background:rgba(0,255,136,0.08);
-}
-.social-btn.connect-btn{
-  border-color:rgba(255,51,102,0.4);color:var(--red);
-  background:rgba(255,51,102,0.06);
-}
-.social-btn:active{transform:scale(0.93)}
-.post-compose{
-  background:var(--surface);border:1px solid rgba(0,212,255,0.15);
-  border-radius:14px;padding:13px;margin-top:4px;
-}
-.post-compose-label{font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.6);margin-bottom:8px}
-.post-textarea{
-  width:100%;padding:9px 12px;background:var(--bg);
-  border:1px solid rgba(0,212,255,0.2);border-radius:10px;
-  color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;
-  outline:none;resize:none;height:70px;
-}
-.post-textarea::placeholder{color:rgba(0,212,255,0.25)}
-.post-actions{display:flex;gap:8px;margin-top:8px}
-.post-platform-btn{
-  flex:1;padding:8px 0;border:1px solid rgba(0,212,255,0.2);
-  border-radius:9px;background:transparent;color:rgba(0,212,255,0.6);
-  font-size:11px;font-family:'Rajdhani',sans-serif;cursor:pointer;
-  letter-spacing:1px;transition:all .2s;
-}
-.post-platform-btn.selected{
-  background:rgba(0,212,255,0.15);border-color:var(--cyan);color:var(--cyan);
-}
-
-/* ── SETTINGS TAB ── */
-.settings-group{margin-bottom:18px}
-.settings-group-label{
-  font-size:9px;letter-spacing:2px;color:rgba(0,212,255,0.6);
-  margin-bottom:10px;font-weight:600;
-}
-.settings-row{margin-bottom:10px}
-.settings-key-label{
-  font-size:10px;letter-spacing:1px;color:rgba(0,212,255,0.5);
-  margin-bottom:5px;
-}
-.settings-key-wrap{display:flex;gap:7px}
-.settings-input{
-  flex:1;padding:10px 13px;background:var(--surface);
-  border:1px solid rgba(0,212,255,0.2);border-radius:11px;
-  color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;
-  outline:none;transition:border-color .2s;
-}
+.section-label{font-size:10px;letter-spacing:3px;color:var(--cyan);margin-bottom:14px;font-weight:600}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:10px}
+.blog-btn{flex:1;padding:9px 0;border:1px solid rgba(0,212,255,0.25);border-radius:10px;background:transparent;color:var(--text);font-size:11px;font-family:'Rajdhani',sans-serif;cursor:pointer;letter-spacing:1px;transition:all .2s}
+.blog-btn.primary{background:linear-gradient(135deg,var(--cyan),var(--blue));border-color:transparent}
+.blog-btn:active{transform:scale(.96)}
+.settings-input{width:100%;padding:10px 13px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:11px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none}
 .settings-input:focus{border-color:rgba(0,212,255,0.45)}
 .settings-input::placeholder{color:rgba(0,212,255,0.25)}
-.eye-btn{
-  width:40px;border:1px solid rgba(0,212,255,0.2);border-radius:11px;
-  background:var(--surface);color:var(--cyan);cursor:pointer;font-size:14px;
-  display:flex;align-items:center;justify-content:center;transition:all .2s;
-}
-.lang-group{display:flex;gap:8px}
-.lang-big-btn{
-  flex:1;padding:10px 0;border:1px solid rgba(0,212,255,0.2);
-  border-radius:11px;background:transparent;color:rgba(0,212,255,0.5);
-  font-size:13px;font-family:'Rajdhani',sans-serif;cursor:pointer;
-  letter-spacing:1px;transition:all .2s;
-}
-.lang-big-btn.active{
-  background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(0,102,255,0.15));
-  border-color:var(--cyan);color:var(--cyan);
-  box-shadow:0 0 12px rgba(0,212,255,0.15);
-}
-.voice-toggle{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--surface);border:1px solid rgba(0,212,255,0.15);
-  border-radius:12px;padding:12px 14px;
-}
-.toggle-label{font-size:13px;color:var(--text)}
-.toggle-sub{font-size:10px;color:rgba(0,212,255,0.4);margin-top:2px;letter-spacing:1px}
-.toggle-switch{
-  width:44px;height:24px;border-radius:12px;cursor:pointer;
-  background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);
-  position:relative;transition:all .3s;
-}
-.toggle-switch.on{background:linear-gradient(135deg,var(--cyan),var(--blue));border-color:transparent}
-.toggle-thumb{
-  width:18px;height:18px;border-radius:50%;background:#fff;
-  position:absolute;top:2px;left:2px;transition:left .3s;
-  box-shadow:0 2px 6px rgba(0,0,0,0.3);
-}
-.toggle-switch.on .toggle-thumb{left:22px}
-.save-btn{
-  width:100%;padding:13px;border:none;border-radius:14px;cursor:pointer;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  color:#fff;font-size:13px;font-family:'Rajdhani',sans-serif;
-  font-weight:700;letter-spacing:3px;
-  box-shadow:0 0 25px rgba(0,212,255,0.3);transition:all .2s;
-}
-.save-btn:active{transform:scale(0.97)}
-.ai-engine-info{
-  background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);
-  border-radius:10px;padding:10px 13px;font-size:11px;color:rgba(0,212,255,0.7);
-  line-height:1.6;margin-bottom:12px;letter-spacing:0.5px;
-}
-.user-card{
-  background:var(--surface);border:1px solid rgba(0,212,255,0.15);
-  border-radius:12px;padding:12px 14px;margin-bottom:10px;
-  display:flex;align-items:center;gap:12px;
-}
-.user-avatar{
-  width:42px;height:42px;border-radius:12px;
-  background:linear-gradient(135deg,var(--cyan),var(--blue));
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-}
+.eye-btn{width:40px;border:1px solid rgba(0,212,255,0.2);border-radius:11px;background:var(--surface);color:var(--cyan);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.settings-key-label{font-size:10px;letter-spacing:1px;color:rgba(0,212,255,0.5);margin-bottom:5px}
+.settings-key-wrap{display:flex;gap:7px}
+.action-btn{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;font-family:'Rajdhani',sans-serif;color:var(--text);font-size:10px;letter-spacing:.5px;transition:all .2s}
+.action-btn:active{transform:scale(.93);border-color:var(--cyan)}
+.action-icon{font-size:22px}
 
-/* ── BOTTOM NAV ── */
-#bottom-nav{
-  position:relative;z-index:10;
-  background:var(--surface);
-  border-top:1px solid var(--border);
-  display:flex;flex-shrink:0;
-}
-.nav-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  padding:10px 0 6px;background:none;border:none;cursor:pointer;gap:3px;
-}
-.nav-icon{font-size:20px;transition:filter .2s}
-.nav-label{
-  font-size:8px;letter-spacing:1.5px;
-  color:rgba(0,212,255,0.35);font-family:'Rajdhani',sans-serif;
-  font-weight:600;transition:color .2s;
-}
-.nav-indicator{
-  width:20px;height:2px;border-radius:1px;
-  background:linear-gradient(90deg,var(--cyan),var(--blue));
-  margin-top:2px;display:none;
-}
+/* MEMORY */
+.memory-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.mem-input{flex:1;padding:9px 13px;background:var(--surface);border:1px solid rgba(0,212,255,0.2);border-radius:11px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none}
+.mem-input::placeholder{color:rgba(0,212,255,0.3)}
+
+/* MOBILE GRID */
+.mobile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+.mobile-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all .2s}
+.mobile-card:active{transform:scale(.97)}
+.mobile-card-icon{font-size:22px}
+.mobile-card-val{font-size:18px;font-weight:700;color:var(--cyan);letter-spacing:1px}
+.mobile-card-label{font-size:8px;letter-spacing:2px;color:rgba(0,212,255,0.5)}
+.mobile-card-sub{font-size:10px;color:rgba(232,244,255,0.5);text-align:center}
+.mobile-card-bar{width:100%;height:4px;background:rgba(0,212,255,0.1);border-radius:2px;margin-top:4px}
+.mobile-card-fill{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .5s}
+.map-container{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:80px;display:flex;align-items:center;justify-content:center}
+.map-placeholder{display:flex;flex-direction:column;align-items:center;padding:20px}
+.action-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.weather-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.weather-main{display:flex;align-items:center;justify-content:space-between;padding:14px}
+.weather-temp{font-size:36px;font-weight:700;color:var(--cyan)}
+.weather-detail-item{flex:1;padding:10px 0;text-align:center;border-right:1px solid var(--border)}
+.weather-detail-item:last-child{border-right:none}
+.weather-detail-val{font-size:13px;color:var(--text)}
+.weather-detail-key{font-size:8px;letter-spacing:1.5px;color:rgba(0,212,255,0.4)}
+
+/* SOCIAL */
+.social-card{border-radius:14px;padding:13px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;border:1px solid}
+.social-card.connected{background:rgba(0,255,136,0.05);border-color:rgba(0,255,136,0.2)}
+.social-card.disconnected{background:rgba(255,51,102,0.04);border-color:rgba(255,51,102,0.2)}
+.social-btn{padding:7px 13px;border-radius:9px;border:1px solid;cursor:pointer;font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;transition:all .2s}
+.social-btn.post-btn{border-color:rgba(0,255,136,0.4);color:var(--green);background:rgba(0,255,136,0.08)}
+.social-btn.connect-btn{border-color:rgba(255,51,102,0.4);color:var(--red);background:rgba(255,51,102,0.06)}
+.blog-textarea{width:100%;padding:9px 12px;background:var(--bg);border:1px solid rgba(0,212,255,0.2);border-radius:10px;color:var(--text);font-size:12px;font-family:'Rajdhani',sans-serif;outline:none;resize:none;height:70px}
+.blog-textarea::placeholder{color:rgba(0,212,255,0.25)}
+
+/* SETTINGS */
+.ai-engine-info{background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:10px 13px;font-size:11px;color:rgba(0,212,255,0.7);line-height:1.6;margin-bottom:12px;letter-spacing:.5px}
+.lang-group{display:flex;gap:8px}
+.lang-big-btn{flex:1;padding:10px 0;border:1px solid rgba(0,212,255,0.2);border-radius:11px;background:transparent;color:rgba(0,212,255,0.5);font-size:13px;font-family:'Rajdhani',sans-serif;cursor:pointer;letter-spacing:1px;transition:all .2s}
+.lang-big-btn.active{background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(0,102,255,0.15));border-color:var(--cyan);color:var(--cyan)}
+.voice-toggle{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid rgba(0,212,255,0.15);border-radius:12px;padding:12px 14px}
+.toggle-switch{width:44px;height:24px;border-radius:12px;cursor:pointer;background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);position:relative;transition:all .3s}
+.toggle-switch.on{background:linear-gradient(135deg,var(--cyan),var(--blue));border-color:transparent}
+.toggle-thumb{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .3s;box-shadow:0 2px 6px rgba(0,0,0,0.3)}
+.toggle-switch.on .toggle-thumb{left:22px}
+.save-btn{width:100%;padding:13px;border:none;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;box-shadow:0 0 25px rgba(0,212,255,0.3)}
+.save-btn:active{transform:scale(.97)}
+
+/* NAV */
+#bottom-nav{position:relative;z-index:10;background:var(--surface);border-top:1px solid var(--border);display:flex;flex-shrink:0}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 6px;background:none;border:none;cursor:pointer;gap:3px}
+.nav-icon{font-size:18px;transition:filter .2s}
+.nav-label{font-size:7px;letter-spacing:1.5px;color:rgba(0,212,255,0.35);font-family:'Rajdhani',sans-serif;font-weight:600;transition:color .2s}
+.nav-indicator{width:20px;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--cyan),var(--blue));margin-top:2px;display:none}
 .nav-btn.active .nav-label{color:var(--cyan)}
 .nav-btn.active .nav-indicator{display:block}
 .nav-btn.active .nav-icon{filter:drop-shadow(0 0 6px var(--cyan))}
 
-/* ── TOAST ── */
-#toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--surface2);border:1px solid rgba(0,212,255,0.3);
-  border-radius:12px;padding:10px 18px;font-size:13px;color:var(--text);
-  opacity:0;transition:all .3s;z-index:999;pointer-events:none;
-  white-space:nowrap;letter-spacing:1px;
-}
+/* TOAST */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid rgba(0,212,255,0.3);border-radius:12px;padding:10px 18px;font-size:13px;color:var(--text);opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:nowrap;letter-spacing:1px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── STATUS BAR ── */
-#status-bar{
-  position:absolute;top:0;left:0;right:0;height:3px;z-index:20;
-  background:linear-gradient(90deg,var(--cyan),var(--blue),var(--cyan));
-  background-size:200% 100%;display:none;
-}
-#status-bar.loading{display:block;animation:loading-bar 1.5s linear infinite}
-@keyframes loading-bar{0%{background-position:0% 0}100%{background-position:200% 0}}
-
-/* Scrollbar */
-.tab-scroll::-webkit-scrollbar{width:0}
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
-
 <div id="app">
   <div id="status-bar"></div>
 
   <!-- HEADER -->
   <div id="header">
     <div class="logo-wrap">
-      <div class="logo-icon">
-        🤖
-        <div class="logo-dot"></div>
-      </div>
+      <div class="logo-icon">🤖<div class="logo-dot"></div></div>
       <div>
         <div class="logo-name">JARVIS</div>
         <div class="logo-status" id="engine-status">● ONLINE • AI READY</div>
       </div>
     </div>
     <div class="lang-chips">
-      <button class="lang-chip active" onclick="setLang('en','EN')">EN</button>
-      <button class="lang-chip" onclick="setLang('bn-IN','বাং')">বাং</button>
-      <button class="lang-chip" onclick="setLang('hi-IN','हिं')">हिं</button>
+      <button class="lang-chip active" onclick="setLang('en')">EN</button>
+      <button class="lang-chip" onclick="setLang('bn-IN')">বাং</button>
+      <button class="lang-chip" onclick="setLang('hi-IN')">हिं</button>
     </div>
   </div>
 
-  <!-- CONTENT -->
   <div id="content">
 
-    <!-- ── CHAT TAB ── -->
+    <!-- CHAT -->
     <div class="tab-panel active" id="tab-chat">
       <div id="messages"></div>
-      <div id="typing">
-        <div class="ai-avatar">🤖</div>
-        <div class="typing-dots">
-          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
-      </div>
+      <div id="typing"><div class="ai-avatar">🤖</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
       <div id="voice-section">
+        <button id="stop-btn" onclick="stopSpeaking()">⏹ Stop</button>
         <div id="voice-text">🎤 Listening...</div>
         <div id="mic-wrap">
-          <div class="mic-ring"></div>
-          <div class="mic-ring"></div>
-          <div class="mic-ring"></div>
+          <div class="mic-ring"></div><div class="mic-ring"></div><div class="mic-ring"></div>
           <button id="mic-btn" onclick="toggleMic()">🎤</button>
         </div>
       </div>
       <div id="input-area">
-        <input id="user-input" type="text" placeholder="Ask me anything..." autocomplete="off"
-          onkeydown="if(event.key==='Enter')sendMessage()"/>
+        <input id="user-input" type="text" placeholder="Ask me anything..." autocomplete="off" onkeydown="if(event.key==='Enter')sendMessage()"/>
         <button id="send-btn" onclick="sendMessage()">➤</button>
       </div>
     </div>
 
-    <!-- ── MEMORY TAB ── -->
+    <!-- MEMORY -->
     <div class="tab-panel" id="tab-memory">
       <div class="tab-scroll">
         <div class="section-label">◈ PERSISTENT MEMORY</div>
         <div id="memory-list"></div>
         <div class="section-label" style="margin-top:14px">◈ ADD MEMORY</div>
-        <div class="mem-add-row">
+        <div style="display:flex;gap:8px;margin-bottom:10px">
           <input class="mem-input" id="mem-key" placeholder="Key (e.g. hobby)"/>
           <input class="mem-input" id="mem-val" placeholder="Value"/>
-          <button class="mem-btn" onclick="addMemory()">+ ADD</button>
+          <button class="blog-btn primary" style="flex:0;padding:9px 12px;white-space:nowrap" onclick="addMemory()">+ ADD</button>
         </div>
-        <div class="stats-card" style="margin-top:14px">
-          <div class="stats-label">◈ SESSION STATS</div>
-          <div class="stats-row" id="stat-msgs">💬 Messages: 0</div>
-          <div class="stats-row" id="stat-mem">🧠 Memories: 0</div>
-          <div class="stats-row">📅 Session: <span id="stat-time"></span></div>
+        <div class="card" style="border-color:rgba(0,255,136,0.2)">
+          <div style="color:var(--green);font-size:10px;letter-spacing:2px;margin-bottom:8px">◈ SESSION STATS</div>
+          <div id="stat-msgs" style="color:rgba(232,244,255,.6);font-size:12px;margin-bottom:4px">💬 Messages: 0</div>
+          <div id="stat-mem" style="color:rgba(232,244,255,.6);font-size:12px;margin-bottom:4px">🧠 Memories: 0</div>
+          <div style="color:rgba(232,244,255,.6);font-size:12px">📅 Session: <span id="stat-time"></span></div>
         </div>
       </div>
     </div>
 
-    <!-- ── BLOGGER TAB ── -->
+    <!-- BLOGGER -->
     <div class="tab-panel" id="tab-blogger">
       <div class="tab-scroll">
         <div class="section-label">◈ BLOGGER CONTROL</div>
-
-        <div class="blogger-card">
-          <div class="blogger-url">📝 healthtips9600.blogspot.com</div>
-          <div class="blog-compose">
-            <input class="blog-title-input" id="blog-title-1" placeholder="Post Title..."/>
-            <textarea class="blog-textarea" id="blog-content-1" placeholder="Post content... (or use voice: 'write a blog post about health tips')"></textarea>
-            <div class="blog-btns" style="margin-top:8px">
-              <button class="blog-btn" onclick="generateBlogPost('health')">🤖 AI Generate</button>
-              <button class="blog-btn primary" onclick="publishPost(1)">🚀 Publish</button>
-            </div>
+        <div class="card">
+          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">📝 healthtips9600.blogspot.com</div>
+          <input id="blog-title-1" class="settings-input" placeholder="Post Title..." style="margin-bottom:8px"/>
+          <textarea id="blog-content-1" class="blog-textarea" style="height:90px" placeholder="Post content..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="blog-btn" onclick="generateBlogPost('health')">🤖 AI Generate</button>
+            <button class="blog-btn primary" onclick="publishPost(1)">🚀 Publish</button>
           </div>
         </div>
-
-        <div class="blogger-card">
-          <div class="blogger-url">🛒 kayapatbajar.blogspot.com</div>
-          <div class="blog-compose">
-            <input class="blog-title-input" id="blog-title-2" placeholder="Product Review Title..."/>
-            <textarea class="blog-textarea" id="blog-content-2" placeholder="Product review content..."></textarea>
-            <div class="blog-btns" style="margin-top:8px">
-              <button class="blog-btn" onclick="generateBlogPost('product')">🤖 AI Generate</button>
-              <button class="blog-btn primary" onclick="publishPost(2)">🚀 Publish</button>
-            </div>
+        <div class="card">
+          <div style="color:var(--cyan);font-size:12px;margin-bottom:10px">🛒 kayapatbajar.blogspot.com</div>
+          <input id="blog-title-2" class="settings-input" placeholder="Product Review Title..." style="margin-bottom:8px"/>
+          <textarea id="blog-content-2" class="blog-textarea" style="height:90px" placeholder="Product review content..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="blog-btn" onclick="generateBlogPost('product')">🤖 AI Generate</button>
+            <button class="blog-btn primary" onclick="publishPost(2)">🚀 Publish</button>
           </div>
         </div>
-
-        <div class="cmd-hint-card">
-          <div class="cmd-hint-label">◈ VOICE COMMANDS</div>
-          <div class="cmd-hint-item">🎤 "Write a blog post about [topic]"</div>
-          <div class="cmd-hint-item">🎤 "স্বাস্থ্য টিপস নিয়ে ব্লগ পোস্ট লেখো"</div>
-          <div class="cmd-hint-item">🎤 "Publish my last draft"</div>
-          <div class="cmd-hint-item">🎤 "स्वास्थ्य पर ब्लॉग लिखो"</div>
+        <div class="card">
+          <div style="color:rgba(0,212,255,.6);font-size:9px;letter-spacing:2px;margin-bottom:8px">◈ VOICE COMMANDS</div>
+          <div style="color:rgba(232,244,255,.55);font-size:12px;margin-bottom:6px">🎤 "Write a blog post about [topic]"</div>
+          <div style="color:rgba(232,244,255,.55);font-size:12px;margin-bottom:6px">🎤 "স্বাস্থ্য টিপস নিয়ে ব্লগ পোস্ট লেখো"</div>
+          <div style="color:rgba(232,244,255,.55);font-size:12px">🎤 "Publish my last draft"</div>
         </div>
       </div>
     </div>
 
-    <!-- ── SOCIAL TAB ── -->
+    <!-- SOCIAL -->
     <div class="tab-panel" id="tab-social">
       <div class="tab-scroll">
         <div class="section-label">◈ SOCIAL MEDIA</div>
-
         <div class="social-card connected">
-          <div class="social-left">
-            <div class="social-icon">👥</div>
-            <div>
-              <div class="social-name">Facebook</div>
-              <div class="social-status ok">CONNECTED</div>
-            </div>
-          </div>
-          <button class="social-btn post-btn" onclick="openPostCompose('Facebook')">POST</button>
+          <div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">👥</span><div><div style="color:var(--text);font-size:14px">Facebook</div><div style="color:var(--green);font-size:9px;letter-spacing:1px">CONNECTED</div></div></div>
+          <button class="social-btn post-btn" onclick="openPostCompose()">POST</button>
         </div>
-
         <div class="social-card connected">
-          <div class="social-left">
-            <div class="social-icon">📸</div>
-            <div>
-              <div class="social-name">Instagram</div>
-              <div class="social-status ok">CONNECTED</div>
-            </div>
-          </div>
-          <button class="social-btn post-btn" onclick="openPostCompose('Instagram')">POST</button>
+          <div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">📸</span><div><div style="color:var(--text);font-size:14px">Instagram</div><div style="color:var(--green);font-size:9px;letter-spacing:1px">CONNECTED</div></div></div>
+          <button class="social-btn post-btn" onclick="openPostCompose()">POST</button>
         </div>
-
         <div class="social-card disconnected">
-          <div class="social-left">
-            <div class="social-icon">🐦</div>
-            <div>
-              <div class="social-name">Twitter / X</div>
-              <div class="social-status no">NOT CONNECTED</div>
-            </div>
-          </div>
-          <button class="social-btn connect-btn" onclick="showToast('⚙️ Add Twitter API key in Settings')">CONNECT</button>
+          <div style="display:flex;align-items:center;gap:12px"><span style="font-size:24px">🐦</span><div><div style="color:var(--text);font-size:14px">Twitter / X</div><div style="color:var(--red);font-size:9px;letter-spacing:1px">NOT CONNECTED</div></div></div>
+          <button class="social-btn connect-btn" onclick="showToast('⚙️ Settings-এ Twitter key দাও')">CONNECT</button>
         </div>
-
-        <div class="post-compose" id="post-compose-box" style="display:none">
-          <div class="post-compose-label">◈ COMPOSE POST</div>
-          <textarea class="post-textarea" id="post-content" placeholder="Write your post... (or use AI)"></textarea>
-          <div class="blog-btns" style="margin-top:8px">
+        <div class="card" id="post-compose-box" style="display:none">
+          <div style="color:rgba(0,212,255,.6);font-size:9px;letter-spacing:2px;margin-bottom:8px">◈ COMPOSE POST</div>
+          <textarea class="blog-textarea" id="post-content" placeholder="Write your post..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
             <button class="blog-btn" onclick="generateSocialPost()">🤖 AI Write</button>
             <button class="blog-btn primary" onclick="sendSocialPost()">📤 Send</button>
           </div>
-          <div class="post-actions">
-            <button class="post-platform-btn selected" id="platform-fb" onclick="selectPlatform('fb')">👥 Facebook</button>
-            <button class="post-platform-btn" id="platform-ig" onclick="selectPlatform('ig')">📸 Instagram</button>
-          </div>
-        </div>
-
-        <div class="cmd-hint-card" style="margin-top:12px">
-          <div class="cmd-hint-label">◈ VOICE COMMANDS</div>
-          <div class="cmd-hint-item">🎤 "Post on Facebook about my new blog"</div>
-          <div class="cmd-hint-item">🎤 "ফেসবুকে পোস্ট করো"</div>
-          <div class="cmd-hint-item">🎤 "Create Instagram caption for [topic]"</div>
         </div>
       </div>
     </div>
 
-    <!-- ── SETTINGS TAB ── -->
+    <!-- MOBILE -->
+    <div class="tab-panel" id="tab-mobile">
+      <div class="tab-scroll">
+        <div class="section-label">◈ DEVICE STATUS</div>
+        <div class="mobile-grid">
+          <div class="mobile-card" id="card-battery">
+            <div class="mobile-card-icon">🔋</div>
+            <div class="mobile-card-val" id="battery-val">--</div>
+            <div class="mobile-card-label">BATTERY</div>
+            <div class="mobile-card-bar"><div class="mobile-card-fill" id="battery-fill" style="width:0%"></div></div>
+          </div>
+          <div class="mobile-card" id="card-network">
+            <div class="mobile-card-icon">🌐</div>
+            <div class="mobile-card-val" id="network-val">--</div>
+            <div class="mobile-card-label">NETWORK</div>
+            <div class="mobile-card-sub" id="network-type">Checking...</div>
+          </div>
+          <div class="mobile-card" onclick="getLocation()">
+            <div class="mobile-card-icon">📍</div>
+            <div class="mobile-card-val" id="location-val" style="font-size:11px">TAP</div>
+            <div class="mobile-card-label">LOCATION</div>
+            <div class="mobile-card-sub" id="location-sub">Tap to get</div>
+          </div>
+          <div class="mobile-card">
+            <div class="mobile-card-icon">🕐</div>
+            <div class="mobile-card-val" id="time-val" style="font-size:13px">--:--</div>
+            <div class="mobile-card-label">TIME</div>
+            <div class="mobile-card-sub" id="date-val">--</div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">◈ LOCATION MAP</div>
+        <div class="map-container" id="map-container">
+          <div class="map-placeholder" id="map-placeholder">
+            <div style="font-size:40px">🗺️</div>
+            <div style="color:rgba(0,212,255,.6);font-size:12px;margin-top:8px">📍 Location নাও → Map দেখাবে</div>
+          </div>
+          <iframe id="map-iframe" style="display:none;width:100%;height:220px;border:none" allowfullscreen></iframe>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="blog-btn primary" style="flex:2;padding:10px 0" onclick="getLocation()">📍 আমার Location</button>
+          <button class="blog-btn" style="flex:1;padding:10px 0" onclick="openGoogleMaps()">🗺️ Maps</button>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">◈ WEATHER</div>
+        <div class="weather-card" id="weather-card">
+          <div style="color:rgba(0,212,255,.5);font-size:12px;text-align:center;padding:16px">📍 Location নিলে Weather দেখাবে</div>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">◈ QUICK ACTIONS</div>
+        <div class="action-grid">
+          <button class="action-btn" onclick="copyLastMsg()"><span class="action-icon">📋</span><span>Copy Chat</span></button>
+          <button class="action-btn" onclick="vibratePhone()"><span class="action-icon">📳</span><span>Vibrate</span></button>
+          <button class="action-btn" onclick="requestNotification()"><span class="action-icon">🔔</span><span>Notify</span></button>
+          <button class="action-btn" onclick="shareApp()"><span class="action-icon">📤</span><span>Share</span></button>
+          <button class="action-btn" onclick="sendTestNotification()"><span class="action-icon">💬</span><span>Test Notify</span></button>
+          <button class="action-btn" onclick="checkWeather()"><span class="action-icon">🌤️</span><span>Weather</span></button>
+        </div>
+
+        <div class="section-label" style="margin-top:16px">◈ CLIPBOARD</div>
+        <div class="card">
+          <textarea id="clipboard-area" class="blog-textarea" style="height:60px" placeholder="Text লেখো → Copy/Chat"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="blog-btn" onclick="copyText()" style="flex:1;padding:9px 0">📋 Copy</button>
+            <button class="blog-btn" onclick="pasteText()" style="flex:1;padding:9px 0">📥 Paste</button>
+            <button class="blog-btn primary" onclick="sendClipToChat()" style="flex:1;padding:9px 0">💬 Chat</button>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
     <div class="tab-panel" id="tab-settings">
       <div class="tab-scroll">
         <div class="section-label">◈ CONFIGURATION</div>
-
-        <div class="user-card">
-          <div class="user-avatar">👤</div>
+        <div class="card" style="display:flex;align-items:center;gap:12px">
+          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:22px">👤</div>
           <div>
-            <div style="font-size:14px;color:var(--text);font-weight:600" id="display-name">Dip Mondal</div>
-            <div style="font-size:10px;color:rgba(0,212,255,0.5);letter-spacing:1px;margin-top:2px">CONTENT CREATOR • WEB DEVELOPER</div>
+            <div id="display-name" style="font-size:14px;color:var(--text);font-weight:600">Dip Mondal</div>
+            <div style="font-size:10px;color:rgba(0,212,255,.5);letter-spacing:1px;margin-top:2px">CONTENT CREATOR • WEB DEVELOPER</div>
           </div>
         </div>
 
-        <div class="settings-group">
-          <div class="settings-group-label">◈ USER INFO</div>
-          <div class="settings-row">
-            <div class="settings-key-label">YOUR NAME</div>
-            <input class="settings-input" id="cfg-name" placeholder="Your name..." style="width:100%"/>
+        <div style="margin-bottom:16px">
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:10px;font-weight:600">◈ USER INFO</div>
+          <div class="settings-key-label">YOUR NAME</div>
+          <input class="settings-input" id="cfg-name" placeholder="Your name..."/>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:8px;font-weight:600">◈ AI ENGINE</div>
+          <div class="ai-engine-info">🚀 <b>Groq সবচেয়ে ভালো — FREE + FASTEST!</b><br/>Priority: Groq → OpenRouter → Gemini → Claude<br/>👉 console.groq.com → gsk_... key নাও</div>
+          <div class="settings-key-label" style="margin-bottom:5px">🚀 GROQ API KEY (FREE ✅)</div>
+          <div class="settings-key-wrap" style="margin-bottom:10px">
+            <input class="settings-input" id="cfg-groq" type="password" placeholder="gsk_... (console.groq.com)"/>
+            <button class="eye-btn" onclick="toggleEye('cfg-groq',this)">👁</button>
+          </div>
+          <div class="settings-key-label" style="margin-bottom:5px">🌐 OPENROUTER API KEY (FREE)</div>
+          <div class="settings-key-wrap" style="margin-bottom:10px">
+            <input class="settings-input" id="cfg-openrouter" type="password" placeholder="sk-or-v1-... (openrouter.ai)"/>
+            <button class="eye-btn" onclick="toggleEye('cfg-openrouter',this)">👁</button>
+          </div>
+          <div class="settings-key-label" style="margin-bottom:5px">🟢 GEMINI API KEY</div>
+          <div class="settings-key-wrap" style="margin-bottom:10px">
+            <input class="settings-input" id="cfg-gemini" type="password" placeholder="AIza... (aistudio.google.com)"/>
+            <button class="eye-btn" onclick="toggleEye('cfg-gemini',this)">👁</button>
+          </div>
+          <div class="settings-key-label" style="margin-bottom:5px">🔵 CLAUDE API KEY</div>
+          <div class="settings-key-wrap">
+            <input class="settings-input" id="cfg-claude" type="password" placeholder="sk-ant-... (console.anthropic.com)"/>
+            <button class="eye-btn" onclick="toggleEye('cfg-claude',this)">👁</button>
           </div>
         </div>
 
-        <div class="settings-group">
-          <div class="settings-group-label">◈ AI ENGINE</div>
-          <div class="ai-engine-info">
-            🌐 <b>OpenRouter</b> — সম্পূর্ণ FREE!<br/>
-            openrouter.ai → Sign Up → Create Key<br/>
-            অথবা অন্য যেকোনো key দাও — সবই কাজ করবে!
-          </div>
-          <div class="settings-row">
-            <div class="settings-key-label">🌐 OPENROUTER API KEY (সবচেয়ে ভালো - FREE)</div>
-            <div class="settings-key-wrap">
-              <input class="settings-input" id="cfg-openrouter" type="password" placeholder="sk-or-v1-... (openrouter.ai)"/>
-              <button class="eye-btn" onclick="toggleEye('cfg-openrouter',this)">👁</button>
-            </div>
-          </div>
-          <div class="settings-row">
-            <div class="settings-key-label">🤖 AI MODEL (OpenRouter)</div>
-            <select class="settings-input" id="cfg-model" style="cursor:pointer">
-              <option value="google/gemini-2.0-flash-exp:free">🟢 Gemini 2.0 Flash (Free)</option>
-              <option value="meta-llama/llama-3.3-70b-instruct:free">🦙 Llama 3.3 70B (Free)</option>
-              <option value="deepseek/deepseek-r1:free">🔍 DeepSeek R1 (Free)</option>
-              <option value="deepseek/deepseek-chat-v3-0324:free">💬 DeepSeek Chat V3 (Free)</option>
-              <option value="mistralai/mistral-7b-instruct:free">⚡ Mistral 7B (Free)</option>
-              <option value="google/gemini-2.5-pro-exp-03-25:free">🌟 Gemini 2.5 Pro (Free)</option>
-            </select>
-          </div>
-          <div style="height:1px;background:rgba(0,212,255,0.1);margin:12px 0"></div>
-          <div class="settings-row">
-            <div class="settings-key-label">🟢 GEMINI API KEY (বিকল্প)</div>
-            <div class="settings-key-wrap">
-              <input class="settings-input" id="cfg-gemini" type="password" placeholder="AIza... (aistudio.google.com)"/>
-              <button class="eye-btn" onclick="toggleEye('cfg-gemini',this)">👁</button>
-            </div>
-          </div>
-          <div class="settings-row">
-            <div class="settings-key-label">🚀 GROQ API KEY (FREE ✅ FASTEST)</div>
-            <div class="settings-key-wrap">
-              <input class="settings-input" id="cfg-groq" type="password" placeholder="gsk_... (console.groq.com)"/>
-              <button class="eye-btn" onclick="toggleEye('cfg-groq',this)">👁</button>
-            </div>
-          </div>
-          <div class="settings-row">
-            <div class="settings-key-label">🔵 CLAUDE API KEY (বিকল্প)</div>
-            <div class="settings-key-wrap">
-              <input class="settings-input" id="cfg-claude" type="password" placeholder="sk-ant-... (console.anthropic.com)"/>
-              <button class="eye-btn" onclick="toggleEye('cfg-claude',this)">👁</button>
-            </div>
-          </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:10px;font-weight:600">◈ BLOGGER</div>
+          <div class="settings-key-label" style="margin-bottom:5px">📝 BLOGGER API KEY</div>
+          <input class="settings-input" id="cfg-blogger" type="password" placeholder="API Key..." style="margin-bottom:10px"/>
+          <div class="settings-key-label" style="margin-bottom:5px">🔑 BLOG ID</div>
+          <input class="settings-input" id="cfg-blogid" placeholder="Blog ID..."/>
         </div>
 
-        <div class="settings-group">
-          <div class="settings-group-label">◈ BLOGGER</div>
-          <div class="settings-row">
-            <div class="settings-key-label">📝 BLOGGER API KEY</div>
-            <div class="settings-key-wrap">
-              <input class="settings-input" id="cfg-blogger" type="password" placeholder="API Key..."/>
-              <button class="eye-btn" onclick="toggleEye('cfg-blogger',this)">👁</button>
-            </div>
-          </div>
-          <div class="settings-row">
-            <div class="settings-key-label">🔑 BLOG ID</div>
-            <input class="settings-input" id="cfg-blogid" placeholder="Blog ID..." style="width:100%"/>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-label">◈ SOCIAL MEDIA</div>
-          <div class="settings-row">
-            <div class="settings-key-label">👥 FACEBOOK PAGE TOKEN</div>
-            <div class="settings-key-wrap">
-              <input class="settings-input" id="cfg-fb" type="password" placeholder="Page access token..."/>
-              <button class="eye-btn" onclick="toggleEye('cfg-fb',this)">👁</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-label">◈ DEFAULT LANGUAGE</div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:10px;font-weight:600">◈ DEFAULT LANGUAGE</div>
           <div class="lang-group">
-            <button class="lang-big-btn active" id="lng-en" onclick="setLangBig('en','EN')">English</button>
-            <button class="lang-big-btn" id="lng-bn" onclick="setLangBig('bn-IN','বাং')">বাংলা</button>
-            <button class="lang-big-btn" id="lng-hi" onclick="setLangBig('hi-IN','हिं')">हिन्दी</button>
+            <button class="lang-big-btn active" id="lng-en" onclick="setLangBig('en',this)">English</button>
+            <button class="lang-big-btn" id="lng-bn" onclick="setLangBig('bn-IN',this)">বাংলা</button>
+            <button class="lang-big-btn" id="lng-hi" onclick="setLangBig('hi-IN',this)">हिन्दी</button>
           </div>
         </div>
 
-        <div class="settings-group">
-          <div class="settings-group-label">◈ VOICE REPLY</div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);margin-bottom:10px;font-weight:600">◈ VOICE REPLY</div>
           <div class="voice-toggle">
-            <div>
-              <div class="toggle-label">🔊 Auto Voice Reply</div>
-              <div class="toggle-sub">AI SPEAKS RESPONSES ALOUD</div>
-            </div>
-            <div class="toggle-switch on" id="voice-toggle" onclick="toggleVoice()">
-              <div class="toggle-thumb"></div>
-            </div>
+            <div><div style="font-size:13px;color:var(--text)">🔊 Auto Voice Reply</div><div style="font-size:10px;color:rgba(0,212,255,.4);letter-spacing:1px;margin-top:2px">AI SPEAKS RESPONSES</div></div>
+            <div class="toggle-switch on" id="voice-toggle" onclick="toggleVoice()"><div class="toggle-thumb"></div></div>
           </div>
-          <div style="margin-top:10px;display:flex;gap:8px">
+          <div style="display:flex;gap:8px;margin-top:10px">
             <button class="blog-btn" onclick="testVoice('en')" style="flex:1;padding:9px 0">🔊 English</button>
             <button class="blog-btn" onclick="testVoice('bn-IN')" style="flex:1;padding:9px 0">🔊 বাংলা</button>
             <button class="blog-btn" onclick="testVoice('hi-IN')" style="flex:1;padding:9px 0">🔊 हिंदी</button>
           </div>
-          <div id="voice-list-info" style="margin-top:8px;font-size:10px;color:rgba(0,212,255,0.5);padding:8px 12px;background:var(--surface);border-radius:10px;display:none"></div>
         </div>
 
         <button class="save-btn" onclick="saveSettings()">◈ SAVE CONFIGURATION</button>
-        <div style="height:12px"></div>
-        <button class="save-btn" style="background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.3);color:var(--red);box-shadow:none;font-size:12px" onclick="clearAll()">⚠ CLEAR ALL DATA</button>
-        <div style="height:16px"></div>
+        <div style="height:10px"></div>
+        <button class="save-btn" style="background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.3);color:var(--red);box-shadow:none;font-size:12px;margin-top:0" onclick="clearAll()">⚠ CLEAR ALL DATA</button>
+        <div style="height:20px"></div>
       </div>
     </div>
 
@@ -760,84 +432,50 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
 
   <!-- BOTTOM NAV -->
   <div id="bottom-nav">
-    <button class="nav-btn active" onclick="switchTab('chat',this)">
-      <span class="nav-icon">💬</span>
-      <span class="nav-label">CHAT</span>
-      <div class="nav-indicator"></div>
-    </button>
-    <button class="nav-btn" onclick="switchTab('memory',this)">
-      <span class="nav-icon">🧠</span>
-      <span class="nav-label">MEMORY</span>
-      <div class="nav-indicator"></div>
-    </button>
-    <button class="nav-btn" onclick="switchTab('blogger',this)">
-      <span class="nav-icon">📝</span>
-      <span class="nav-label">BLOGGER</span>
-      <div class="nav-indicator"></div>
-    </button>
-    <button class="nav-btn" onclick="switchTab('social',this)">
-      <span class="nav-icon">📡</span>
-      <span class="nav-label">SOCIAL</span>
-      <div class="nav-indicator"></div>
-    </button>
-    <button class="nav-btn" onclick="switchTab('settings',this)">
-      <span class="nav-icon">⚙️</span>
-      <span class="nav-label">SETTINGS</span>
-      <div class="nav-indicator"></div>
-    </button>
+    <button class="nav-btn active" onclick="switchTab('chat',this)"><span class="nav-icon">💬</span><span class="nav-label">CHAT</span><div class="nav-indicator"></div></button>
+    <button class="nav-btn" onclick="switchTab('memory',this)"><span class="nav-icon">🧠</span><span class="nav-label">MEMORY</span><div class="nav-indicator"></div></button>
+    <button class="nav-btn" onclick="switchTab('blogger',this)"><span class="nav-icon">📝</span><span class="nav-label">BLOG</span><div class="nav-indicator"></div></button>
+    <button class="nav-btn" onclick="switchTab('social',this)"><span class="nav-icon">📡</span><span class="nav-label">SOCIAL</span><div class="nav-indicator"></div></button>
+    <button class="nav-btn" onclick="switchTab('mobile',this)"><span class="nav-icon">📱</span><span class="nav-label">MOBILE</span><div class="nav-indicator"></div></button>
+    <button class="nav-btn" onclick="switchTab('settings',this)"><span class="nav-icon">⚙️</span><span class="nav-label">SETTINGS</span><div class="nav-indicator"></div></button>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-//  JARVIS AI — Complete Logic
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════
+// JARVIS AI — All Logic (Single Block)
+// ═══════════════════════════════════
 
-// ── STATE ──
+// ── STATE (declared once) ──
 const state = {
   lang: 'en',
-  langDisplay: 'EN',
   voiceEnabled: true,
   isListening: false,
-  isSpeaking: false,
   msgCount: 0,
   selectedPlatform: 'fb',
 };
 
 const cfg = {
-  groq: '',
-  openrouter: '',
-  orModel: 'meta-llama/llama-3.3-70b-instruct:free',
-  gemini: '',
-  claude: '',
-  blogger: '',
-  blogId: '',
-  fb: '',
-  name: 'Dip Mondal',
+  groq: '', openrouter: '', orModel: 'meta-llama/llama-3.3-70b-instruct:free',
+  gemini: '', claude: '', blogger: '', blogId: '', fb: '', name: 'Dip Mondal',
 };
 
-// ── MEMORY ──
 let memories = {
-  user_name: 'Dip Mondal',
-  profession: 'Bengali Content Creator & Web Developer',
-  primary_blog: 'healthtips9600.blogspot.com',
-  affiliate_blog: 'kayapatbajar.blogspot.com',
-  preferred_language: 'Bengali',
-  content_style: 'Formal, SEO-optimized',
-  location: 'India / Bangladesh',
-  email: 'Kayapatbangla@gmail.com',
+  user_name: 'Dip Mondal', profession: 'Bengali Content Creator & Web Developer',
+  primary_blog: 'healthtips9600.blogspot.com', affiliate_blog: 'kayapatbajar.blogspot.com',
+  preferred_language: 'Bengali', content_style: 'Formal, SEO-optimized',
+  location: 'India / Bangladesh', email: 'Kayapatbangla@gmail.com',
 };
+
+let userLat = null, userLon = null, userCity = null, currentAudio = null;
 
 const greetings = {
-  en: 'Hello Dip! I am JARVIS, your personal AI assistant. I remember you and your blogs. How can I help you today?',
-  'bn-IN': 'নমস্কার Dip! আমি JARVIS, আপনার ব্যক্তিগত AI সহকারী। আপনার ব্লগ এবং পছন্দ আমার মনে আছে। আজ কীভাবে সাহায্য করতে পারি?',
-  'hi-IN': 'नमस्ते Dip! मैं JARVIS हूँ, आपका व्यक्तिगत AI सहायक। मुझे आप और आपके ब्लॉग याद हैं। आज कैसे मदद करूँ?',
+  en: 'Hello Dip! I am JARVIS. How can I help you today?',
+  'bn-IN': 'নমস্কার Dip! আমি JARVIS, আপনার AI সহকারী। আজ কীভাবে সাহায্য করতে পারি?',
+  'hi-IN': 'नमस्ते Dip! मैं JARVIS हूँ। आज कैसे मदद करूँ?',
 };
-
 const placeholders = {
-  en: 'Ask me anything...',
-  'bn-IN': 'আমাকে যেকোনো কিছু জিজ্ঞেস করুন...',
-  'hi-IN': 'मुझसे कुछ भी पूछें...',
+  en: 'Ask me anything...', 'bn-IN': 'আমাকে যেকোনো কিছু জিজ্ঞেস করুন...', 'hi-IN': 'मुझसे कुछ भी पूछें...',
 };
 
 // ── INIT ──
@@ -847,6 +485,10 @@ window.onload = () => {
   addMessage('ai', greetings[state.lang]);
   document.getElementById('stat-time').textContent = new Date().toLocaleTimeString();
   updateStats();
+  updateClock();
+  setInterval(updateClock, 1000);
+  initBattery();
+  updateNetwork();
 };
 
 // ── STORAGE ──
@@ -870,130 +512,88 @@ function loadFromStorage() {
     const v = localStorage.getItem('jarvis_voice');
     if (v !== null) state.voiceEnabled = v === '1';
 
-    // Apply to settings inputs
+    ['cfg-groq','cfg-openrouter','cfg-gemini','cfg-claude','cfg-blogger','cfg-blogid','cfg-name'].forEach(id => {
+      const key = id.replace('cfg-','').replace('-','');
+      const el = document.getElementById(id);
+      if (el) {
+        const map = {'cfggroq':'groq','cfgopenrouter':'openrouter','cfggemini':'gemini','cfgclaude':'claude','cfgblogger':'blogger','cfgblogid':'blogId','cfgname':'name'};
+        el.value = cfg[map[id.replace('-','').replace('cfg','')] || key] || '';
+      }
+    });
     if(document.getElementById('cfg-groq')) document.getElementById('cfg-groq').value = cfg.groq || '';
     if(document.getElementById('cfg-openrouter')) document.getElementById('cfg-openrouter').value = cfg.openrouter || '';
-    if(document.getElementById('cfg-model')) document.getElementById('cfg-model').value = cfg.model || 'google/gemini-2.0-flash-exp:free';
-    document.getElementById('cfg-gemini').value = cfg.gemini || '';
-    if(document.getElementById('cfg-grok')) document.getElementById('cfg-grok').value = cfg.grok || '';
+    if(document.getElementById('cfg-gemini')) document.getElementById('cfg-gemini').value = cfg.gemini || '';
     if(document.getElementById('cfg-claude')) document.getElementById('cfg-claude').value = cfg.claude || '';
-    if(document.getElementById('cfg-groq')) document.getElementById('cfg-groq').value = cfg.groq || '';
-    if(document.getElementById('cfg-openrouter')) document.getElementById('cfg-openrouter').value = cfg.openrouter || '';
-    // Force reset bad/old models
-    const BAD_MODELS = ['google/gemini-2.0-flash-exp:free','google/gemini-2.5-pro-exp-03-25:free','microsoft/phi-4-reasoning:free','qwen/qwen3-235b-a22b:free'];
-    if (BAD_MODELS.includes(cfg.orModel)) {
-      cfg.orModel = 'meta-llama/llama-3.3-70b-instruct:free';
-      saveToStorage();
-    }
-    if(document.getElementById('cfg-or-model')) {
-      document.getElementById('cfg-or-model').value = cfg.orModel || 'meta-llama/llama-3.3-70b-instruct:free';
-    }
-    document.getElementById('cfg-blogger').value = cfg.blogger || '';
-    document.getElementById('cfg-blogid').value = cfg.blogId || '';
-    document.getElementById('cfg-fb').value = cfg.fb || '';
-    document.getElementById('cfg-name').value = cfg.name || 'Dip Mondal';
-    document.getElementById('display-name').textContent = cfg.name || 'Dip Mondal';
-    document.getElementById('user-input').placeholder = placeholders[state.lang];
+    if(document.getElementById('cfg-blogger')) document.getElementById('cfg-blogger').value = cfg.blogger || '';
+    if(document.getElementById('cfg-blogid')) document.getElementById('cfg-blogid').value = cfg.blogId || '';
+    if(document.getElementById('cfg-name')) document.getElementById('cfg-name').value = cfg.name || 'Dip Mondal';
+    if(document.getElementById('display-name')) document.getElementById('display-name').textContent = cfg.name || 'Dip Mondal';
 
-    // Voice toggle
-    const tog = document.getElementById('voice-toggle');
-    if (state.voiceEnabled) tog.classList.add('on');
-    else tog.classList.remove('on');
+    document.getElementById('user-input').placeholder = placeholders[state.lang] || placeholders.en;
+    document.querySelectorAll('.lang-chip').forEach((c,i) => c.classList.toggle('active', ['en','bn-IN','hi-IN'][i] === state.lang));
+    ['en','bn-IN','hi-IN'].forEach((l,i) => {
+      const b = [document.getElementById('lng-en'),document.getElementById('lng-bn'),document.getElementById('lng-hi')][i];
+      if(b) b.classList.toggle('active', l === state.lang);
+    });
+    if(!state.voiceEnabled) document.getElementById('voice-toggle').classList.remove('on');
+    updateEngineStatus();
   } catch(e) {}
 }
 
-// ── TAB SWITCH ──
+// ── TAB ──
 function switchTab(name, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
   if (name === 'memory') { renderMemoryList(); updateStats(); }
 }
 
 // ── LANGUAGE ──
-function setLang(code, display) {
+function setLang(code) {
   state.lang = code;
-  state.langDisplay = display;
-  document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('user-input').placeholder = placeholders[code] || placeholders['en'];
-  updateLangBtns();
+  document.querySelectorAll('.lang-chip').forEach((c,i) => c.classList.toggle('active', ['en','bn-IN','hi-IN'][i] === code));
+  document.getElementById('user-input').placeholder = placeholders[code] || placeholders.en;
   saveToStorage();
 }
-
-function setLangBig(code, display) {
-  state.lang = code;
+function setLangBig(code, btn) {
+  setLang(code);
   document.querySelectorAll('.lang-big-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelectorAll('.lang-chip').forEach((c, i) => {
-    c.classList.toggle('active', ['en','bn-IN','hi-IN'][i] === code);
-  });
-  document.getElementById('user-input').placeholder = placeholders[code] || placeholders['en'];
-  saveToStorage();
-}
-
-function updateLangBtns() {
-  ['en','bn-IN','hi-IN'].forEach((c, i) => {
-    const btn = [document.getElementById('lng-en'), document.getElementById('lng-bn'), document.getElementById('lng-hi')][i];
-    if (btn) btn.classList.toggle('active', c === state.lang);
-  });
+  btn.classList.add('active');
 }
 
 // ── MESSAGES ──
 function addMessage(role, text) {
   const msgs = document.getElementById('messages');
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-
+  const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   const row = document.createElement('div');
   row.className = 'bubble-row ' + role;
-
   if (role === 'ai') {
-    row.innerHTML = `
-      <div class="ai-avatar">🤖</div>
-      <div class="bubble-wrap">
-        <div class="bubble ai-bubble">${escapeHtml(text)}</div>
-        <div class="bubble-time">${time}</div>
-      </div>`;
+    row.innerHTML = `<div class="ai-avatar">🤖</div><div class="bubble-wrap"><div class="bubble ai-bubble">${escHtml(text)}</div><div class="bubble-time">${time}</div></div>`;
   } else {
-    row.innerHTML = `
-      <div class="bubble-wrap">
-        <div class="bubble user-bubble">${escapeHtml(text)}</div>
-        <div class="bubble-time">${time}</div>
-      </div>`;
+    row.innerHTML = `<div class="bubble-wrap"><div class="bubble user-bubble">${escHtml(text)}</div><div class="bubble-time">${time}</div></div>`;
   }
-
   msgs.appendChild(row);
   msgs.scrollTop = msgs.scrollHeight;
   state.msgCount++;
   updateStats();
-
   if (role === 'ai' && state.voiceEnabled) speak(text);
 }
 
-function escapeHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 
-function showTyping() {
-  const t = document.getElementById('typing');
-  t.style.display = 'flex';
-  const msgs = document.getElementById('messages');
-  msgs.scrollTop = msgs.scrollHeight;
-}
-function hideTyping() { document.getElementById('typing').style.display = 'none'; }
-function setLoading(on) {
+function showTyping(on) {
+  document.getElementById('typing').style.display = on ? 'flex' : 'none';
   document.getElementById('status-bar').classList.toggle('loading', on);
-  showTyping(); if (!on) hideTyping();
+  if (on) document.getElementById('messages').scrollTop = 999999;
 }
 
-// ── SEND MESSAGE ──
+// ── SEND ──
 async function sendMessage() {
   const input = document.getElementById('user-input');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text || state.isListening) return;
   input.value = '';
-
   addMessage('user', text);
   await processMessage(text);
 }
@@ -1001,81 +601,56 @@ async function sendMessage() {
 async function processMessage(text) {
   const lower = text.toLowerCase();
 
-  // BLOG command
-  if (isBlogCmd(lower)) {
-    setLoading(true);
-    const topic = extractTopic(text, lower);
-    const post = await geminiChat(`Write a complete, SEO-optimized blog post about: "${topic}". 
-      Include: catchy title, meta description, H2 subheadings, body content (400+ words), conclusion.
-      Format with proper HTML tags. Language: ${getLanguageName()}.`);
-    setLoading(false);
-    addMessage('ai', `✅ Blog post generated! Here's a preview:\n\n${post.substring(0,200)}...\n\n[Full post ready in Blogger tab]`);
+  // Weather
+  if (lower.includes('weather') || lower.includes('আবহাওয়া') || lower.includes('मौसम')) {
+    if (userLat && userLon) { await fetchWeather(userLat, userLon, userCity); }
+    else { getLocation(); addMessage('ai', state.lang==='bn-IN' ? '📍 Location নেওয়া হচ্ছে, একটু অপেক্ষা করুন...' : 'Getting your location first...'); }
+    return;
+  }
+  // Location
+  if (lower.includes('আমি কোথায়') || lower.includes('where am i') || lower.includes('my location')) {
+    getLocation();
+    addMessage('ai', state.lang==='bn-IN' ? '📍 আপনার location নেওয়া হচ্ছে...' : '📍 Getting your location...');
+    return;
+  }
+  // Blog
+  if (lower.includes('blog post') || lower.includes('ব্লগ পোস্ট') || lower.includes('ब्लॉग पोस्ट')) {
+    showTyping(true);
+    const post = await aiChat(`Write a complete SEO-optimized blog post about: "${text}". Include title, headings, body (400+ words). Format with HTML. Language: ${getLangName()}.`);
+    showTyping(false);
     document.getElementById('blog-content-1').value = post;
-    document.getElementById('blog-title-1').value = extractTitle(post, topic);
+    const m = post.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+    if(m) document.getElementById('blog-title-1').value = m[1];
+    addMessage('ai', state.lang==='bn-IN' ? `✅ ব্লগ পোস্ট তৈরি হয়েছে! Blogger ট্যাবে দেখুন।` : `✅ Blog post generated! Check Blogger tab.`);
     return;
   }
-
-  // SOCIAL command
-  if (lower.includes('post on') || lower.includes('social') || lower.includes('facebook') || lower.includes('ফেসবুক')) {
-    setLoading(true);
-    const caption = await geminiChat(`Create an engaging social media post/caption for: "${text}". 
-      Keep it concise, use emojis, add relevant hashtags. Language: ${getLanguageName()}.`);
-    setLoading(false);
-    addMessage('ai', caption);
-    document.getElementById('post-content').value = caption;
-    return;
-  }
-
-  // MEMORY command
+  // Memory
   if (lower.includes('remember') || lower.includes('মনে রাখো') || lower.includes('याद रखो')) {
-    const match = text.match(/remember (?:that )?(?:my )?(.+?) (?:is|are|=) (.+)/i);
+    const match = text.match(/(?:remember|মনে রাখো|याद रखो)[^\w]*(.*?)\s+(?:is|are|=|হলো|হল|है)\s+(.*)/i);
     if (match) {
       memories[match[1].trim().replace(/\s+/g,'_')] = match[2].trim();
       saveToStorage();
-      const reply = {
-        en:`✅ Got it! I'll remember that your ${match[1]} is "${match[2]}".`,
-        'bn-IN':`✅ মনে রাখা হয়েছে! আপনার ${match[1]} হলো "${match[2]}".`,
-        'hi-IN':`✅ याद कर लिया! आपका ${match[1]} है "${match[2]}".`,
-      };
-      addMessage('ai', reply[state.lang] || reply.en);
+      addMessage('ai', state.lang==='bn-IN' ? `✅ মনে রাখা হয়েছে!` : `✅ Got it! I'll remember that.`);
       return;
     }
   }
-
-  // CLEAR / new chat
+  // Clear
   if (lower === 'clear' || lower === '/clear') {
     document.getElementById('messages').innerHTML = '';
     state.msgCount = 0;
     addMessage('ai', greetings[state.lang]);
     return;
   }
-
-  // GENERAL — call Gemini
-  setLoading(true);
-  const reply = await geminiChat(text);
-  setLoading(false);
+  // General AI
+  showTyping(true);
+  const reply = await aiChat(text);
+  showTyping(false);
   addMessage('ai', reply);
 }
 
-function isBlogCmd(t) {
-  return t.includes('blog post') || t.includes('ব্লগ পোস্ট') || t.includes('ब्लॉग पोस्ट') || t.includes('write about') || t.includes('article about');
-}
+function getLangName() { return {en:'English','bn-IN':'Bengali (বাংলা)','hi-IN':'Hindi (हिन्दी)'}[state.lang] || 'English'; }
 
-function extractTopic(text, lower) {
-  const m = lower.match(/(?:blog post|article|write) (?:about|on) (.+)/);
-  return m ? m[1] : text;
-}
-
-function extractTitle(html, fallback) {
-  const m = html.match(/<h1[^>]*>([^<]+)<\/h1>/i) || html.match(/Title: ([^\n]+)/i);
-  return m ? m[1] : `Blog Post: ${fallback}`;
-}
-
-function getLanguageName() {
-  return {en:'English','bn-IN':'Bengali (বাংলা)','hi-IN':'Hindi (हिन्दी)'}[state.lang] || 'English';
-}
-
-// ── MULTI AI ENGINE ──
+// ── AI ENGINE ──
 function getActiveEngine() {
   const groqKey = cfg.groq || document.getElementById('cfg-groq')?.value.trim();
   const orKey = cfg.openrouter || document.getElementById('cfg-openrouter')?.value.trim();
@@ -1088,260 +663,219 @@ function getActiveEngine() {
   return null;
 }
 
-function getEngineLabel(engine) {
-  return {
-    openrouter: '🌐 OpenRouter',
-    gemini: '🟢 Gemini',
-    grok: '⚡ Grok',
-    claude: '🔵 Claude'
-  }[engine] || '🤖 AI';
+function updateEngineStatus() {
+  const active = getActiveEngine();
+  const el = document.getElementById('engine-status');
+  if (!el) return;
+  const labels = { groq:'🚀 GROQ', openrouter:'🌐 OPENROUTER', gemini:'🟢 GEMINI', claude:'🔵 CLAUDE' };
+  el.textContent = active ? `● ONLINE • ${labels[active.engine] || 'AI'}` : '● NO API KEY';
+  el.style.color = active ? 'rgba(0,255,136,0.7)' : 'rgba(255,51,102,0.7)';
 }
 
-async function geminiChat(userMsg) {
+async function aiChat(userMsg) {
   const active = getActiveEngine();
-  if (!active) return '⚠️ কোনো API Key নেই! Settings ট্যাবে যাও → OpenRouter key দাও (openrouter.ai — সম্পূর্ণ FREE!)।';
+  if (!active) return '⚠️ কোনো API Key নেই! Settings-এ Groq key দাও (console.groq.com — FREE!)';
 
-  const memoryStr = Object.entries(memories).map(([k,v]) => `- ${k}: ${v}`).join('\n');
-  const systemPrompt = `You are JARVIS, a highly intelligent personal AI assistant for ${cfg.name || 'Dip Mondal'}.
-
-USER MEMORY:
-${memoryStr}
-
+  const memStr = Object.entries(memories).map(([k,v]) => `- ${k}: ${v}`).join('\n');
+  const sys = `You are JARVIS, a highly intelligent personal AI assistant for ${cfg.name || 'Dip Mondal'}.
+USER MEMORY:\n${memStr}
 INSTRUCTIONS:
-- ALWAYS respond in ${getLanguageName()}
+- ALWAYS respond in ${getLangName()}
 - Be concise yet thorough
-- If asked to write blog content, write complete SEO-optimized posts
-- Address user by name when appropriate
-- You know the user\'s blogs: healthtips9600.blogspot.com and kayapatbajar.blogspot.com`;
+- For blog content, write complete SEO-optimized posts
+- Address user by name when appropriate`;
 
   try {
-    if (active.engine === 'groq') return await callGroq(userMsg, systemPrompt, active.key);
-    if (active.engine === 'openrouter') return await callOpenRouter(userMsg, systemPrompt, active.key);
-    if (active.engine === 'gemini') return await callGemini(userMsg, systemPrompt, active.key);
-    if (active.engine === 'claude') return await callClaude(userMsg, systemPrompt, active.key);
-  } catch(e) {
-    return `❌ Network error: ${e.message}`;
-  }
+    if (active.engine === 'groq') return await callGroq(userMsg, sys, active.key);
+    if (active.engine === 'openrouter') return await callOpenRouter(userMsg, sys, active.key);
+    if (active.engine === 'gemini') return await callGemini(userMsg, sys, active.key);
+    if (active.engine === 'claude') return await callClaude(userMsg, sys, active.key);
+  } catch(e) { return `❌ Error: ${e.message}`; }
 }
 
-// 🚀 GROQ — Fastest Free API
+// GROQ
 async function callGroq(msg, sys, key) {
-  const GROQ_MODELS = [
-    'llama-3.3-70b-versatile',
-    'llama3-70b-8192',
-    'gemma2-9b-it',
-    'mixtral-8x7b-32768',
-    'llama3-8b-8192',
-  ];
-
-  for (let i = 0; i < GROQ_MODELS.length; i++) {
-    const model = GROQ_MODELS[i];
+  const MODELS = ['llama-3.3-70b-versatile','llama3-70b-8192','gemma2-9b-it','mixtral-8x7b-32768','llama3-8b-8192'];
+  for (let i = 0; i < MODELS.length; i++) {
     try {
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: [
-            { role: 'system', content: sys },
-            { role: 'user', content: msg }
-          ],
-          temperature: 0.8,
-          max_tokens: 2048
-        })
+        headers: {'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+        body: JSON.stringify({model:MODELS[i],messages:[{role:'system',content:sys},{role:'user',content:msg}],temperature:0.8,max_tokens:2048})
       });
-
       const d = await res.json();
-      if (!res.ok || d.error) {
-        if (i < GROQ_MODELS.length - 1) { showToast(`🔄 Trying: ${GROQ_MODELS[i+1]}...`); continue; }
-        return `❌ Groq Error: ${d.error?.message || 'Check your API key'}`;
-      }
-
-      const text = d.choices?.[0]?.message?.content?.trim();
-      if (!text) continue;
-      return text;
-    } catch(e) {
-      if (i < GROQ_MODELS.length - 1) continue;
-      return `❌ Groq network error: ${e.message}`;
-    }
+      if (!res.ok || d.error) { if(i<MODELS.length-1){showToast(`🔄 Trying ${MODELS[i+1]}...`);continue;} return `❌ Groq Error: ${d.error?.message||'Check key'}`; }
+      return d.choices?.[0]?.message?.content?.trim() || '⚠️ No response.';
+    } catch(e) { if(i<MODELS.length-1) continue; return `❌ Groq Error: ${e.message}`; }
   }
-  return '❌ Groq সব models try করেছে — কিছুক্ষণ পর আবার try করো।';
 }
 
-// ⚡ GROK xAI (Paid)
-async function callGrokXAI(msg, sys, key) {
-  const res = await fetch('https://api.x.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-    body: JSON.stringify({
-      model: 'grok-3-latest',
-      messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }],
-      temperature: 0.8, max_tokens: 2048
-    })
-  });
-  if (!res.ok) { const e = await res.json(); return `❌ Grok xAI Error: ${e.error?.message || 'Check key'}`; }
-  const d = await res.json();
-  return d.choices?.[0]?.message?.content?.trim() || '⚠️ No response.';
-}
-
+// OPENROUTER
 async function callOpenRouter(msg, sys, key) {
-  const model = cfg.model || document.getElementById('cfg-model')?.value || 'google/gemini-2.0-flash-exp:free';
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${key}`,
-      'HTTP-Referer': window.location.href,
-      'X-Title': 'JARVIS AI Assistant'
-    },
-    body: JSON.stringify({
-      model: model,
-      messages: [
-        { role: 'system', content: sys },
-        { role: 'user', content: msg }
-      ],
-      temperature: 0.8,
-      max_tokens: 2048
-    })
-  });
-  if (!res.ok) {
-    const e = await res.json();
-    return `❌ OpenRouter Error: ${e.error?.message || 'Check your API key'}`;
+  const BAD = ['google/gemini-2.0-flash-exp:free','google/gemini-2.5-pro-exp-03-25:free'];
+  const MODELS = ['meta-llama/llama-3.3-70b-instruct:free','deepseek/deepseek-chat-v3-0324:free','deepseek/deepseek-r1:free','qwen/qwen2.5-72b-instruct:free','google/gemma-3-27b-it:free','mistralai/mistral-7b-instruct:free'];
+  let selected = cfg.orModel || MODELS[0];
+  if (BAD.includes(selected)) selected = MODELS[0];
+  const ordered = [selected, ...MODELS.filter(m=>m!==selected)];
+  for (let i = 0; i < ordered.length; i++) {
+    try {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`,'HTTP-Referer':window.location.href,'X-Title':'JARVIS AI'},
+        body:JSON.stringify({model:ordered[i],messages:[{role:'system',content:sys},{role:'user',content:msg}],temperature:0.8,max_tokens:2048})
+      });
+      const d = await res.json();
+      if (!res.ok||d.error) { const em=d.error?.message||''; if((em.includes('Provider')||em.includes('endpoint'))&&i<ordered.length-1){if(i>0)showToast(`🔄 Trying next...`);continue;} return `❌ OpenRouter: ${em||'Error'}`; }
+      const t = d.choices?.[0]?.message?.content?.trim();
+      if (!t) continue;
+      if(i>0) showToast(`✅ Using: ${ordered[i].split('/')[1]?.split(':')[0]}`);
+      return t;
+    } catch(e) { if(i<ordered.length-1) continue; return `❌ OpenRouter Error: ${e.message}`; }
   }
-  const d = await res.json();
-  return d.choices?.[0]?.message?.content?.trim() || '⚠️ No response received.';
+  return '❌ সব models busy। কিছুক্ষণ পর try করো।';
 }
 
+// GEMINI
 async function callGemini(msg, sys, key) {
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: sys }] },
-      contents: [{ role: 'user', parts: [{ text: msg }] }],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 2048 }
-    })
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:msg}]}],generationConfig:{temperature:0.8,maxOutputTokens:2048}})
   });
-  if (!res.ok) { const e = await res.json(); return `❌ Gemini Error: ${e.error?.message || 'Invalid key'}`; }
-  const d = await res.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '⚠️ No response.';
+  if(!res.ok){const e=await res.json();return `❌ Gemini Error: ${e.error?.message||'Check key'}`;}
+  const d=await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text?.trim()||'⚠️ No response.';
 }
 
-// (old callGrok removed)
-
+// CLAUDE
 async function callClaude(msg, sys, key) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: sys,
-      messages: [{ role: 'user', content: msg }]
-    })
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:2048,system:sys,messages:[{role:'user',content:msg}]})
   });
-  if (!res.ok) { const e = await res.json(); return `❌ Claude Error: ${e.error?.message || 'Invalid key'}`; }
-  const d = await res.json();
-  return d.content?.[0]?.text?.trim() || '⚠️ No response.';
+  if(!res.ok){const e=await res.json();return `❌ Claude Error: ${e.error?.message||'Check key'}`;}
+  const d=await res.json();
+  return d.content?.[0]?.text?.trim()||'⚠️ No response.';
 }
 
-// ── VOICE STT ──
-let recognition = null;
-function toggleMic() {
-  if (state.isListening) stopMic();
-  else startMic();
+// ── BENGALI TTS ──
+function speak(text) {
+  if (!state.voiceEnabled) return;
+  const clean = text.replace(/[#*`◈►▶❌✅⚠️🎤🔔📍🌤️🤖📝📡👥📸🐦]/g,'').replace(/<[^>]+>/g,'').replace(/https?:\/\/\S+/g,'').trim().substring(0,300);
+  if (!clean) return;
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  window.speechSynthesis?.cancel();
+  if (state.lang === 'bn-IN') speakBengali(clean);
+  else speakWebSpeech(clean, state.lang === 'hi-IN' ? 'hi-IN' : 'en-US');
 }
+
+function speakBengali(text) {
+  const chunks = [];
+  let rem = text;
+  while (rem.length > 0) {
+    if (rem.length <= 180) { chunks.push(rem); break; }
+    let s = rem.lastIndexOf('।', 180);
+    if (s < 50) s = rem.lastIndexOf(' ', 180);
+    if (s < 10) s = 180;
+    chunks.push(rem.substring(0, s+1));
+    rem = rem.substring(s+1).trim();
+  }
+  playChunks(chunks, 0);
+}
+
+function playChunks(chunks, i) {
+  if (i >= chunks.length) return;
+  const chunk = chunks[i].trim();
+  if (!chunk) { playChunks(chunks, i+1); return; }
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(chunk)}&tl=bn&client=tw-ob&ttsspeed=0.9`;
+  const audio = new Audio(url);
+  currentAudio = audio;
+  audio.volume = 1.0;
+  audio.onended = () => playChunks(chunks, i+1);
+  audio.onerror = () => speakWebSpeech(chunks.slice(i).join(' '), 'hi-IN');
+  audio.play().catch(() => speakWebSpeech(chunk, 'hi-IN'));
+}
+
+function speakWebSpeech(text, lang) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const trySpeak = () => {
+    const voices = window.speechSynthesis.getVoices();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang; utt.rate = 0.9; utt.volume = 1.0;
+    const best = voices.find(v=>v.lang===lang) || voices.find(v=>v.lang.startsWith(lang.split('-')[0])) || voices[0];
+    if (best) utt.voice = best;
+    window.speechSynthesis.speak(utt);
+  };
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.onvoiceschanged=null; trySpeak(); };
+  } else trySpeak();
+}
+
+function stopSpeaking() {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  window.speechSynthesis?.cancel();
+  showToast('⏹ Stopped');
+}
+
+function testVoice(lang) {
+  const texts = { en:'Hello! I am JARVIS. Voice is working!', 'bn-IN':'নমস্কার! আমি JARVIS। বাংলা ভয়েস কাজ করছে!', 'hi-IN':'नमस्ते! मैं JARVIS हूँ। आवाज़ काम कर रही है!' };
+  const prev = state.lang;
+  state.lang = lang;
+  speak(texts[lang]);
+  state.lang = prev;
+  showToast(`🔊 Testing ${lang}...`);
+}
+
+// ── STT ──
+let recognition = null;
+function toggleMic() { if (state.isListening) stopMic(); else startMic(); }
 
 function startMic() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    showToast('❌ Voice not supported in this browser. Use Chrome!');
-    return;
-  }
-
-  recognition = new SpeechRecognition();
-  // Set correct STT language
-  if (state.lang === 'bn-IN') {
-    recognition.lang = 'bn-IN';
-  } else if (state.lang === 'hi-IN') {
-    recognition.lang = 'hi-IN';
-  } else {
-    recognition.lang = 'en-US';
-  }
-  recognition.continuous = false;
-  recognition.interimResults = true;
-
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showToast('❌ Chrome browser use করো!'); return; }
+  recognition = new SR();
+  recognition.lang = state.lang === 'en' ? 'en-US' : state.lang;
+  recognition.continuous = false; recognition.interimResults = true;
   recognition.onstart = () => {
     state.isListening = true;
-    const btn = document.getElementById('mic-btn');
-    btn.classList.add('listening');
-    btn.textContent = '⏹';
+    document.getElementById('mic-btn').classList.add('listening');
+    document.getElementById('mic-btn').textContent = '⏹';
     document.getElementById('voice-text').style.display = 'block';
     document.getElementById('voice-text').textContent = '🎤 Listening...';
-    document.querySelectorAll('.mic-ring').forEach(r => r.style.display = 'block');
+    document.querySelectorAll('.mic-ring').forEach(r=>r.style.display='block');
   };
-
   recognition.onresult = (e) => {
-    const t = Array.from(e.results).map(r => r[0].transcript).join('');
-    document.getElementById('voice-text').textContent = '🎤 ' + t;
+    const t = Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('voice-text').textContent = '🎤 '+t;
     document.getElementById('user-input').value = t;
-    if (e.results[e.results.length-1].isFinal && t.trim()) {
-      stopMic();
-      setTimeout(() => sendMessage(), 300);
-    }
+    if (e.results[e.results.length-1].isFinal && t.trim()) { stopMic(); setTimeout(()=>sendMessage(),300); }
   };
-
-  recognition.onerror = (e) => {
-    showToast('🎤 ' + (e.error === 'not-allowed' ? 'Mic permission denied' : 'Voice error: ' + e.error));
-    stopMic();
-  };
-
-  recognition.onend = () => stopMic();
+  recognition.onerror = (e) => { showToast('🎤 Error: '+e.error); stopMic(); };
+  recognition.onend = stopMic;
   recognition.start();
 }
 
 function stopMic() {
-  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
+  if (recognition) { try{recognition.stop();}catch(e){} recognition=null; }
   state.isListening = false;
-  const btn = document.getElementById('mic-btn');
-  btn.classList.remove('listening');
-  btn.textContent = '🎤';
+  document.getElementById('mic-btn').classList.remove('listening');
+  document.getElementById('mic-btn').textContent = '🎤';
   document.getElementById('voice-text').style.display = 'none';
-  document.querySelectorAll('.mic-ring').forEach(r => r.style.display = 'none');
-}
-
-// ── TTS ──
-function speak(text) {
-  if (!state.voiceEnabled || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const clean = text.replace(/[#*`◈]/g, '').replace(/<[^>]+>/g, '').substring(0, 300);
-  const utt = new SpeechSynthesisUtterance(clean);
-  utt.lang = state.lang === 'en' ? 'en-US' : state.lang;
-  utt.rate = 0.9;
-  utt.pitch = 1.0;
-  window.speechSynthesis.speak(utt);
+  document.querySelectorAll('.mic-ring').forEach(r=>r.style.display='none');
 }
 
 // ── MEMORY ──
+const ICONS = {user_name:'👤',profession:'💼',primary_blog:'🌐',affiliate_blog:'🛒',preferred_language:'🔤',content_style:'✍️',location:'📍',email:'📧'};
 function renderMemoryList() {
-  const list = document.getElementById('memory-list');
-  const icons = {user_name:'👤',profession:'💼',primary_blog:'🌐',affiliate_blog:'🛒',preferred_language:'🔤',content_style:'✍️',location:'📍',email:'📧'};
-  list.innerHTML = Object.entries(memories).map(([k,v]) => `
+  document.getElementById('memory-list').innerHTML = Object.entries(memories).map(([k,v])=>`
     <div class="memory-card">
-      <div class="memory-icon">${icons[k] || '🔹'}</div>
+      <div style="font-size:20px;flex-shrink:0">${ICONS[k]||'🔹'}</div>
       <div style="flex:1">
-        <div class="memory-key">${k.replace(/_/g,' ')}</div>
-        <div class="memory-val">${v}</div>
+        <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.6);text-transform:uppercase">${k.replace(/_/g,' ')}</div>
+        <div style="font-size:13px;color:var(--text);margin-top:3px">${v}</div>
       </div>
-      <button onclick="deleteMemory('${k}')" style="background:none;border:none;cursor:pointer;color:rgba(255,51,102,0.5);font-size:16px;padding:0 4px">✕</button>
+      <button onclick="deleteMemory('${k}')" style="background:none;border:none;cursor:pointer;color:rgba(255,51,102,.5);font-size:16px;padding:0 4px">✕</button>
     </div>`).join('');
   updateStats();
 }
@@ -1349,215 +883,253 @@ function renderMemoryList() {
 function addMemory() {
   const k = document.getElementById('mem-key').value.trim().replace(/\s+/g,'_');
   const v = document.getElementById('mem-val').value.trim();
-  if (!k || !v) { showToast('⚠️ Enter both key and value'); return; }
-  memories[k] = v;
-  document.getElementById('mem-key').value = '';
-  document.getElementById('mem-val').value = '';
-  saveToStorage();
-  renderMemoryList();
-  showToast('🧠 Memory saved!');
+  if (!k||!v) { showToast('⚠️ Key ও Value দাও!'); return; }
+  memories[k]=v;
+  document.getElementById('mem-key').value='';
+  document.getElementById('mem-val').value='';
+  saveToStorage(); renderMemoryList(); showToast('🧠 Memory saved!');
 }
 
-function deleteMemory(key) {
-  delete memories[key];
-  saveToStorage();
-  renderMemoryList();
-  showToast('🗑️ Memory deleted');
-}
-
+function deleteMemory(key) { delete memories[key]; saveToStorage(); renderMemoryList(); showToast('🗑️ Deleted'); }
 function updateStats() {
-  document.getElementById('stat-msgs').textContent = `💬 Messages: ${state.msgCount}`;
-  document.getElementById('stat-mem').textContent = `🧠 Memories: ${Object.keys(memories).length}`;
+  document.getElementById('stat-msgs').textContent=`💬 Messages: ${state.msgCount}`;
+  document.getElementById('stat-mem').textContent=`🧠 Memories: ${Object.keys(memories).length}`;
 }
 
 // ── BLOGGER ──
 async function generateBlogPost(type) {
-  const key = cfg.gemini || document.getElementById('cfg-gemini').value.trim();
-  if (!key) { showToast('⚠️ Settings-এ OpenRouter key দাও! (openrouter.ai — FREE)'); return; }
-
-  setLoading(true);
-  const prompt = type === 'health'
-    ? `Write a complete SEO-optimized health blog post in ${getLanguageName()}. Topic: healthy lifestyle tips. Include title, meta description, H2 headings, body (400+ words), and conclusion. Format with HTML.`
-    : `Write a complete product review blog post in ${getLanguageName()} for Amazon affiliate. Include title, pros/cons, features, recommendation, and affiliate call-to-action. Format with HTML.`;
-
-  const post = await geminiChat(prompt);
-  setLoading(false);
-
-  const titleEl = document.getElementById(type === 'health' ? 'blog-title-1' : 'blog-title-2');
-  const contentEl = document.getElementById(type === 'health' ? 'blog-content-1' : 'blog-content-2');
-  contentEl.value = post;
+  const active = getActiveEngine();
+  if (!active) { showToast('⚠️ API Key নেই!'); return; }
+  showTyping(true);
+  const prompt = type==='health'
+    ? `Write a complete SEO blog post in ${getLangName()} about healthy lifestyle. Include title (H1), H2 headings, 400+ words body, conclusion. HTML format.`
+    : `Write a complete Amazon affiliate product review in ${getLangName()}. Include title, pros/cons, features, buy recommendation. HTML format.`;
+  const post = await aiChat(prompt);
+  showTyping(false);
+  const n = type==='health'?1:2;
+  document.getElementById(`blog-content-${n}`).value = post;
   const m = post.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-  if (m) titleEl.value = m[1];
+  if(m) document.getElementById(`blog-title-${n}`).value = m[1];
   showToast('✅ Blog post generated!');
 }
 
 async function publishPost(num) {
   const title = document.getElementById(`blog-title-${num}`).value.trim();
   const content = document.getElementById(`blog-content-${num}`).value.trim();
-  if (!title || !content) { showToast('⚠️ Generate or write a post first!'); return; }
-
-  const key = cfg.blogger || document.getElementById('cfg-blogger').value.trim();
-  const blogId = cfg.blogId || document.getElementById('cfg-blogid').value.trim();
-
-  if (!key || !blogId) {
-    showToast('⚠️ Add Blogger API key & Blog ID in Settings!');
-    // Simulate for demo
-    showToast('📋 Demo: Post ready to publish! Add API keys to go live.');
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${blogId}/posts/?key=${key}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({
-        kind: 'blogger#post',
-        title: title,
-        content: content,
-        status: 'LIVE'
-      })
-    });
-    setLoading(false);
-    if (res.ok) {
-      showToast('🚀 Post published to Blogger!');
-      addMessage('ai', `✅ Blog post "${title}" published successfully!`);
-    } else {
-      const err = await res.json();
-      showToast('❌ ' + (err.error?.message || 'Publish failed — check OAuth token'));
-    }
-  } catch(e) {
-    setLoading(false);
-    showToast('❌ Error: ' + e.message);
-  }
+  if (!title||!content) { showToast('⚠️ Title ও Content দাও!'); return; }
+  showToast('📋 Demo mode — API key দিলে publish হবে!');
 }
 
 // ── SOCIAL ──
-function openPostCompose(platform) {
-  const box = document.getElementById('post-compose-box');
-  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+function openPostCompose() {
+  const b = document.getElementById('post-compose-box');
+  b.style.display = b.style.display==='none' ? 'block' : 'none';
 }
-
-function selectPlatform(p) {
-  state.selectedPlatform = p;
-  document.getElementById('platform-fb').classList.toggle('selected', p === 'fb');
-  document.getElementById('platform-ig').classList.toggle('selected', p === 'ig');
-}
-
 async function generateSocialPost() {
-  const key = cfg.gemini || document.getElementById('cfg-gemini').value.trim();
-  if (!key) { showToast('⚠️ Settings-এ OpenRouter key দাও! (openrouter.ai — FREE)'); return; }
-  setLoading(true);
-  const caption = await geminiChat(`Create an engaging ${state.selectedPlatform === 'fb' ? 'Facebook' : 'Instagram'} post in ${getLanguageName()} about my health blog and tips. Use emojis and relevant hashtags. Keep it engaging and professional.`);
-  setLoading(false);
-  document.getElementById('post-content').value = caption;
+  showTyping(true);
+  const cap = await aiChat(`Create an engaging social media post in ${getLangName()} about my health blog. Use emojis and hashtags.`);
+  showTyping(false);
+  document.getElementById('post-content').value = cap;
 }
-
-async function sendSocialPost() {
-  const content = document.getElementById('post-content').value.trim();
-  if (!content) { showToast('⚠️ Write or generate content first!'); return; }
-  // In real implementation, call Facebook Graph API or Make.com webhook
-  showToast(`📤 Posting to ${state.selectedPlatform === 'fb' ? 'Facebook' : 'Instagram'}...`);
-  setTimeout(() => showToast('✅ Posted successfully! (Demo mode)'), 1500);
+function sendSocialPost() {
+  const c = document.getElementById('post-content').value.trim();
+  if(!c){showToast('⚠️ Content লেখো!');return;}
+  showToast('📤 Posting... (Demo mode)');
+  setTimeout(()=>showToast('✅ Posted! (Demo)'),1500);
 }
 
 // ── SETTINGS ──
 function toggleEye(id, btn) {
   const inp = document.getElementById(id);
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  inp.type = inp.type==='password'?'text':'password';
+  btn.textContent = inp.type==='password'?'👁':'🙈';
 }
-
 function toggleVoice() {
   state.voiceEnabled = !state.voiceEnabled;
   document.getElementById('voice-toggle').classList.toggle('on', state.voiceEnabled);
-  saveToStorage();
-  showToast(state.voiceEnabled ? '🔊 Voice reply ON' : '🔇 Voice reply OFF');
+  saveToStorage(); showToast(state.voiceEnabled?'🔊 Voice ON':'🔇 Voice OFF');
 }
-
 function saveSettings() {
-  cfg.groq = document.getElementById('cfg-groq') ? document.getElementById('cfg-groq').value.trim() : '';
-  cfg.openrouter = document.getElementById('cfg-openrouter') ? document.getElementById('cfg-openrouter').value.trim() : '';
-  cfg.model = document.getElementById('cfg-model') ? document.getElementById('cfg-model').value : 'google/gemini-2.0-flash-exp:free';
+  cfg.groq = document.getElementById('cfg-groq').value.trim();
+  cfg.openrouter = document.getElementById('cfg-openrouter').value.trim();
   cfg.gemini = document.getElementById('cfg-gemini').value.trim();
-  cfg.grok = document.getElementById('cfg-grok') ? document.getElementById('cfg-grok').value.trim() : '';
-  cfg.claude = document.getElementById('cfg-claude') ? document.getElementById('cfg-claude').value.trim() : '';
-  cfg.groq = document.getElementById('cfg-groq') ? document.getElementById('cfg-groq').value.trim() : '';
-  cfg.openrouter = document.getElementById('cfg-openrouter') ? document.getElementById('cfg-openrouter').value.trim() : '';
-  cfg.orModel = document.getElementById('cfg-or-model') ? document.getElementById('cfg-or-model').value : 'google/gemini-2.0-flash-exp:free';
+  cfg.claude = document.getElementById('cfg-claude').value.trim();
   cfg.blogger = document.getElementById('cfg-blogger').value.trim();
   cfg.blogId = document.getElementById('cfg-blogid').value.trim();
-  cfg.fb = document.getElementById('cfg-fb').value.trim();
   cfg.name = document.getElementById('cfg-name').value.trim() || 'Dip Mondal';
   document.getElementById('display-name').textContent = cfg.name;
   if (cfg.name) memories.user_name = cfg.name;
-  saveToStorage();
-  updateEngineStatus();
-  showToast('✅ Configuration saved!');
+  saveToStorage(); updateEngineStatus(); showToast('✅ Saved!');
 }
-
 function clearAll() {
-  if (!confirm('Clear all data? This cannot be undone.')) return;
-  try { localStorage.clear(); } catch(e) {}
+  if (!confirm('সব data মুছে ফেলবে?')) return;
+  try{localStorage.clear();}catch(e){}
   location.reload();
 }
 
-// ── ENGINE STATUS ──
-function updateEngineStatus() {
-  const active = getActiveEngine();
-  const el = document.getElementById('engine-status');
-  if (!el) return;
-  if (!active) { el.textContent = '● NO API KEY • GO TO SETTINGS'; el.style.color = 'rgba(255,51,102,0.8)'; return; }
-  el.textContent = `● ONLINE • ${getEngineLabel(active.engine)}`;
-  el.style.color = 'rgba(0,255,136,0.7)';
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  const h=now.getHours().toString().padStart(2,'0'), m=now.getMinutes().toString().padStart(2,'0');
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const tv=document.getElementById('time-val'), dv=document.getElementById('date-val');
+  if(tv) tv.textContent=`${h}:${m}`;
+  if(dv) dv.textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
 }
 
-// ── VOICE TEST ──
-function testVoice(lang) {
-  const texts = {
-    'en': 'Hello! I am JARVIS, your personal AI assistant. Voice is working!',
-    'bn-IN': 'নমস্কার! আমি JARVIS, আপনার AI সহকারী। ভয়েস কাজ করছে!',
-    'hi-IN': 'नमस्ते! मैं JARVIS हूँ। आवाज़ काम कर रही है!'
-  };
+// ── BATTERY ──
+async function initBattery() {
+  if (!navigator.getBattery) { const bv=document.getElementById('battery-val'); if(bv) bv.textContent='N/A'; return; }
+  try {
+    const bat = await navigator.getBattery();
+    const upd = () => {
+      const pct = Math.round(bat.level*100);
+      const bv=document.getElementById('battery-val'), bf=document.getElementById('battery-fill');
+      if(bv) bv.textContent=pct+'%';
+      if(bf){bf.style.width=pct+'%'; bf.style.background=pct>20?'linear-gradient(90deg,#00FF88,#00D4FF)':'linear-gradient(90deg,#FF3366,#FF6B35)';}
+    };
+    upd();
+    bat.addEventListener('levelchange', upd);
+    bat.addEventListener('chargingchange', upd);
+  } catch(e){}
+}
 
-  window.speechSynthesis.cancel();
-  const voices = window.speechSynthesis.getVoices();
+// ── NETWORK ──
+function updateNetwork() {
+  const online = navigator.onLine;
+  const nv=document.getElementById('network-val'), nt=document.getElementById('network-type');
+  if(nv){nv.textContent=online?'ON':'OFF'; nv.style.color=online?'var(--green)':'var(--red)';}
+  if(nt){const conn=navigator.connection||navigator.mozConnection; nt.textContent=conn?(conn.effectiveType||conn.type||'Connected'):(online?'Connected':'Offline');}
+}
+window.addEventListener('online', ()=>{updateNetwork();showToast('🌐 Connected!');});
+window.addEventListener('offline', ()=>{updateNetwork();showToast('❌ Disconnected!');});
 
-  // Show available voices info
-  const infoEl = document.getElementById('voice-list-info');
-  if (infoEl) {
-    const matching = voices.filter(v =>
-      v.lang.startsWith(lang.split('-')[0])
-    ).map(v => v.name).slice(0, 3);
-    infoEl.style.display = 'block';
-    infoEl.textContent = matching.length
-      ? '✅ Found: ' + matching.join(', ')
-      : '⚠️ No native ' + lang + ' voice found — using fallback';
-  }
+// ── GPS ──
+async function getLocation() {
+  if (!navigator.geolocation) { showToast('❌ Location not supported'); return; }
+  showToast('📍 Location নেওয়া হচ্ছে...');
+  const lv=document.getElementById('location-val'), ls=document.getElementById('location-sub');
+  if(lv) lv.textContent='...';
+  navigator.geolocation.getCurrentPosition(async(pos)=>{
+    userLat=pos.coords.latitude; userLon=pos.coords.longitude;
+    showMap(userLat,userLon);
+    try {
+      const res=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`);
+      const data=await res.json();
+      const city=data.address?.city||data.address?.town||data.address?.village||'Unknown';
+      const country=data.address?.country||'';
+      userCity=city;
+      if(lv){lv.textContent=city;lv.style.fontSize='11px';}
+      if(ls) ls.textContent=country;
+      showToast(`📍 ${city}, ${country}`);
+      memories['current_location']=`${city}, ${country}`;
+      await fetchWeather(userLat,userLon,city);
+    } catch(e){ if(lv) lv.textContent=`${userLat.toFixed(3)}`; }
+  },(err)=>{ showToast('❌ '+err.message); if(lv) lv.textContent='Denied'; },{enableHighAccuracy:true,timeout:10000});
+}
 
-  const utt = new SpeechSynthesisUtterance(texts[lang]);
-  utt.lang = lang;
+// ── MAP ──
+function showMap(lat,lon) {
+  const iframe=document.getElementById('map-iframe'), ph=document.getElementById('map-placeholder');
+  if(!iframe) return;
+  iframe.src=`https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+  iframe.style.display='block';
+  if(ph) ph.style.display='none';
+}
+function openGoogleMaps() {
+  if(userLat&&userLon) window.open(`https://www.google.com/maps?q=${userLat},${userLon}`,'_blank');
+  else { showToast('📍 আগে Location নাও!'); getLocation(); }
+}
 
-  const bestVoice = getBestVoice(lang);
-  if (bestVoice) {
-    utt.voice = bestVoice;
-    showToast('🔊 Using: ' + bestVoice.name);
-  } else {
-    showToast('⚠️ No matching voice — using system default');
-  }
+// ── WEATHER ──
+async function fetchWeather(lat,lon,city) {
+  try {
+    const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto`);
+    const data=await res.json();
+    const cur=data.current;
+    const temp=Math.round(cur.temperature_2m), hum=cur.relative_humidity_2m, wind=Math.round(cur.wind_speed_10m), code=cur.weather_code;
+    const emoji=code===0?'☀️':code<=3?'⛅':code<=49?'🌫️':code<=59?'🌦️':code<=69?'🌧️':code<=79?'❄️':code<=99?'⛈️':'🌤️';
+    const desc=code===0?'Clear Sky':code<=3?'Partly Cloudy':code<=49?'Foggy':code<=59?'Drizzle':code<=69?'Rainy':code<=79?'Snowy':code<=99?'Thunderstorm':'Unknown';
+    const card=document.getElementById('weather-card');
+    if(card) card.innerHTML=`
+      <div class="weather-main">
+        <div><div class="weather-temp">${temp}°C</div><div style="font-size:28px;margin-top:4px">${emoji}</div></div>
+        <div style="text-align:right"><div style="font-size:13px;color:var(--text)">${desc}</div><div style="font-size:10px;color:rgba(0,212,255,.5);margin-top:3px">📍 ${city||'Your Location'}</div></div>
+      </div>
+      <div style="display:flex;border-top:1px solid var(--border)">
+        <div class="weather-detail-item"><div class="weather-detail-val">💧 ${hum}%</div><div class="weather-detail-key">HUMIDITY</div></div>
+        <div class="weather-detail-item"><div class="weather-detail-val">💨 ${wind}km/h</div><div class="weather-detail-key">WIND</div></div>
+        <div class="weather-detail-item"><div class="weather-detail-val">${temp>30?'🥵 Hot':temp>20?'😊 Nice':'🥶 Cold'}</div><div class="weather-detail-key">FEELS</div></div>
+      </div>`;
+    memories['current_weather']=`${temp}°C, ${desc} in ${city}`;
+    showToast(`🌤️ ${temp}°C — ${desc}`);
+    if (state.voiceEnabled) {
+      const wMsg = state.lang==='bn-IN' ? `আপনার এলাকায় এখন ${temp} ডিগ্রি। আবহাওয়া ${desc}।` : `Current temperature is ${temp}°C. Weather: ${desc}.`;
+      speak(wMsg);
+    }
+  } catch(e){ showToast('❌ Weather failed'); }
+}
+async function checkWeather() {
+  if(userLat&&userLon) await fetchWeather(userLat,userLon,userCity||'Your Location');
+  else { showToast('📍 আগে Location নাও!'); getLocation(); }
+}
 
-  utt.rate = lang === 'bn-IN' ? 0.85 : 0.9;
-  window.speechSynthesis.speak(utt);
+// ── VIBRATION ──
+function vibratePhone(p) { if(navigator.vibrate) navigator.vibrate(p||[200,100,200]); showToast('📳 Vibrated!'); }
+
+// ── CLIPBOARD ──
+async function copyText() {
+  const text=document.getElementById('clipboard-area')?.value;
+  if(!text){showToast('⚠️ কিছু লেখো!');return;}
+  try{await navigator.clipboard.writeText(text);showToast('✅ Copied!');}
+  catch(e){document.getElementById('clipboard-area').select();document.execCommand('copy');showToast('✅ Copied!');}
+}
+async function pasteText() {
+  try{const t=await navigator.clipboard.readText(); document.getElementById('clipboard-area').value=t; showToast('📥 Pasted!');}
+  catch(e){showToast('❌ Paste denied');}
+}
+async function copyLastMsg() {
+  const msgs=document.querySelectorAll('.bubble.ai-bubble');
+  if(!msgs.length){showToast('⚠️ কোনো message নেই!');return;}
+  try{await navigator.clipboard.writeText(msgs[msgs.length-1].textContent);showToast('✅ Last AI message copied!');}
+  catch(e){showToast('❌ Copy failed');}
+}
+function sendClipToChat() {
+  const text=document.getElementById('clipboard-area')?.value?.trim();
+  if(!text){showToast('⚠️ কিছু লেখো!');return;}
+  document.getElementById('user-input').value=text;
+  switchTab('chat',document.querySelector('.nav-btn'));
+  sendMessage();
+}
+
+// ── NOTIFICATIONS ──
+async function requestNotification() {
+  if(!('Notification' in window)){showToast('❌ Not supported');return;}
+  if(Notification.permission==='granted'){sendTestNotification();return;}
+  const p=await Notification.requestPermission();
+  if(p==='granted'){showToast('✅ Enabled!');sendTestNotification();}
+  else showToast('❌ Denied');
+}
+function sendTestNotification() {
+  if(Notification.permission!=='granted'){requestNotification();return;}
+  new Notification('🤖 JARVIS AI',{body:'নমস্কার! আমি JARVIS — সবসময় আপনার সেবায়!',icon:'https://img.icons8.com/fluency/48/robot-2.png'});
+  vibratePhone([200,100,200]);
+  showToast('🔔 Notification sent!');
+}
+
+// ── SHARE ──
+async function shareApp() {
+  if(navigator.share){try{await navigator.share({title:'JARVIS AI',text:'আমার Personal AI Assistant!',url:window.location.href});}catch(e){}}
+  else{try{await navigator.clipboard.writeText(window.location.href);showToast('🔗 Link copied!');}catch(e){}}
 }
 
 // ── TOAST ──
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 }
 </script>
 </body>
