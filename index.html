@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>JARVIS AI — Multi AI Assistant</title>
+<title>JARVIS AI — Powered by OpenRouter</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -649,25 +649,45 @@ body{display:flex;align-items:center;justify-content:center;font-family:'Rajdhan
         <div class="settings-group">
           <div class="settings-group-label">◈ AI ENGINE</div>
           <div class="ai-engine-info">
-            🤖 যেটার Key দেবে সেটাই কাজ করবে!<br/>
-            Priority: Gemini → Grok → Claude
+            🌐 <b>OpenRouter</b> — সম্পূর্ণ FREE!<br/>
+            openrouter.ai → Sign Up → Create Key<br/>
+            অথবা অন্য যেকোনো key দাও — সবই কাজ করবে!
           </div>
           <div class="settings-row">
-            <div class="settings-key-label">🟢 GEMINI API KEY (FREE)</div>
+            <div class="settings-key-label">🌐 OPENROUTER API KEY (সবচেয়ে ভালো - FREE)</div>
+            <div class="settings-key-wrap">
+              <input class="settings-input" id="cfg-openrouter" type="password" placeholder="sk-or-v1-... (openrouter.ai)"/>
+              <button class="eye-btn" onclick="toggleEye('cfg-openrouter',this)">👁</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-key-label">🤖 AI MODEL (OpenRouter)</div>
+            <select class="settings-input" id="cfg-model" style="cursor:pointer">
+              <option value="google/gemini-2.0-flash-exp:free">🟢 Gemini 2.0 Flash (Free)</option>
+              <option value="meta-llama/llama-3.3-70b-instruct:free">🦙 Llama 3.3 70B (Free)</option>
+              <option value="deepseek/deepseek-r1:free">🔍 DeepSeek R1 (Free)</option>
+              <option value="deepseek/deepseek-chat-v3-0324:free">💬 DeepSeek Chat V3 (Free)</option>
+              <option value="mistralai/mistral-7b-instruct:free">⚡ Mistral 7B (Free)</option>
+              <option value="google/gemini-2.5-pro-exp-03-25:free">🌟 Gemini 2.5 Pro (Free)</option>
+            </select>
+          </div>
+          <div style="height:1px;background:rgba(0,212,255,0.1);margin:12px 0"></div>
+          <div class="settings-row">
+            <div class="settings-key-label">🟢 GEMINI API KEY (বিকল্প)</div>
             <div class="settings-key-wrap">
               <input class="settings-input" id="cfg-gemini" type="password" placeholder="AIza... (aistudio.google.com)"/>
               <button class="eye-btn" onclick="toggleEye('cfg-gemini',this)">👁</button>
             </div>
           </div>
           <div class="settings-row">
-            <div class="settings-key-label">⚡ GROK API KEY (xAI)</div>
+            <div class="settings-key-label">⚡ GROK API KEY (বিকল্প)</div>
             <div class="settings-key-wrap">
               <input class="settings-input" id="cfg-grok" type="password" placeholder="xai-... (console.x.ai)"/>
               <button class="eye-btn" onclick="toggleEye('cfg-grok',this)">👁</button>
             </div>
           </div>
           <div class="settings-row">
-            <div class="settings-key-label">🔵 CLAUDE API KEY (Anthropic)</div>
+            <div class="settings-key-label">🔵 CLAUDE API KEY (বিকল্প)</div>
             <div class="settings-key-wrap">
               <input class="settings-input" id="cfg-claude" type="password" placeholder="sk-ant-... (console.anthropic.com)"/>
               <button class="eye-btn" onclick="toggleEye('cfg-claude',this)">👁</button>
@@ -785,6 +805,8 @@ const state = {
 };
 
 const cfg = {
+  openrouter: '',
+  model: 'google/gemini-2.0-flash-exp:free',
   gemini: '',
   grok: '',
   claude: '',
@@ -849,9 +871,13 @@ function loadFromStorage() {
     if (v !== null) state.voiceEnabled = v === '1';
 
     // Apply to settings inputs
+    if(document.getElementById('cfg-openrouter')) document.getElementById('cfg-openrouter').value = cfg.openrouter || '';
+    if(document.getElementById('cfg-model')) document.getElementById('cfg-model').value = cfg.model || 'google/gemini-2.0-flash-exp:free';
     document.getElementById('cfg-gemini').value = cfg.gemini || '';
     if(document.getElementById('cfg-grok')) document.getElementById('cfg-grok').value = cfg.grok || '';
     if(document.getElementById('cfg-claude')) document.getElementById('cfg-claude').value = cfg.claude || '';
+    if(document.getElementById('cfg-openrouter')) document.getElementById('cfg-openrouter').value = cfg.openrouter || '';
+    if(document.getElementById('cfg-or-model') && cfg.orModel) document.getElementById('cfg-or-model').value = cfg.orModel;
     document.getElementById('cfg-blogger').value = cfg.blogger || '';
     document.getElementById('cfg-blogid').value = cfg.blogId || '';
     document.getElementById('cfg-fb').value = cfg.fb || '';
@@ -1041,9 +1067,11 @@ function getLanguageName() {
 
 // ── MULTI AI ENGINE ──
 function getActiveEngine() {
+  const orKey = cfg.openrouter || document.getElementById('cfg-openrouter')?.value.trim();
   const gemKey = cfg.gemini || document.getElementById('cfg-gemini')?.value.trim();
   const grokKey = cfg.grok || document.getElementById('cfg-grok')?.value.trim();
   const claudeKey = cfg.claude || document.getElementById('cfg-claude')?.value.trim();
+  if (orKey) return { engine: 'openrouter', key: orKey };
   if (gemKey) return { engine: 'gemini', key: gemKey };
   if (grokKey) return { engine: 'grok', key: grokKey };
   if (claudeKey) return { engine: 'claude', key: claudeKey };
@@ -1051,12 +1079,17 @@ function getActiveEngine() {
 }
 
 function getEngineLabel(engine) {
-  return { gemini: '🟢 Gemini', grok: '⚡ Grok', claude: '🔵 Claude' }[engine] || '🤖 AI';
+  return {
+    openrouter: '🌐 OpenRouter',
+    gemini: '🟢 Gemini',
+    grok: '⚡ Grok',
+    claude: '🔵 Claude'
+  }[engine] || '🤖 AI';
 }
 
 async function geminiChat(userMsg) {
   const active = getActiveEngine();
-  if (!active) return '⚠️ কোনো API Key দেওয়া নেই! Settings-এ যাও এবং Gemini / Grok / Claude এর যেকোনো একটা key দাও।';
+  if (!active) return '⚠️ কোনো API Key নেই! Settings ট্যাবে যাও → OpenRouter key দাও (openrouter.ai — সম্পূর্ণ FREE!)।';
 
   const memoryStr = Object.entries(memories).map(([k,v]) => `- ${k}: ${v}`).join('\n');
   const systemPrompt = `You are JARVIS, a highly intelligent personal AI assistant for ${cfg.name || 'Dip Mondal'}.
@@ -1072,12 +1105,41 @@ INSTRUCTIONS:
 - You know the user\'s blogs: healthtips9600.blogspot.com and kayapatbajar.blogspot.com`;
 
   try {
+    if (active.engine === 'openrouter') return await callOpenRouter(userMsg, systemPrompt, active.key);
     if (active.engine === 'gemini') return await callGemini(userMsg, systemPrompt, active.key);
     if (active.engine === 'grok') return await callGrok(userMsg, systemPrompt, active.key);
     if (active.engine === 'claude') return await callClaude(userMsg, systemPrompt, active.key);
   } catch(e) {
     return `❌ Network error: ${e.message}`;
   }
+}
+
+async function callOpenRouter(msg, sys, key) {
+  const model = cfg.model || document.getElementById('cfg-model')?.value || 'google/gemini-2.0-flash-exp:free';
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${key}`,
+      'HTTP-Referer': window.location.href,
+      'X-Title': 'JARVIS AI Assistant'
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: [
+        { role: 'system', content: sys },
+        { role: 'user', content: msg }
+      ],
+      temperature: 0.8,
+      max_tokens: 2048
+    })
+  });
+  if (!res.ok) {
+    const e = await res.json();
+    return `❌ OpenRouter Error: ${e.error?.message || 'Check your API key'}`;
+  }
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content?.trim() || '⚠️ No response received.';
 }
 
 async function callGemini(msg, sys, key) {
@@ -1251,7 +1313,7 @@ function updateStats() {
 // ── BLOGGER ──
 async function generateBlogPost(type) {
   const key = cfg.gemini || document.getElementById('cfg-gemini').value.trim();
-  if (!key) { showToast('⚠️ কোনো API Key নেই! Settings-এ দাও।'); return; }
+  if (!key) { showToast('⚠️ Settings-এ OpenRouter key দাও! (openrouter.ai — FREE)'); return; }
 
   setLoading(true);
   const prompt = type === 'health'
@@ -1324,7 +1386,7 @@ function selectPlatform(p) {
 
 async function generateSocialPost() {
   const key = cfg.gemini || document.getElementById('cfg-gemini').value.trim();
-  if (!key) { showToast('⚠️ কোনো API Key নেই! Settings-এ দাও।'); return; }
+  if (!key) { showToast('⚠️ Settings-এ OpenRouter key দাও! (openrouter.ai — FREE)'); return; }
   setLoading(true);
   const caption = await geminiChat(`Create an engaging ${state.selectedPlatform === 'fb' ? 'Facebook' : 'Instagram'} post in ${getLanguageName()} about my health blog and tips. Use emojis and relevant hashtags. Keep it engaging and professional.`);
   setLoading(false);
@@ -1354,9 +1416,13 @@ function toggleVoice() {
 }
 
 function saveSettings() {
+  cfg.openrouter = document.getElementById('cfg-openrouter') ? document.getElementById('cfg-openrouter').value.trim() : '';
+  cfg.model = document.getElementById('cfg-model') ? document.getElementById('cfg-model').value : 'google/gemini-2.0-flash-exp:free';
   cfg.gemini = document.getElementById('cfg-gemini').value.trim();
   cfg.grok = document.getElementById('cfg-grok') ? document.getElementById('cfg-grok').value.trim() : '';
   cfg.claude = document.getElementById('cfg-claude') ? document.getElementById('cfg-claude').value.trim() : '';
+  cfg.openrouter = document.getElementById('cfg-openrouter') ? document.getElementById('cfg-openrouter').value.trim() : '';
+  cfg.orModel = document.getElementById('cfg-or-model') ? document.getElementById('cfg-or-model').value : 'google/gemini-2.0-flash-exp:free';
   cfg.blogger = document.getElementById('cfg-blogger').value.trim();
   cfg.blogId = document.getElementById('cfg-blogid').value.trim();
   cfg.fb = document.getElementById('cfg-fb').value.trim();
