@@ -490,12 +490,27 @@ body{display:flex;align-items:center;justify-content:center}
       <div style="margin-top:9px">
         <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🎙️ SARVAM VOICE (Bengali/Hindi)</div>
         <select id="svv" class="se" style="margin-bottom:7px">
-          <option value="anushka">👩 Anushka (Female)</option>
-          <option value="manisha">👩 Manisha (Female)</option>
-          <option value="vidya">👩 Vidya (Female)</option>
-          <option value="arya">👩 Arya (Female)</option>
-          <option value="abhilash">👨 Abhilash (Male)</option>
-          <option value="karun">👨 Karun (Male)</option>
+          <optgroup label="bulbul:v2 — Bengali ভালো">
+            <option value="anushka">👩 Anushka (Female) ← Bengali Best</option>
+            <option value="manisha">👩 Manisha (Female)</option>
+            <option value="vidya">👩 Vidya (Female)</option>
+            <option value="arya">👩 Arya (Female)</option>
+            <option value="abhilash">👨 Abhilash (Male)</option>
+            <option value="karun">👨 Karun (Male)</option>
+          </optgroup>
+          <optgroup label="bulbul:v3 — Better Quality">
+            <option value="shubh">👨 Shubh (Male) ← v3 Default</option>
+            <option value="ritu">👩 Ritu (Female)</option>
+            <option value="priya">👩 Priya (Female)</option>
+            <option value="neha">👩 Neha (Female)</option>
+            <option value="rahul">👨 Rahul (Male)</option>
+            <option value="aditya">👨 Aditya (Male)</option>
+          </optgroup>
+        </select>
+        <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🤖 SARVAM MODEL</div>
+        <select id="svm" class="se" style="margin-bottom:7px">
+          <option value="bulbul:v2">bulbul:v2 — Bengali/Hindi Best</option>
+          <option value="bulbul:v3">bulbul:v3 — Better Quality</option>
         </select>
       </div>
       <div style="display:flex;gap:7px;margin-top:5px">
@@ -531,7 +546,7 @@ body{display:flex;align-items:center;justify-content:center}
 
 // STATE
 const S={lang:'en',voice:true,listening:false,cnt:0};
-const C={sarvam:'',sarvamVoice:'anushka',groq:'',or:'',gem:'',cla:'',blogger:'',blogId:'',name:'Dip Mondal'};
+const C={sarvam:'',sarvamVoice:'anushka',sarvamModel:'bulbul:v2',groq:'',or:'',gem:'',cla:'',blogger:'',blogId:'',name:'Dip Mondal'};
 let MEM={user_name:'Dip Mondal',profession:'Bengali Content Creator & Web Developer',primary_blog:'healthtips9600.blogspot.com',affiliate_blog:'kayapatbajar.blogspot.com',preferred_language:'Bengali',content_style:'Formal SEO-optimized',location:'India/Bangladesh',email:'Kayapatbangla@gmail.com'};
 let LAT=null,LON=null,CITY=null,REC=null,wakeREC=null,wakeOn=false,voiceMode=false;
 let rems=[],_blog=null,_cap=null,_cal=null;
@@ -556,6 +571,7 @@ function loadD(){
     const l=localStorage.getItem('jl');if(l)S.lang=l;
     const v=localStorage.getItem('jv');if(v!==null)S.voice=v==='1';
     const mp={csv:'sarvam',cgr:'groq',cor:'or',cgm:'gem',ccl:'cla',cbg:'blogger',cbid:'blogId',cnm:'name'};
+    if(document.getElementById('svm')&&C.sarvamModel) document.getElementById('svm').value=C.sarvamModel;
     Object.entries(mp).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.value=C[k]||'';});
     document.getElementById('dnm').textContent=C.name||'Dip Mondal';
     document.getElementById('ui').placeholder=PH[S.lang]||PH.en;
@@ -774,6 +790,24 @@ function speak(text){
 async function speakSarvam(text, key){
   const langCode = S.lang==='bn-IN'?'bn-IN':'hi-IN';
   const speaker = C.sarvamVoice || document.getElementById('svv')?.value || 'anushka';
+  const model = C.sarvamModel || document.getElementById('svm')?.value || 'bulbul:v2';
+  const isV3 = model.includes('v3');
+
+  // Build request body - use 'text' string for latest API
+  const body = {
+    inputs: [text.substring(0, 500)], // array format - supported by both v2 and v3
+    target_language_code: langCode,
+    speaker: speaker,
+    model: model,
+    enable_preprocessing: true,
+    speech_sample_rate: isV3 ? 24000 : 22050
+  };
+  // v2 only params
+  if(!isV3){
+    body.pace = 0.9;
+    body.loudness = 1.5;
+  }
+
   try{
     const res = await fetch('https://api.sarvam.ai/text-to-speech',{
       method:'POST',
@@ -781,45 +815,35 @@ async function speakSarvam(text, key){
         'api-subscription-key': key,
         'Content-Type':'application/json'
       },
-      body: JSON.stringify({
-        inputs: [text.substring(0,500)],
-        target_language_code: langCode,
-        speaker: speaker,
-        model: 'bulbul:v3',
-        pace: 0.9,
-        loudness: 1.5,
-        enable_preprocessing: true,
-        speech_sample_rate: 22050
-      })
+      body: JSON.stringify(body)
     });
-    if(!res.ok) throw new Error('Sarvam API error: '+res.status);
+
+    if(!res.ok){
+      const errText = await res.text();
+      throw new Error('HTTP '+res.status+': '+errText.substring(0,100));
+    }
+
     const data = await res.json();
-    if(!data.audios || !data.audios[0]) throw new Error('No audio returned');
+    const audioB64 = data.audios?.[0] || data.audio;
+    if(!audioB64) throw new Error('No audio in response: '+JSON.stringify(data).substring(0,100));
 
     // Decode base64 WAV and play
-    const b64 = data.audios[0];
-    const byteChars = atob(b64);
-    const byteNums = new Array(byteChars.length);
-    for(let i=0;i<byteChars.length;i++) byteNums[i]=byteChars.charCodeAt(i);
-    const byteArr = new Uint8Array(byteNums);
+    const byteChars = atob(audioB64);
+    const byteArr = new Uint8Array(byteChars.length);
+    for(let i=0;i<byteChars.length;i++) byteArr[i]=byteChars.charCodeAt(i);
     const blob = new Blob([byteArr],{type:'audio/wav'});
     const url = URL.createObjectURL(blob);
     _curAudio = new Audio(url);
-    _curAudio.onended=()=>{
-      URL.revokeObjectURL(url);
-      _curAudio=null;
-      if(voiceMode) setTimeout(startMic,700);
-    };
-    _curAudio.onerror=()=>{
-      URL.revokeObjectURL(url);
-      _curAudio=null;
-      speakBnFallback(text); // fallback
-    };
-    _curAudio.play();
-    toast('🇮🇳 Sarvam AI: '+speaker);
+    _curAudio.onended=()=>{URL.revokeObjectURL(url);_curAudio=null;if(voiceMode)setTimeout(startMic,700);};
+    _curAudio.onerror=(e)=>{URL.revokeObjectURL(url);_curAudio=null;console.warn('Audio play failed');speakBnFallback(text);};
+    const playPromise = _curAudio.play();
+    if(playPromise) playPromise.catch(e=>{speakBnFallback(text);});
+    toast('🇮🇳 Sarvam: '+speaker+' ('+model+')');
+
   }catch(e){
     console.warn('Sarvam TTS failed:',e.message);
-    // Fallback to Web Speech
+    toast('⚠️ Sarvam failed: '+e.message.substring(0,40));
+    // Fallback
     if(S.lang==='bn-IN') speakBnFallback(text);
     else speakWS(text,'hi-IN');
   }
@@ -1129,6 +1153,7 @@ function togVR(){S.voice=!S.voice;document.getElementById('vtg').classList.toggl
 function saveS(){
   C.sarvam=document.getElementById('csv').value.trim();
   C.sarvamVoice=document.getElementById('svv').value;
+  C.sarvamModel=document.getElementById('svm')?.value||'bulbul:v2';
   C.groq=document.getElementById('cgr').value.trim();C.or=document.getElementById('cor').value.trim();
   C.gem=document.getElementById('cgm').value.trim();C.cla=document.getElementById('ccl').value.trim();
   C.blogger=document.getElementById('cbg').value.trim();C.blogId=document.getElementById('cbid').value.trim();
