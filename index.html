@@ -455,6 +455,8 @@ body{display:flex;align-items:center;justify-content:center}
     <div style="margin-bottom:12px">
       <div style="font-size:9px;letter-spacing:2px;color:rgba(0,212,255,.45);margin-bottom:8px;font-weight:600">◈ AI ENGINE</div>
       <div class="ek">🚀 <b>Groq = FREE + FASTEST!</b><br>Priority: Groq → OpenRouter → Gemini → Claude</div>
+      <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🇮🇳 SARVAM AI — Bengali TTS (dashboard.sarvam.ai)</div>
+      <div class="ew" style="margin-bottom:9px"><input class="si" id="csv" type="password" placeholder="Sarvam API key..."/><button class="eb" onclick="ey('csv',this)">👁</button></div>
       <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🚀 GROQ (console.groq.com)</div>
       <div class="ew" style="margin-bottom:9px"><input class="si" id="cgr" type="password" placeholder="gsk_..."/><button class="eb" onclick="ey('cgr',this)">👁</button></div>
       <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🌐 OPENROUTER</div>
@@ -485,10 +487,21 @@ body{display:flex;align-items:center;justify-content:center}
         <div><div style="font-size:13px;color:var(--t)">🔊 Auto Voice Reply</div><div style="font-size:9px;color:rgba(0,212,255,.35);margin-top:2px">AI SPEAKS RESPONSES</div></div>
         <div class="ts on" id="vtg" onclick="togVR()"><div class="th"></div></div>
       </div>
-      <div style="display:flex;gap:7px;margin-top:9px">
-        <button class="bn" onclick="testV('en')" style="flex:1;padding:8px 0">🔊 EN Test</button>
-        <button class="bn" onclick="testV('bn-IN')" style="flex:1;padding:8px 0">🔊 BN Test</button>
-        <button class="bn" onclick="testV('hi-IN')" style="flex:1;padding:8px 0">🔊 HI Test</button>
+      <div style="margin-top:9px">
+        <div style="font-size:9px;color:rgba(0,212,255,.4);margin-bottom:5px">🎙️ SARVAM VOICE (Bengali/Hindi)</div>
+        <select id="svv" class="se" style="margin-bottom:7px">
+          <option value="anushka">👩 Anushka (Female)</option>
+          <option value="manisha">👩 Manisha (Female)</option>
+          <option value="vidya">👩 Vidya (Female)</option>
+          <option value="arya">👩 Arya (Female)</option>
+          <option value="abhilash">👨 Abhilash (Male)</option>
+          <option value="karun">👨 Karun (Male)</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:7px;margin-top:5px">
+        <button class="bn" onclick="testV('en')" style="flex:1;padding:8px 0">🔊 EN</button>
+        <button class="bn" onclick="testV('bn-IN')" style="flex:1;padding:8px 0">🔊 বাং</button>
+        <button class="bn" onclick="testV('hi-IN')" style="flex:1;padding:8px 0">🔊 हिं</button>
       </div>
     </div>
     <button class="sv" onclick="saveS()">◈ SAVE CONFIGURATION</button>
@@ -518,7 +531,7 @@ body{display:flex;align-items:center;justify-content:center}
 
 // STATE
 const S={lang:'en',voice:true,listening:false,cnt:0};
-const C={groq:'',or:'',gem:'',cla:'',blogger:'',blogId:'',name:'Dip Mondal'};
+const C={sarvam:'',sarvamVoice:'anushka',groq:'',or:'',gem:'',cla:'',blogger:'',blogId:'',name:'Dip Mondal'};
 let MEM={user_name:'Dip Mondal',profession:'Bengali Content Creator & Web Developer',primary_blog:'healthtips9600.blogspot.com',affiliate_blog:'kayapatbajar.blogspot.com',preferred_language:'Bengali',content_style:'Formal SEO-optimized',location:'India/Bangladesh',email:'Kayapatbangla@gmail.com'};
 let LAT=null,LON=null,CITY=null,REC=null,wakeREC=null,wakeOn=false,voiceMode=false;
 let rems=[],_blog=null,_cap=null,_cal=null;
@@ -542,7 +555,7 @@ function loadD(){
     const m=localStorage.getItem('jm');if(m)Object.assign(MEM,JSON.parse(m));
     const l=localStorage.getItem('jl');if(l)S.lang=l;
     const v=localStorage.getItem('jv');if(v!==null)S.voice=v==='1';
-    const mp={cgr:'groq',cor:'or',cgm:'gem',ccl:'cla',cbg:'blogger',cbid:'blogId',cnm:'name'};
+    const mp={csv:'sarvam',cgr:'groq',cor:'or',cgm:'gem',ccl:'cla',cbg:'blogger',cbid:'blogId',cnm:'name'};
     Object.entries(mp).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.value=C[k]||'';});
     document.getElementById('dnm').textContent=C.name||'Dip Mondal';
     document.getElementById('ui').placeholder=PH[S.lang]||PH.en;
@@ -726,10 +739,12 @@ async function cCla(msg,sys,key){
 // ============================================
 //  BENGALI TTS — Web Speech API Only (Works!)
 // ============================================
-// ══════════════════════════════════════
-//  TTS ENGINE — Bengali + Hindi + English
-// ══════════════════════════════════════
-let _ttsQueue = [], _ttsBusy = false;
+// ══════════════════════════════════════════════
+//  TTS ENGINE
+//  Priority: Sarvam AI → ResponsiveVoice → Web Speech
+// ══════════════════════════════════════════════
+
+let _curAudio = null;
 
 function speak(text){
   if(!S.voice) return;
@@ -737,116 +752,132 @@ function speak(text){
     .replace(/<[^>]+>/g,'')
     .replace(/https?:\/\/\S+/g,'')
     .replace(/[◈►▶#*`]/g,'')
-    .trim().substring(0, 400);
+    .trim().substring(0,500);
   if(!clean) return;
   stopSpk();
-  if(S.lang === 'bn-IN') speakBengali(clean);
-  else if(S.lang === 'hi-IN') speakHindi(clean);
-  else speakEnglish(clean);
-}
 
-function speakBengali(text){
-  // Method 1: ResponsiveVoice Bangla Female (most reliable)
-  if(typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()){
-    let done = false;
-    const onEnd = ()=>{ if(!done){ done=true; if(voiceMode) setTimeout(startMic,700); } };
-    responsiveVoice.speak(text, 'Bangla Female', {
-      rate: 0.85, pitch: 1, volume: 1,
-      onend: onEnd,
-      onerror: ()=>{ if(!done){ done=true; speakBnFallback(text); } }
-    });
-    // Timeout safety
-    setTimeout(()=>{ if(!done){ done=true; speakBnFallback(text); } }, 10000);
-    return;
+  const sarvamKey = C.sarvam || document.getElementById('csv')?.value.trim();
+
+  if(sarvamKey && (S.lang==='bn-IN'||S.lang==='hi-IN')){
+    // Sarvam AI — best for Bengali & Hindi
+    speakSarvam(clean, sarvamKey);
+  } else if(S.lang==='bn-IN'){
+    speakBnFallback(clean);
+  } else if(S.lang==='hi-IN'){
+    speakWS(clean,'hi-IN');
+  } else {
+    speakWS(clean,'en-US');
   }
-  speakBnFallback(text);
 }
 
+// ── SARVAM AI TTS (Bengali & Hindi) ──
+async function speakSarvam(text, key){
+  const langCode = S.lang==='bn-IN'?'bn-IN':'hi-IN';
+  const speaker = C.sarvamVoice || document.getElementById('svv')?.value || 'anushka';
+  try{
+    const res = await fetch('https://api.sarvam.ai/text-to-speech',{
+      method:'POST',
+      headers:{
+        'api-subscription-key': key,
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        inputs: [text.substring(0,500)],
+        target_language_code: langCode,
+        speaker: speaker,
+        model: 'bulbul:v3',
+        pace: 0.9,
+        loudness: 1.5,
+        enable_preprocessing: true,
+        speech_sample_rate: 22050
+      })
+    });
+    if(!res.ok) throw new Error('Sarvam API error: '+res.status);
+    const data = await res.json();
+    if(!data.audios || !data.audios[0]) throw new Error('No audio returned');
+
+    // Decode base64 WAV and play
+    const b64 = data.audios[0];
+    const byteChars = atob(b64);
+    const byteNums = new Array(byteChars.length);
+    for(let i=0;i<byteChars.length;i++) byteNums[i]=byteChars.charCodeAt(i);
+    const byteArr = new Uint8Array(byteNums);
+    const blob = new Blob([byteArr],{type:'audio/wav'});
+    const url = URL.createObjectURL(blob);
+    _curAudio = new Audio(url);
+    _curAudio.onended=()=>{
+      URL.revokeObjectURL(url);
+      _curAudio=null;
+      if(voiceMode) setTimeout(startMic,700);
+    };
+    _curAudio.onerror=()=>{
+      URL.revokeObjectURL(url);
+      _curAudio=null;
+      speakBnFallback(text); // fallback
+    };
+    _curAudio.play();
+    toast('🇮🇳 Sarvam AI: '+speaker);
+  }catch(e){
+    console.warn('Sarvam TTS failed:',e.message);
+    // Fallback to Web Speech
+    if(S.lang==='bn-IN') speakBnFallback(text);
+    else speakWS(text,'hi-IN');
+  }
+}
+
+// ── BENGALI FALLBACK ──
 function speakBnFallback(text){
-  // Method 2: Web Speech API
   if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,700); return; }
   window.speechSynthesis.cancel();
-  const tryIt = ()=>{
-    const vs = window.speechSynthesis.getVoices();
-    const v = vs.find(v=>v.lang==='bn-IN') || vs.find(v=>v.lang==='bn-BD') || vs.find(v=>v.lang.startsWith('bn'))
-      || vs.find(v=>v.lang==='hi-IN') || vs.find(v=>v.lang.startsWith('hi'))
-      || vs.find(v=>v.lang.startsWith('en-IN')) || vs[0];
-    const utt = new SpeechSynthesisUtterance(text);
-    if(v){ utt.voice = v; utt.lang = v.lang; }
-    else utt.lang = 'bn-IN';
-    utt.rate = 0.82; utt.volume = 1;
-    utt.onend = ()=>{ if(voiceMode) setTimeout(startMic,700); };
-    utt.onerror = ()=>{ if(voiceMode) setTimeout(startMic,700); };
+  const tryIt=()=>{
+    const vs=window.speechSynthesis.getVoices();
+    const v=vs.find(v=>v.lang==='bn-IN')||vs.find(v=>v.lang==='bn-BD')||vs.find(v=>v.lang.startsWith('bn'))
+      ||vs.find(v=>v.lang==='hi-IN')||vs.find(v=>v.lang.startsWith('hi'))
+      ||vs.find(v=>v.lang.startsWith('en-IN'))||vs[0];
+    const utt=new SpeechSynthesisUtterance(text);
+    if(v){utt.voice=v;utt.lang=v.lang;}else utt.lang='bn-IN';
+    utt.rate=0.82;utt.volume=1;
+    utt.onend=()=>{if(voiceMode)setTimeout(startMic,700);};
+    utt.onerror=()=>{if(voiceMode)setTimeout(startMic,700);};
     window.speechSynthesis.speak(utt);
   };
-  if(window.speechSynthesis.getVoices().length === 0){
-    window.speechSynthesis.onvoiceschanged = ()=>{ window.speechSynthesis.onvoiceschanged=null; tryIt(); };
-  } else tryIt();
+  if(window.speechSynthesis.getVoices().length===0){
+    window.speechSynthesis.onvoiceschanged=()=>{window.speechSynthesis.onvoiceschanged=null;tryIt();};
+  }else tryIt();
 }
 
-function speakHindi(text){
-  if(typeof responsiveVoice !== 'undefined'){
-    let done = false;
-    responsiveVoice.speak(text, 'Hindi Female', {
-      rate: 0.9, volume: 1,
-      onend: ()=>{ if(!done){ done=true; if(voiceMode) setTimeout(startMic,700); } },
-      onerror: ()=>{ if(!done){ done=true; speakWS(text,'hi-IN'); } }
-    });
-    setTimeout(()=>{ if(!done){ done=true; speakWS(text,'hi-IN'); } }, 10000);
-    return;
-  }
-  speakWS(text, 'hi-IN');
-}
-
-function speakEnglish(text){
-  if(typeof responsiveVoice !== 'undefined'){
-    let done = false;
-    responsiveVoice.speak(text, 'UK English Female', {
-      rate: 0.95, volume: 1,
-      onend: ()=>{ if(!done){ done=true; if(voiceMode) setTimeout(startMic,700); } },
-      onerror: ()=>{ if(!done){ done=true; speakWS(text,'en-US'); } }
-    });
-    setTimeout(()=>{ if(!done){ done=true; speakWS(text,'en-US'); } }, 10000);
-    return;
-  }
-  speakWS(text, 'en-US');
-}
-
-function speakWS(text, lang){
-  if(!window.speechSynthesis){ if(voiceMode) setTimeout(startMic,700); return; }
+// ── WEB SPEECH ──
+function speakWS(text,lang){
+  if(!window.speechSynthesis){if(voiceMode)setTimeout(startMic,700);return;}
   window.speechSynthesis.cancel();
-  const vs = window.speechSynthesis.getVoices();
-  const utt = new SpeechSynthesisUtterance(text);
-  const v = vs.find(v=>v.lang===lang) || vs.find(v=>v.lang.startsWith(lang.split('-')[0])) || vs[0];
-  if(v) utt.voice = v;
-  utt.lang = lang; utt.rate = 0.9; utt.volume = 1;
-  utt.onend = ()=>{ if(voiceMode) setTimeout(startMic,700); };
+  const vs=window.speechSynthesis.getVoices();
+  const utt=new SpeechSynthesisUtterance(text);
+  const v=vs.find(v=>v.lang===lang)||vs.find(v=>v.lang.startsWith(lang.split('-')[0]))||vs[0];
+  if(v)utt.voice=v;
+  utt.lang=lang;utt.rate=0.9;utt.volume=1;
+  utt.onend=()=>{if(voiceMode)setTimeout(startMic,700);};
   window.speechSynthesis.speak(utt);
 }
 
 function stopSpk(){
-  try{ if(typeof responsiveVoice!=='undefined') responsiveVoice.cancel(); }catch(e){}
-  try{ window.speechSynthesis?.cancel(); }catch(e){}
+  if(_curAudio){try{_curAudio.pause();}catch(e){}  _curAudio=null;}
+  try{window.speechSynthesis?.cancel();}catch(e){}
   toast('⏹ Stopped');
 }
 
 function testV(lang){
   const TX={
-    en: 'Hello! I am JARVIS. English voice is working perfectly!',
-    'bn-IN': 'নমস্কার! আমি JARVIS। বাংলা ভয়েস পরীক্ষা করা হচ্ছে। আমি এখন বাংলায় কথা বলতে পারছি।',
-    'hi-IN': 'नमस्ते! मैं JARVIS हूँ। हिंदी आवाज़ काम कर रही है!'
+    en:'Hello! I am JARVIS. English voice is working!',
+    'bn-IN':'নমস্কার! আমি JARVIS, আপনার AI সহকারী। Sarvam AI দিয়ে বাংলা ভয়েস পরীক্ষা করা হচ্ছে।',
+    'hi-IN':'नमस्ते! मैं JARVIS हूँ। Sarvam AI से हिंदी आवाज़ परीक्षण हो रहा है!'
   };
-  const prev = S.lang; S.lang = lang;
-  speak(TX[lang] || TX.en);
-  S.lang = prev;
-  // Show RV status
-  if(typeof responsiveVoice !== 'undefined'){
-    toast('🔊 ResponsiveVoice: ' + lang);
-  } else {
-    const vs = window.speechSynthesis?.getVoices() || [];
-    const bn = vs.find(v=>v.lang.startsWith('bn'));
-    toast(lang==='bn-IN' ? (bn ? '✅ Bengali voice: '+bn.name.substring(0,18) : '⚠️ No Bengali — using Hindi fallback') : '🔊 Testing '+lang+'...');
-  }
+  const prev=S.lang; S.lang=lang;
+  speak(TX[lang]||TX.en);
+  S.lang=prev;
+  const sk=C.sarvam||document.getElementById('csv')?.value.trim();
+  if(sk&&(lang==='bn-IN'||lang==='hi-IN')){toast('🇮🇳 Sarvam AI: '+lang);}
+  else if(lang==='bn-IN'){const vs=window.speechSynthesis?.getVoices()||[];const bn=vs.find(v=>v.lang.startsWith('bn'));toast(bn?'✅ Bengali: '+bn.name.substring(0,18):'⚠️ No Bengali voice — Add Sarvam key!');}
+  else toast('🔊 Testing: '+lang);
 }
 
 // ============================================
@@ -1096,6 +1127,8 @@ function sendPost(){const c=document.getElementById('postc').value.trim();if(!c)
 function ey(id,btn){const e=document.getElementById(id);e.type=e.type==='password'?'text':'password';btn.textContent=e.type==='password'?'👁':'🙈';}
 function togVR(){S.voice=!S.voice;document.getElementById('vtg').classList.toggle('on',S.voice);saveD();toast(S.voice?'🔊 Voice ON':'🔇 Voice OFF');}
 function saveS(){
+  C.sarvam=document.getElementById('csv').value.trim();
+  C.sarvamVoice=document.getElementById('svv').value;
   C.groq=document.getElementById('cgr').value.trim();C.or=document.getElementById('cor').value.trim();
   C.gem=document.getElementById('cgm').value.trim();C.cla=document.getElementById('ccl').value.trim();
   C.blogger=document.getElementById('cbg').value.trim();C.blogId=document.getElementById('cbid').value.trim();
